@@ -1,0 +1,43 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+const base = import.meta.env.BASE_URL;
+---
+
+<LegalLayout
+  title="Política de Cookies"
+  description="Qué cookies y almacenamiento local usa Cuando Juega el Xeneize y cómo gestionarlas."
+>
+  <p>
+    Esta página explica qué cookies y tecnologías de almacenamiento local utiliza el sitio y cómo
+    podés gestionarlas.
+  </p>
+
+  <h2>1. Qué son</h2>
+  <p>
+    Las cookies son pequeños archivos que un sitio guarda en tu navegador. El almacenamiento local
+    (localStorage) es una tecnología similar que permite guardar información en tu dispositivo.
+  </p>
+
+  <h2>2. Qué usamos</h2>
+  <ul>
+    <li><strong>Necesario (siempre activo):</strong> almacenamiento local para guardar una copia de
+      los partidos y tu preferencia de cookies. Es imprescindible para el funcionamiento y no
+      requiere consentimiento.</li>
+    <li><strong>Estadísticas (opcional):</strong> Google Analytics 4, que solo se activa si
+      aceptás. Sirve para medir el uso del sitio de forma agregada y anónima (con anonimización
+      de IP).</li>
+  </ul>
+
+  <h2>3. Cómo gestionarlas</h2>
+  <p>
+    Al ingresar, mostramos un aviso para <strong>aceptar o rechazar</strong> las cookies de
+    estadísticas. Tu elección queda guardada en tu navegador. También podés borrar o bloquear
+    cookies desde la configuración de tu navegador.
+  </p>
+
+  <h2>4. Más información</h2>
+  <p>
+    Ver también la <a href={`${base}privacidad`}>Política de Privacidad</a>. Consultas:
+    <a href="mailto:delnorte.destinos@gmail.com">delnorte.destinos@gmail.com</a>.
+  </p>
+</LegalLayout>

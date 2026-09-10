@@ -1,0 +1,54 @@
+{
+  "updatedAt": "2026-09-10T02:43:04.875Z",
+  "matches": [
+    {
+      "id": "sheet-4",
+      "date": "2026-09-02",
+      "time": "21:30",
+      "homeTeam": "Vélez Sarsfield",
+      "awayTeam": "Boca",
+      "homeScore": 0,
+      "awayScore": 0,
+      "competition": "Copa Argentina",
+      "round": "Octavos de Final",
+      "channel": "-",
+      "status": "finished"
+    },
+    {
+      "id": "sheet-2",
+      "date": "2026-09-08",
+      "time": "21:30",
+      "homeTeam": "Boca",
+      "awayTeam": "São Paulo",
+      "homeScore": 1,
+      "awayScore": 0,
+      "competition": "Copa Sudamericana",
+      "round": "Cuartos de Final - Ida",
+      "channel": "-",
+      "status": "finished"
+    },
+    {
+      "id": "sheet-1",
+      "date": "2026-09-11",
+      "dayLabel": "VIE",
+      "time": "21:30",
+      "homeTeam": "Boca",
+      "awayTeam": "Central Córdoba (SdE)",
+      "competition": "Liga Profesional",
+      "round": "Fecha 9",
+      "channel": "Por definir",
+      "status": "next"
+    },
+    {
+      "id": "sheet-3",
+      "date": "2026-09-15",
+      "time": "21:30",
+      "homeTeam": "São Paulo",
+      "awayTeam": "Boca",
+      "competition": "Copa Sudamericana",
+      "round": "Cuartos de Final - Vuelta",
+      "channel": "ESPN",
+      "status": "scheduled"
+    }
+  ]
+}

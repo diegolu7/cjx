@@ -1,0 +1,18 @@
+# Cuando Juega el Xeneize
+
+> Sitio informativo independiente (NO oficial) que muestra cuándo juega Boca Juniors: próximo partido, fecha, hora, rival, torneo, canal y resultados recientes. Contenido en español (Argentina).
+
+Hechos clave:
+- Propósito: responder rápido "¿cuándo juega Boca?" con la agenda y los resultados.
+- Sitio no oficial: no afiliado a Boca Juniors, AFA ni CONMEBOL. Canal oficial: https://www.bocajuniors.com.ar
+- Fuente de datos: Google Sheets propio + servicios de datos deportivos (TheSportsDB).
+- Los datos pueden contener errores o estar desactualizados; verificar en canales oficiales.
+- Contacto: delnorte.destinos@gmail.com
+
+Páginas:
+- Inicio (agenda y próximo partido): https://diegolu7.github.io/cjx/
+- Información, FAQ y fuentes: https://diegolu7.github.io/cjx/info
+- Contacto: https://diegolu7.github.io/cjx/contacto
+- Términos: https://diegolu7.github.io/cjx/terminos
+- Privacidad: https://diegolu7.github.io/cjx/privacidad
+- Cookies: https://diegolu7.github.io/cjx/cookies

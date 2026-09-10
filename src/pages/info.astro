@@ -1,0 +1,99 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+const base = import.meta.env.BASE_URL;
+
+const faqs = [
+  {
+    q: "¿Cuándo juega Boca?",
+    a: "En la portada mostramos siempre el próximo partido destacado con fecha, hora, rival y torneo. Más abajo están los resultados recientes y los partidos que siguen.",
+  },
+  {
+    q: "¿Este sitio es oficial?",
+    a: "No. Cuando Juega el Xeneize es un sitio informativo independiente, no afiliado ni respaldado por el Club Atlético Boca Juniors, la AFA ni la CONMEBOL. El canal oficial es bocajuniors.com.ar.",
+  },
+  {
+    q: "¿De dónde salen los datos de los partidos?",
+    a: "De fuentes públicas y de servicios de datos deportivos (por ejemplo, TheSportsDB). La información puede contener errores o estar desactualizada; siempre conviene verificar en los canales oficiales.",
+  },
+  {
+    q: "¿Dónde se puede ver el partido?",
+    a: "Cuando el dato está disponible, mostramos el canal de TV en el partido destacado. Si no figura, puede que todavía no esté confirmada la transmisión.",
+  },
+  {
+    q: "¿Cómo se actualizan los resultados?",
+    a: "Un proceso automático completa los resultados de los partidos ya jugados y mantiene la agenda al día. Igual, ante cualquier duda, priorizá la información oficial.",
+  },
+];
+
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<LegalLayout
+  title="Información"
+  description="Quiénes somos, preguntas frecuentes, fuentes de datos, notificaciones y contacto de Cuando Juega el Xeneize."
+>
+  <p>
+    Todo lo que necesitás saber sobre <strong>Cuando Juega el Xeneize</strong>: qué es, de dónde
+    salen los datos, cómo se actualizan y cómo contactarnos.
+  </p>
+
+  <h2 id="quienes-somos">Quiénes somos</h2>
+  <p>
+    Somos un sitio informativo independiente hecho por hinchas, cuyo único objetivo es mostrar de
+    forma rápida y clara <strong>cuándo juega Boca Juniors</strong>, con sus próximos partidos,
+    horarios y resultados.
+  </p>
+  <p>
+    <strong>No es un sitio oficial:</strong> no estamos afiliados, asociados, autorizados ni
+    respaldados por el Club Atlético Boca Juniors, la AFA ni la CONMEBOL. El canal oficial es
+    <a href="https://www.bocajuniors.com.ar" target="_blank" rel="noopener noreferrer">bocajuniors.com.ar</a>.
+  </p>
+
+  <h2 id="faq">Preguntas frecuentes</h2>
+  <ul>
+    {faqs.map((f) => (
+      <li>
+        <strong>{f.q}</strong>
+        <br />
+        {f.a}
+      </li>
+    ))}
+  </ul>
+
+  <h2 id="fuentes">Fuentes de datos</h2>
+  <p>
+    La agenda y los resultados se confeccionan a partir de fuentes públicas y de servicios de datos
+    deportivos (por ejemplo, TheSportsDB). Aunque ponemos cuidado, la información puede contener
+    errores, estar incompleta o desactualizada. No garantizamos su exactitud.
+  </p>
+
+  <h2 id="notificaciones">Notificaciones</h2>
+  <p>
+    <strong>Próximamente:</strong> vas a poder activar avisos para que te notifiquemos cuando esté
+    por jugar Boca. Por ahora esta función está en desarrollo.
+  </p>
+
+  <h2 id="contacto">Contacto</h2>
+  <p>
+    Para consultas, correcciones o reclamos escribinos a
+    <a href="mailto:delnorte.destinos@gmail.com">delnorte.destinos@gmail.com</a> o visitá la página de
+    <a href={`${base}contacto`}>Contacto</a>.
+  </p>
+
+  <h2 id="legal">Legal</h2>
+  <ul>
+    <li><a href={`${base}terminos`}>Términos y Condiciones</a></li>
+    <li><a href={`${base}privacidad`}>Política de Privacidad</a></li>
+    <li><a href={`${base}cookies`}>Política de Cookies</a></li>
+  </ul>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+</LegalLayout>

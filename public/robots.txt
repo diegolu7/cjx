@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Crawlers de IA (Generative Engine Optimization)
+User-agent: GPTBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+Sitemap: https://diegolu7.github.io/cjx/sitemap-index.xml

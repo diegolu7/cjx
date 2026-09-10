@@ -1,0 +1,70 @@
+---
+// Header según design.md §15: marca textual como H1 con logo (favicon) a la izquierda.
+// Mobile: CUANDO JUEGA / EL XENEIZE (2 líneas). Desktop: una fila.
+// "EL XENEIZE" en color accent; el resto blanco. Subtítulo sin color.
+const base = import.meta.env.BASE_URL;
+---
+
+<header class="site-header">
+  <div class="site-header__inner">
+    <a href={`${base}`} class="brand flex items-center gap-3 min-w-0 shrink-0" aria-label="Cuando Juega el Xeneize — Inicio">
+      <img
+        src={`${base}logo.png`}
+        alt=""
+        width={60}
+        height={40}
+        class="h-8 lg:h-10 w-auto shrink-0"
+        loading="eager"
+      />
+      <span class="block min-w-0">
+        <p class="text-[24px] lg:text-[28px] leading-[1.12] tracking-[0.02em] font-bold text-text-primary uppercase">
+          <!-- Mobile: dos líneas -->
+          <span class="block lg:hidden">
+            <span class="block">Cuando Juega</span>
+            <span class="block text-accent">el Xeneize</span>
+          </span>
+          <!-- Desktop: una fila -->
+          <span class="hidden lg:block">
+            <span>Cuando Juega </span><span class="text-accent">el Xeneize</span>
+          </span>
+        </p>
+        <p class="mt-[4px] text-[12px] lg:text-[13px] leading-[1.35] text-text-muted">
+          Partidos de Boca Juniors · Sitio no oficial
+        </p>
+      </span>
+    </a>
+
+    <!-- Nav desktop -->
+    <nav aria-label="Principal" class="hidden lg:flex items-center gap-[32px] shrink-0">
+      <a href={`${base}`} class="nav-link nav-link--active" aria-current="page">Inicio</a>
+      <a href={`${base}#partidos`} class="nav-link">Partidos</a>
+      <a href={`${base}info`} class="nav-link">Info</a>
+    </nav>
+
+    <!-- Menú mobile -->
+    <details class="site-menu lg:hidden relative">
+      <summary aria-label="Abrir menú">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <line x1="4" x2="20" y1="6" y2="6" />
+          <line x1="4" x2="20" y1="12" y2="12" />
+          <line x1="4" x2="20" y1="18" y2="18" />
+        </svg>
+      </summary>
+      <div class="site-menu__panel">
+        <a href={`${base}`} aria-current="page">Inicio</a>
+        <a href={`${base}#partidos`}>Partidos</a>
+        <a href={`${base}info`}>Info</a>
+      </div>
+    </details>
+  </div>
+</header>

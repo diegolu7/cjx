@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+const base = import.meta.env.BASE_URL;
+---
+
+<Layout
+  title="Página no encontrada — Cuando Juega el Xeneize"
+  description="La página que buscás no existe. Volvé al inicio para ver cuándo juega Boca Juniors."
+  noindex={true}
+>
+  <section class="max-w-[60ch]">
+    <p class="text-[12px] font-semibold tracking-[0.04em] uppercase text-accent">Error 404</p>
+    <h1 class="mt-2 text-[26px] lg:text-[30px] font-bold leading-[1.15] text-text-primary">
+      Página no encontrada
+    </h1>
+    <p class="mt-3 text-[14px] leading-relaxed text-text-secondary">
+      La página que buscás no existe o cambió de dirección.
+    </p>
+    <p class="mt-6">
+      <a
+        href={`${base}`}
+        class="inline-flex items-center h-10 px-4 rounded-[6px] text-[12px] font-semibold tracking-[0.04em] uppercase text-bg bg-accent hover:bg-accent-strong transition-colors"
+      >Volver al inicio</a>
+    </p>
+  </section>
+</Layout>

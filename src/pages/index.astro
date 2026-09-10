@@ -1,0 +1,83 @@
+---
+import Layout from "../layouts/Layout.astro";
+import MatchesTimeline from "../components/MatchesTimeline.tsx";
+import type { Match } from "../types/match";
+import data from "../data/matches.json";
+
+const matches = data.matches as Match[];
+const next = matches.find((m) => m.status === "next");
+
+function fechaLarga(iso: string): string {
+  const d = new Date(`${iso}T12:00:00Z`);
+  return new Intl.DateTimeFormat("es-AR", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  }).format(d);
+}
+
+const actualizado = new Intl.DateTimeFormat("es-AR", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+  timeZone: "UTC",
+}).format(new Date(data.updatedAt));
+
+const nextText = next
+  ? `Próximo partido: Boca vs ${next.awayTeam === "Boca" ? next.homeTeam : next.awayTeam}, el ${fechaLarga(
+      next.date,
+    )}${next.time ? ` a las ${next.time}` : ""} por ${next.competition}${
+      next.channel ? ` (TV: ${next.channel})` : ""
+    }.`
+  : "";
+
+const sportsEvent = next
+  ? {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      name: `${next.homeTeam} vs ${next.awayTeam}`,
+      startDate: `${next.date}T${next.time ?? "00:00"}:00-03:00`,
+      eventStatus: "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      sport: "Soccer",
+      url: new URL(Astro.url.pathname, Astro.site).href,
+      competitor: [
+        { "@type": "SportsTeam", name: "Boca Juniors", sport: "Soccer" },
+        {
+          "@type": "SportsTeam",
+          name: next.homeTeam === "Boca" ? next.awayTeam : next.homeTeam,
+          sport: "Soccer",
+        },
+      ],
+      organizer: { "@type": "Organization", name: next.competition },
+    }
+  : null;
+---
+
+<Layout
+  title="Cuándo Juega Boca Juniors — Próximos Partidos y Resultados"
+  description="Cuándo juega Boca Juniors: próximo partido, fecha, hora, rival y resultados recientes. Agenda del Xeneize actualizada. Sitio no oficial."
+>
+  <section class="mb-6">
+    <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
+      Cuándo juega Boca Juniors
+    </h1>
+    {nextText && (
+      <p class="mt-2 text-[14px] lg:text-[15px] leading-relaxed text-text-secondary max-w-[70ch]">
+        {nextText}
+      </p>
+    )}
+    <p class="mt-1 text-[12px] leading-relaxed text-text-muted">
+      Última actualización: {actualizado}
+    </p>
+  </section>
+
+  <div id="partidos" class="scroll-mt-6">
+    <MatchesTimeline client:visible matches={matches} />
+  </div>
+
+  {sportsEvent && (
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />
+  )}
+</Layout>

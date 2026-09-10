@@ -1,0 +1,31 @@
+---
+import LegalLayout from "../layouts/LegalLayout.astro";
+const base = import.meta.env.BASE_URL;
+---
+
+<LegalLayout
+  title="Contacto"
+  description="Contacto de Cuando Juega el Xeneize para consultas, correcciones y reclamos legales."
+>
+  <p>
+    Para consultas, correcciones de datos, sugerencias o reclamos, escribinos a:
+  </p>
+  <p>
+    <strong><a href="mailto:delnorte.destinos@gmail.com">delnorte.destinos@gmail.com</a></strong>
+  </p>
+
+  <h2>Reclamos de propiedad intelectual</h2>
+  <p>
+    Si sos titular de derechos y considerás que algún contenido de este sitio los vulnera, escribinos
+    indicando el contenido cuestionado, tu carácter de titular y un medio de contacto. Atenderemos
+    el pedido a la brevedad y, de corresponder, retiraremos o modificaremos el contenido.
+  </p>
+
+  <h2>Otros enlaces</h2>
+  <ul>
+    <li><a href={`${base}info#quienes-somos`}>Quiénes somos</a></li>
+    <li><a href={`${base}terminos`}>Términos y Condiciones</a></li>
+    <li><a href={`${base}privacidad`}>Política de Privacidad</a></li>
+    <li><a href={`${base}cookies`}>Política de Cookies</a></li>
+  </ul>
+</LegalLayout>
