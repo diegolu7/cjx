@@ -43,6 +43,7 @@
 @layer base {
   html {
     font-family: var(--font-ui);
+    overflow-x: clip;
   }
 
   body {
