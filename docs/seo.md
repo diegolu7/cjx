@@ -17,9 +17,8 @@
 - Páginas legales: `BreadcrumbList`.
 
 **Contenido / GEO**
-- Bloque server-rendered del próximo partido + "Última actualización".
 - `public/llms.txt` con resumen, hechos clave y links.
-- **SSG**: la agenda está en el HTML (no depende de JS) → rastreable por buscadores y LLMs.
+- **SSG**: la agenda (featured + timeline) está en el HTML → rastreable por buscadores y LLMs. El próximo partido también se expone en JSON-LD `SportsEvent`.
 
 **Performance**
 - Isla con `client:visible`; `preload` de la fuente.
