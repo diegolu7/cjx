@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { KeyboardEvent } from "react";
 import type { Match, MatchStatus } from "../types/match";
 
@@ -114,6 +114,12 @@ function NodeCell({ active, isFirst, isLast }: { active: boolean; isFirst: boole
 export default function MatchesTimeline({ matches }: { matches: Match[] }) {
   const [tab, setTab] = useState<Tab>("TODOS");
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const panelRef = useRef<HTMLDivElement>(null);
+
+  // Al cambiar de tab, volver al inicio de la lista (evita quedar en el fondo).
+  useEffect(() => {
+    if (panelRef.current) panelRef.current.scrollTop = 0;
+  }, [tab]);
 
   const filtered = useMemo(() => {
     switch (tab) {
@@ -158,7 +164,9 @@ export default function MatchesTimeline({ matches }: { matches: Match[] }) {
     () => matches.some((m) => m.status === "next" || m.status === "scheduled"),
     [matches],
   );
-  const showNoUpcoming = matches.length > 0 && !hasUpcoming && tab === "TODOS";
+  // Aviso "sin próximos": depende de los datos (no de la tab) para que no
+  // aparezca/desaparezca al cambiar de filtro y no altere la altura.
+  const showNoUpcoming = matches.length > 0 && !hasUpcoming;
 
   function onTabKeyDown(e: KeyboardEvent<HTMLButtonElement>, idx: number) {
     let next: number | null = null;
@@ -233,9 +241,10 @@ export default function MatchesTimeline({ matches }: { matches: Match[] }) {
       )}
       <div
         id="matches-panel"
+        ref={panelRef}
         role="tabpanel"
         aria-labelledby={`tab-${activeIdx}`}
-        className="outline-none"
+        className="outline-none h-[64vh] overflow-y-auto lg:h-auto lg:overflow-visible"
       >
         {grouped.length === 0 && (
           <p className="text-text-secondary text-sm">No hay partidos disponibles por el momento.</p>
