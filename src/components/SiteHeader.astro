@@ -68,3 +68,38 @@ const base = import.meta.env.BASE_URL;
     </details>
   </div>
 </header>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>(".site-menu").forEach((menu) => {
+    // Cierra al tocar un ítem del menú.
+    menu.querySelectorAll<HTMLAnchorElement>(".site-menu__panel a").forEach((link) => {
+      link.addEventListener("click", () => {
+        menu.open = false;
+      });
+    });
+
+    // Cierra al hacer click fuera.
+    document.addEventListener("click", (event) => {
+      if (menu.open && event.target instanceof Node && !menu.contains(event.target)) {
+        menu.open = false;
+      }
+    });
+
+    // Cierra con Escape.
+    menu.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        menu.open = false;
+        menu.querySelector("summary")?.focus();
+      }
+    });
+
+    // Cierra al hacer scroll.
+    window.addEventListener(
+      "scroll",
+      () => {
+        if (menu.open) menu.open = false;
+      },
+      { passive: true },
+    );
+  });
+</script>
