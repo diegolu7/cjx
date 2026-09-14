@@ -1,0 +1,28 @@
+name: Notificaciones Web Push
+
+on:
+  schedule:
+    # Cada 15 minutos
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: Snapshot del Google Sheet
+        run: npm run snapshot
+      - name: Enviar avisos debidos
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SEND_SECRET: ${{ secrets.SEND_SECRET }}
+        run: node scripts/notify.mjs

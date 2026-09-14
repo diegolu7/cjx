@@ -1,5 +1,6 @@
 ---
 import LegalLayout from "../layouts/LegalLayout.astro";
+import Notifications from "../components/Notifications.astro";
 const base = import.meta.env.BASE_URL;
 
 const faqs = [
@@ -75,11 +76,7 @@ const faqLd = {
     errores, estar incompleta o desactualizada. No garantizamos su exactitud.
   </p>
 
-  <h2 id="notificaciones">Notificaciones</h2>
-  <p>
-    <strong>Próximamente:</strong> vas a poder activar avisos para que te notifiquemos cuando esté
-    por jugar Boca. Por ahora esta función está en desarrollo.
-  </p>
+  <Notifications />
 
   <h2 id="contacto">Contacto</h2>
   <p>
