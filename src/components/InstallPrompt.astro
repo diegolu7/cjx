@@ -1,0 +1,131 @@
+---
+const base = import.meta.env.BASE_URL;
+---
+
+<div
+  id="install-banner"
+  class="fixed left-4 right-4 bottom-4 z-40 mx-auto hidden max-w-[720px] rounded-lg border border-border-strong bg-surface p-4 shadow-[0_8px_24px_rgba(0,0,0,0.28)]"
+>
+  <div class="flex items-start gap-3">
+    <img
+      src={`${base}icons/icon-192.png`}
+      alt=""
+      width="40"
+      height="40"
+      class="h-10 w-10 shrink-0 rounded"
+      loading="lazy"
+    />
+    <div class="min-w-0 flex-1">
+      <p class="text-[13px] leading-[1.5] text-text-secondary">
+        Instalá <strong class="text-text-primary">Cuando Juega el Xeneize</strong> como app: acceso
+        directo en tu pantalla de inicio, sin tiendas.
+      </p>
+      <div id="install-ios" class="mt-2 hidden text-[12px] leading-[1.5] text-text-muted">
+        En iPhone/iPad: tocá <strong class="text-text-secondary">Compartir</strong> y luego
+        <strong class="text-text-secondary">Agregar a pantalla de inicio</strong>.
+      </div>
+      <div class="mt-3 flex flex-wrap gap-2">
+        <button
+          type="button"
+          data-install-app
+          class="h-9 rounded-[6px] border border-accent bg-accent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong"
+        >
+          Instalar
+        </button>
+        <button
+          type="button"
+          id="install-dismiss"
+          class="h-9 rounded-[6px] border border-border-strong px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary"
+        >
+          Ahora no
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function () {
+    var DISMISS_KEY = "cjx:install-dismissed";
+    var banner = document.getElementById("install-banner");
+    var iosBox = document.getElementById("install-ios");
+    var deferredPrompt: any = null;
+
+    var standalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      (navigator as any).standalone === true;
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+    function dismissed(): boolean {
+      try {
+        return localStorage.getItem(DISMISS_KEY) === "1";
+      } catch (e) {
+        return false;
+      }
+    }
+
+    function cookieVisible(): boolean {
+      var c = document.getElementById("cookie-banner");
+      return !!c && !c.hasAttribute("hidden");
+    }
+
+    function showBanner(): void {
+      if (!banner || standalone || dismissed()) return;
+      // No superponer con el banner de cookies: esperar a que se decida.
+      if (cookieVisible()) {
+        window.setTimeout(showBanner, 1500);
+        return;
+      }
+      if (isIOS && iosBox) iosBox.classList.remove("hidden");
+      banner.classList.remove("hidden");
+    }
+
+    // Android / desktop (Chrome, Edge)
+    window.addEventListener("beforeinstallprompt", function (e: Event) {
+      e.preventDefault();
+      deferredPrompt = e;
+      showBanner();
+    });
+
+    window.addEventListener("appinstalled", function () {
+      if (banner) banner.classList.add("hidden");
+      deferredPrompt = null;
+    });
+
+    // Botones "Instalar app" (banner + footer)
+    document.addEventListener("click", function (e: Event) {
+      var target = e.target as HTMLElement | null;
+      var trigger = target && target.closest ? target.closest("[data-install-app]") : null;
+      if (!trigger) return;
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt = null;
+      } else if (isIOS) {
+        if (banner) banner.classList.remove("hidden");
+        if (iosBox) iosBox.classList.remove("hidden");
+      }
+    });
+
+    var dismissBtn = document.getElementById("install-dismiss");
+    if (dismissBtn) {
+      dismissBtn.addEventListener("click", function () {
+        try {
+          localStorage.setItem(DISMISS_KEY, "1");
+        } catch (e) {
+          /* storage no disponible */
+        }
+        if (banner) banner.classList.add("hidden");
+      });
+    }
+
+    // Si ya está instalada, ocultar los botones del footer.
+    if (standalone) {
+      document.querySelectorAll("[data-install-app]").forEach(function (el) {
+        (el as HTMLElement).style.display = "none";
+      });
+    }
+
+    // iOS no dispara beforeinstallprompt: mostrar el banner con instrucciones.
+    if (isIOS) showBanner();
+  })();
+</script>

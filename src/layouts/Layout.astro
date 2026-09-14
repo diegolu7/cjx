@@ -3,6 +3,7 @@ import SiteHeader from "../components/SiteHeader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
 import Analytics from "../components/Analytics.astro";
 import CookieBanner from "../components/CookieBanner.astro";
+import InstallPrompt from "../components/InstallPrompt.astro";
 import SeoHead from "../components/SeoHead.astro";
 import "../styles/global.css";
 
@@ -49,6 +50,11 @@ const structuredData = {
     <meta name="generator" content={Astro.generator} />
     <link rel="icon" type="image/png" href={`${base}favicon.png`} />
     <link rel="icon" href={`${base}favicon.ico`} />
+    <link rel="manifest" href={`${base}manifest.webmanifest`} />
+    <link rel="apple-touch-icon" href={`${base}icons/apple-touch-icon.png`} />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Xeneize" />
     <meta name="theme-color" content="#07111F" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -74,5 +80,15 @@ const structuredData = {
     </div>
     <Analytics />
     <CookieBanner />
+    <InstallPrompt />
+    {import.meta.env.PROD && (
+      <script is:inline define:vars={{ base }}>
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", function () {
+            navigator.serviceWorker.register(base + "sw.js", { scope: base }).catch(function () {});
+          });
+        }
+      </script>
+    )}
   </body>
 </html>
