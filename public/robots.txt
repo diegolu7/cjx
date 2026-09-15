@@ -1,17 +1,26 @@
 User-agent: *
 Allow: /
 
-# Crawlers de IA (Generative Engine Optimization)
+# Crawlers de IA (Generative Engine Optimization): permitidos explícitamente.
 User-agent: GPTBot
 Allow: /
 
-User-agent: Google-Extended
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
 Allow: /
 
 User-agent: PerplexityBot
 Allow: /
 
 User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: Applebot-Extended
 Allow: /
 
 Sitemap: https://cuandojuegaelxeneize.com.ar/sitemap-index.xml

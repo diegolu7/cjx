@@ -46,6 +46,26 @@
 
 ---
 
+## 🔎 SEO / GEO
+
+**Hecho (código):**
+- [x] `robots.txt` limpio (un grupo `*`) + AI crawlers permitidos (GPTBot, OAI-SearchBot,
+  ChatGPT-User, PerplexityBot, ClaudeBot, Google-Extended, Applebot-Extended).
+- [x] `meta robots="index, follow, max-snippet:-1, max-image-preview:large"` en páginas indexables.
+- [x] `lastmod` real en el sitemap (home = `updatedAt` de `matches.json`).
+
+**Pendiente (externo / tus cuentas):**
+- [ ] **Google Search Console**: verificar por dominio (TXT en Cloudflare), enviar
+  `sitemap-index.xml` y *Solicitar indexación* de `/` e `/info`.
+- [ ] **Bing Webmaster Tools**: verificar + enviar sitemap.
+- [ ] **Cloudflare → Control de rastreo de IA**: desactivar el robots.txt gestionado
+  (hoy **bloquea** GPTBot/ClaudeBot/Google-Extended → contradice el GEO).
+- [ ] **Backlinks / difusión** (redes, foros, grupos).
+- [ ] **Paciencia**: dominio nuevo (alta 2026-09-11), indexar tarda días/semanas.
+- [ ] Verificar avance con `site:cuandojuegaelxeneize.com.ar` y GSC → Páginas.
+
+---
+
 ## ✅ Resultado global (ida/vuelta)
 
 - [x] **GAS `calcularGlobales()`**: suma ida + vuelta y escribe `Global Boca` / `Global Rival`
