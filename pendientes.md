@@ -31,6 +31,21 @@
 
 ---
 
+## ✅ Cron confiable (Cloudflare Worker)
+
+- [x] Worker `workers/cron-dispatcher` con Cron Trigger `*/15` que dispara
+  `deploy.yml` y `notify.yml` por `workflow_dispatch` (el `schedule` de GitHub se
+  espaciaba a cada ~3-6 h y no era confiable).
+- [ ] **Manual:** crear el PAT de GitHub (Actions: read & write), `wrangler secret put
+  GITHUB_TOKEN` y `wrangler deploy`. Ver `docs/cron-cloudflare.md`.
+
+## ✅ Nav
+
+- [x] Se quitó "Partidos" del nav (desktop y mobile) y se agregó **"Instalar App 📥"**
+  (dispara el prompt de instalación vía `data-install-app`).
+
+---
+
 ## ✅ Resultado global (ida/vuelta)
 
 - [x] **GAS `calcularGlobales()`**: suma ida + vuelta y escribe `Global Boca` / `Global Rival`

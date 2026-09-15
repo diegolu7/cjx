@@ -6,7 +6,8 @@
   ],
   "exclude": [
     "dist",
-    "supabase"
+    "supabase",
+    "workers"
   ],
   "compilerOptions": {
     "jsx": "react-jsx",

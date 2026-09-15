@@ -1,0 +1,13 @@
+name = "cjx-cron-dispatcher"
+main = "src/index.js"
+compatibility_date = "2026-09-15"
+
+# Cron confiable: cada 15 minutos (reemplaza al scheduler de GitHub Actions).
+[triggers]
+crons = ["*/15 * * * *"]
+
+[vars]
+GITHUB_OWNER = "diegolu7"
+GITHUB_REPO = "cjx"
+GITHUB_REF = "main"
+WORKFLOWS = "deploy.yml,notify.yml"

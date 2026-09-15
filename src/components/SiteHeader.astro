@@ -37,8 +37,10 @@ const base = import.meta.env.BASE_URL;
     <!-- Nav desktop -->
     <nav aria-label="Principal" class="hidden lg:flex items-center gap-[32px] shrink-0">
       <a href={`${base}`} class="nav-link nav-link--active" aria-current="page">Inicio</a>
-      <a href={`${base}#partidos`} class="nav-link">Partidos</a>
       <a href={`${base}info`} class="nav-link">Info</a>
+      <button type="button" data-install-app class="nav-link cursor-pointer border-0 bg-transparent">
+        Instalar App 📥
+      </button>
     </nav>
 
     <!-- Menú mobile -->
@@ -62,8 +64,14 @@ const base = import.meta.env.BASE_URL;
       </summary>
       <div class="site-menu__panel">
         <a href={`${base}`} aria-current="page">Inicio</a>
-        <a href={`${base}#partidos`}>Partidos</a>
         <a href={`${base}info`}>Info</a>
+        <button
+          type="button"
+          data-install-app
+          class="px-[14px] py-3 text-left text-[12px] font-semibold uppercase tracking-[0.04em] text-text-secondary transition-colors hover:bg-surface-hover hover:text-text-primary rounded-[4px]"
+        >
+          Instalar App 📥
+        </button>
       </div>
     </details>
   </div>
@@ -71,9 +79,9 @@ const base = import.meta.env.BASE_URL;
 
 <script>
   document.querySelectorAll<HTMLDetailsElement>(".site-menu").forEach((menu) => {
-    // Cierra al tocar un ítem del menú.
-    menu.querySelectorAll<HTMLAnchorElement>(".site-menu__panel a").forEach((link) => {
-      link.addEventListener("click", () => {
+    // Cierra al tocar un ítem del menú (link o botón).
+    menu.querySelectorAll<HTMLElement>(".site-menu__panel a, .site-menu__panel button").forEach((item) => {
+      item.addEventListener("click", () => {
         menu.open = false;
       });
     });
