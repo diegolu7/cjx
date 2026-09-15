@@ -12,7 +12,7 @@
 
 **Datos estructurados (JSON-LD)**
 - Site-wide: `WebSite` + `Organization`.
-- Home: `SportsEvent` (próximo partido) + `SportsTeam`.
+- Home: `SportsEvent` (próximo partido) con `location`, `image`, `description`, `endDate` + `SportsTeam`.
 - `/info`: `FAQPage`.
 - Páginas legales: `BreadcrumbList`.
 

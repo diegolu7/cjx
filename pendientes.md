@@ -53,13 +53,18 @@
   ChatGPT-User, PerplexityBot, ClaudeBot, Google-Extended, Applebot-Extended).
 - [x] `meta robots="index, follow, max-snippet:-1, max-image-preview:large"` en páginas indexables.
 - [x] `lastmod` real en el sitemap (home = `updatedAt` de `matches.json`).
+- [x] `SportsEvent` completo (`location` con estadio, `image`, `description`, `endDate`);
+  parser expone `venue` desde la columna `Lugar`.
+- [x] **Página indexada en Google** (verificado en GSC → Inspección de URL).
 
 **Pendiente (externo / tus cuentas):**
-- [ ] **Google Search Console**: verificar por dominio (TXT en Cloudflare), enviar
-  `sitemap-index.xml` y *Solicitar indexación* de `/` e `/info`.
+- [x] **Google Search Console**: propiedad verificada (TXT vía Cloudflare) y
+  `sitemap-index.xml` enviado. La home ya figura **indexada**.
+- [ ] GSC → *Solicitar indexación* de `/info/` y validar el `SportsEvent` en el
+  Rich Results Test (debe quedar en 0 elementos no válidos).
 - [ ] **Bing Webmaster Tools**: verificar + enviar sitemap.
-- [ ] **Cloudflare → Control de rastreo de IA**: desactivar el robots.txt gestionado
-  (hoy **bloquea** GPTBot/ClaudeBot/Google-Extended → contradice el GEO).
+- [x] **Cloudflare → Control de rastreo de IA**: "Bot Preference Sync" apagado; el
+  `robots.txt` servido ya no tiene el bloque gestionado y permite los AI crawlers.
 - [ ] **Backlinks / difusión** (redes, foros, grupos).
 - [ ] **Paciencia**: dominio nuevo (alta 2026-09-11), indexar tarda días/semanas.
 - [ ] Verificar avance con `site:cuandojuegaelxeneize.com.ar` y GSC → Páginas.

@@ -5,26 +5,38 @@ import Notifications from "../components/Notifications.astro";
 import type { Match } from "../types/match";
 import data from "../data/matches.json";
 
+const base = import.meta.env.BASE_URL;
 const matches = data.matches as Match[];
 const next = matches.find((m) => m.status === "next");
+
+const rival = next ? (next.homeTeam === "Boca" ? next.awayTeam : next.homeTeam) : "";
+const startDate = next ? `${next.date}T${next.time ?? "00:00"}:00-03:00` : null;
+const endDate = startDate
+  ? new Date(new Date(startDate).getTime() + 2 * 60 * 60 * 1000).toISOString()
+  : null;
 
 const sportsEvent = next
   ? {
       "@context": "https://schema.org",
       "@type": "SportsEvent",
       name: `${next.homeTeam} vs ${next.awayTeam}`,
-      startDate: `${next.date}T${next.time ?? "00:00"}:00-03:00`,
+      startDate,
+      endDate,
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Soccer",
       url: new URL(Astro.url.pathname, Astro.site).href,
+      image: new URL(`${base}og.png`, Astro.site).href,
+      description: `${next.homeTeam} vs ${next.awayTeam} por ${next.competition}${
+        next.round ? ` (${next.round})` : ""
+      } el ${next.date}${next.time ? ` a las ${next.time}` : ""} hs.`,
+      location: {
+        "@type": "Place",
+        name: next.venue ?? "Estadio a confirmar",
+      },
       competitor: [
         { "@type": "SportsTeam", name: "Boca Juniors", sport: "Soccer" },
-        {
-          "@type": "SportsTeam",
-          name: next.homeTeam === "Boca" ? next.awayTeam : next.homeTeam,
-          sport: "Soccer",
-        },
+        { "@type": "SportsTeam", name: rival, sport: "Soccer" },
       ],
       organizer: { "@type": "Organization", name: next.competition },
     }

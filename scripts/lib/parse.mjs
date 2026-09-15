@@ -205,6 +205,7 @@ function rowToMatch(row, index) {
     competition: row.torneo.trim() || "—",
     round: row.fase.trim() || undefined,
     channel: row.canal.trim() || undefined,
+    venue: row.lugar.trim() || undefined,
     status,
     aggregate,
   };

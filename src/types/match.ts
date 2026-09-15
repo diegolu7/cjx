@@ -24,6 +24,7 @@ export interface Match {
   round?: string;
 
   channel?: string;
+  venue?: string;
 
   status: MatchStatus;
 

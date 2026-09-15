@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-09-15T02:13:35.335Z",
+  "updatedAt": "2026-09-15T15:46:56.965Z",
   "matches": [
     {
-      "id": "sheet-2",
+      "id": "sheet-1",
       "date": "2026-09-08",
       "time": "21:30",
       "homeTeam": "Boca",
@@ -12,18 +12,21 @@
       "competition": "Copa Sudamericana",
       "round": "Cuartos de Final - Ida",
       "channel": "-",
+      "venue": "La Bombonera",
       "status": "finished"
     },
     {
-      "id": "sheet-4",
+      "id": "sheet-2",
       "date": "2026-09-11",
       "time": "21:30",
       "homeTeam": "Boca",
-      "awayTeam": "Central Córdoba de Santiago del Estero",
+      "awayTeam": "Central Córdoba (SdE)",
       "homeScore": 3,
       "awayScore": 1,
       "competition": "Liga Profesional",
       "round": "Fecha 9",
+      "channel": "-",
+      "venue": "La Bombonera",
       "status": "finished"
     },
     {
@@ -35,10 +38,15 @@
       "competition": "Copa Sudamericana",
       "round": "Cuartos de Final - Vuelta",
       "channel": "ESPN",
-      "status": "next"
+      "venue": "Estadio Morumbi",
+      "status": "next",
+      "aggregate": {
+        "bocaScore": 1,
+        "rivalScore": 0
+      }
     },
     {
-      "id": "sheet-5",
+      "id": "sheet-4",
       "date": "2026-09-20",
       "time": "21:30",
       "homeTeam": "Boca",
@@ -46,10 +54,11 @@
       "competition": "Copa Argentina",
       "round": "Octavos de Final",
       "channel": "-",
+      "venue": "Por definir",
       "status": "scheduled"
     },
     {
-      "id": "sheet-6",
+      "id": "sheet-5",
       "date": "2026-09-22",
       "time": "21:30",
       "homeTeam": "Boca",
@@ -57,6 +66,7 @@
       "competition": "Liga Profesional",
       "round": "Fecha 10",
       "channel": "-",
+      "venue": "La Bombonera",
       "status": "scheduled"
     }
   ]
