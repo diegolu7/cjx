@@ -15,6 +15,39 @@
   partido por fecha (+ hora/torneo) y actualiza la fila existente; `limpiarDuplicados()`
   ahora fusiona la fila "Próximo" con la "Finalizado" del mismo partido.
 - Migración `supabase/migrations/0002_webpush_prefs.sql` (default `{"h1": true}`).
+- Pusheado a `main` (commit `fa75998`).
+
+### Acciones manuales pendientes de la Etapa 1
+- [ ] **Pegar `docs/auto_actualizar.gs` en Apps Script** (Extensiones → Apps Script) y guardar.
+- [ ] **Correr la migración `0002` en Supabase** (SQL Editor o `supabase db push`).
+
+---
+
+## 🌐 Dominio propio — `cuandojuegaelxeneize.com.ar`
+
+Configuración del sitio (ya aplicada en el repo):
+- `astro.config.mjs`: `site = https://cuandojuegaelxeneize.com.ar`, `base = /`.
+- `public/CNAME` con `cuandojuegaelxeneize.com.ar`.
+- `public/robots.txt` y `public/llms.txt` con las URLs del dominio.
+
+### Pasos en Cloudflare (DNS)
+- [ ] Apex `cuandojuegaelxeneize.com.ar` → **A** a GitHub Pages:
+  `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
+- [ ] Apex IPv6 (opcional) → **AAAA**: `2606:50c0:8000::153`, `2606:50c0:8001::153`,
+  `2606:50c0:8002::153`, `2606:50c0:8003::153`.
+- [ ] `www` → **CNAME** a `diegolu7.github.io`.
+- [ ] Dejar los registros en **DNS only (nube gris)** hasta que GitHub emita el
+  certificado; luego se puede activar el proxy (naranja) con SSL **Full**.
+- [ ] SSL/TLS en Cloudflare: modo **Full (strict)**.
+
+### Pasos en GitHub
+- [ ] Repo → **Settings → Pages → Custom domain**: `cuandojuegaelxeneize.com.ar`.
+- [ ] Activar **Enforce HTTPS** (puede tardar unos minutos).
+- [ ] Re-deploy (push o `workflow_dispatch`) para que tome `CNAME` y `site`.
+
+### Post-dominio
+- [ ] **Google Search Console**: verificar por dominio (TXT en Cloudflare) y enviar sitemap.
+- [ ] **Bing Webmaster Tools**: verificar y enviar sitemap.
 
 ---
 

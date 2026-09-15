@@ -7,8 +7,8 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://diegolu7.github.io',
-  base: '/cjx/',
+  site: 'https://cuandojuegaelxeneize.com.ar',
+  base: '/',
   integrations: [react(), sitemap()],
 
   vite: {

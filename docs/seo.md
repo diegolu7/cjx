@@ -26,11 +26,11 @@
 
 ## Pendientes (requieren tus cuentas)
 
-1. **Google Search Console**: verificar propiedad (recomendado por dominio cuando lo tengas; ahora con prefijo de URL `https://diegolu7.github.io/cjx/`), enviar `sitemap-index.xml`.
+1. **Google Search Console**: verificar propiedad por dominio `https://cuandojuegaelxeneize.com.ar/` (DNS TXT en Cloudflare), enviar `sitemap-index.xml`.
 2. **Bing Webmaster Tools**: verificar y enviar sitemap.
 3. **GA4**: reemplazar `G-XXXXXXXXXX` en `src/components/Analytics.astro` por el Measurement ID real.
 4. **Validaciones**: Rich Results Test (SportsEvent, FAQ, Breadcrumb) y PageSpeed/Lighthouse.
-5. **Dominio propio** (cuando esté): actualizar `site` en `astro.config.mjs` y el `Sitemap:` de `robots.txt`, y volver a deployar.
+5. **Dominio propio**: `site`, `base`, `robots.txt`, `llms.txt` y `public/CNAME` ya apuntan a `cuandojuegaelxeneize.com.ar`. Falta configurar DNS en Cloudflare y el custom domain en GitHub Pages (ver `pendientes.md`).
 
 ## Guardrails legal-safe
 - Sin "oficial"; disclaimer visible; marcas en uso descriptivo; sin escudo/colores institucionales.

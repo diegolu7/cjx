@@ -14,4 +14,4 @@ Allow: /
 User-agent: ClaudeBot
 Allow: /
 
-Sitemap: https://diegolu7.github.io/cjx/sitemap-index.xml
+Sitemap: https://cuandojuegaelxeneize.com.ar/sitemap-index.xml
