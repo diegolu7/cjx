@@ -36,6 +36,10 @@
 - [x] **Microsoft Clarity** (`yihrh0k6ab`) en `Analytics.astro`, gateado por consentimiento.
 - [x] **GA4** (`G-Y3RSGVB0D0`), mismo gate de consentimiento.
 - [x] Banner y páginas legales (`cookies`, `privacidad`) actualizados.
+- [x] **Consentimiento por región**: UE/EEE + UK + Suiza + Brasil → banner previo
+  (Aceptar/Rechazar); resto del mundo → consentimiento implícito al navegar, sin aviso
+  (frase en el footer + páginas legales + FAQ). Detección de país vía `/cdn-cgi/trace`
+  (first-party, Cloudflare). Ante fallo de detección se asume implícito.
 - [ ] Verificar que GA4/Clarity empiecen a registrar datos con tráfico real.
 
 ---

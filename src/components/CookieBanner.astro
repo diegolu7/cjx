@@ -2,7 +2,7 @@
 const base = import.meta.env.BASE_URL;
 ---
 
-<div id="cookie-banner" class="cookie-banner" hidden>
+<div id="cookie-banner" class="cookie-banner" role="dialog" aria-label="Aviso de cookies" hidden>
   <p class="cookie-banner__text">
     Usamos almacenamiento local para el funcionamiento del sitio y, con tu permiso, cookies de
     estadísticas (Google Analytics 4 y Microsoft Clarity) para saber cómo se usa. Podés aceptar o
@@ -21,32 +21,81 @@ const base = import.meta.env.BASE_URL;
 <script>
   (function () {
     var KEY = "cjx:consent";
+
+    // Países/regiones donde se pide consentimiento previo explícito.
+    // UE/EEE + Reino Unido + Suiza + Brasil.
+    var ASK = [
+      // UE
+      "AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR",
+      "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK",
+      "SI", "ES", "SE",
+      // EEE
+      "IS", "LI", "NO",
+      // Reino Unido, Suiza, Brasil
+      "GB", "CH", "BR",
+    ];
+
     var banner = document.getElementById("cookie-banner");
 
-    var choice = null;
-    try {
-      choice = localStorage.getItem(KEY);
-    } catch (e) {
-      /* storage no disponible */
+    function readChoice() {
+      try {
+        return localStorage.getItem(KEY);
+      } catch (e) {
+        return null;
+      }
     }
 
-    if (!choice && banner) banner.hidden = false;
-
-    function decide(value: string) {
+    function store(value: string) {
       try {
         localStorage.setItem(KEY, value);
       } catch (e) {
         /* storage no disponible */
       }
-      if (banner) banner.hidden = true;
-      if (value === "granted" && typeof (window as any).cjxLoadAnalytics === "function") {
+    }
+
+    function loadAnalytics() {
+      if (typeof (window as any).cjxLoadAnalytics === "function") {
         (window as any).cjxLoadAnalytics();
       }
     }
+
+    function decide(value: string) {
+      store(value);
+      if (banner) banner.hidden = true;
+      if (value === "granted" || value === "implied") loadAnalytics();
+    }
+
+    function showBanner() {
+      if (banner) banner.hidden = false;
+    }
+
+    var choice = readChoice();
+    if (choice === "granted" || choice === "implied") {
+      loadAnalytics();
+      return;
+    }
+    if (choice === "denied") return;
 
     var accept = document.getElementById("cookie-accept");
     var reject = document.getElementById("cookie-reject");
     if (accept) accept.addEventListener("click", function () { decide("granted"); });
     if (reject) reject.addEventListener("click", function () { decide("denied"); });
+
+    // Sin elección previa: detectar país. UE/UK/CH/BR → banner; resto → implícito.
+    // Si falla la detección, se asume consentimiento implícito (resto del mundo).
+    fetch("/cdn-cgi/trace", { cache: "no-store" })
+      .then(function (res) { return res.ok ? res.text() : ""; })
+      .then(function (text) {
+        var m = /(?:^|\n)loc=([A-Z]{2})/.exec(text || "");
+        var country = m ? m[1] : "";
+        if (country && ASK.indexOf(country) !== -1) {
+          showBanner();
+        } else {
+          decide("implied");
+        }
+      })
+      .catch(function () {
+        decide("implied");
+      });
   })();
 </script>
