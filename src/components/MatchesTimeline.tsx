@@ -87,6 +87,47 @@ function teamsLine(m: Match, featured: boolean): string {
   return `${m.homeTeam} vs ${m.awayTeam}`;
 }
 
+function rivalOf(m: Match): string {
+  return m.homeTeam === "Boca" ? m.awayTeam : m.homeTeam;
+}
+
+/** Resultado global del cruce de ida y vuelta (se muestra en la Vuelta). */
+function GlobalLine({ match, compact = false }: { match: Match; compact?: boolean }) {
+  const agg = match.aggregate;
+  if (!agg) return null;
+
+  const rival = rivalOf(match);
+  const hasPens = agg.penaltyBoca !== undefined && agg.penaltyRival !== undefined;
+
+  let leader: string;
+  if (agg.bocaScore > agg.rivalScore) {
+    leader = "Boca lidera";
+  } else if (agg.bocaScore < agg.rivalScore) {
+    leader = "Boca abajo";
+  } else if (hasPens) {
+    leader = (agg.penaltyBoca as number) > (agg.penaltyRival as number) ? "Boca lidera" : "Boca abajo";
+  } else {
+    leader = "Serie igualada";
+  }
+
+  if (compact) {
+    return (
+      <p className="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
+        Global {agg.bocaScore}-{agg.rivalScore}
+        {hasPens ? ` · Pen ${agg.penaltyBoca}-${agg.penaltyRival}` : ""}
+      </p>
+    );
+  }
+
+  return (
+    <p className="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
+      Global: Boca {agg.bocaScore} - {agg.rivalScore} {rival}
+      {hasPens ? ` · Penales ${agg.penaltyBoca}-${agg.penaltyRival}` : ""}
+      <span className="text-text-muted"> · {leader}</span>
+    </p>
+  );
+}
+
 function NodeCell({ active, isFirst, isLast }: { active: boolean; isFirst: boolean; isLast: boolean }) {
   return (
     <div className="hidden lg:block relative self-stretch" aria-hidden="true">
@@ -315,6 +356,7 @@ function MatchRow({
                 {teamsLine(match, false)}
               </p>
               <p className="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">{meta}</p>
+              <GlobalLine match={match} compact />
             </div>
             <div className="justify-self-end">
               <StatusBadge status={match.status} />
@@ -366,6 +408,7 @@ function FeaturedCard({ match }: { match: Match }) {
           {match.round && (
             <p className="text-[12px] leading-[1.45] text-text-secondary">{match.round}</p>
           )}
+          <GlobalLine match={match} />
           <div className="mt-2.5 flex items-center gap-3">
             {match.channel && (
               <p className="flex items-center gap-1.5 text-[12px] text-text-primary">

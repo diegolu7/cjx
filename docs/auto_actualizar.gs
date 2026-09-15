@@ -22,6 +22,8 @@
  *   - Nunca pisa Canal / Torneo / Lugar cargados a mano en filas existentes.
  *   - Solo completa goles y marca Finalizado cuando la fila aún no tiene resultado.
  *   - Deduplica por rival + fecha (normalizado).
+ *   - calcularGlobales() escribe el resultado global (ida + vuelta) en la fila de la
+ *     Vuelta (columnas `Global Boca` / `Global Rival`), así sobrevive a la poda del Ida.
  *   - Mantiene automáticamente solo los 2 Finalizado más recientes (podas el historial viejo).
  *   - Dedupe en caliente: limpiarDuplicados() borra filas duplicadas exactas y
  *     actualizarResultadosBoca relee la hoja en cada evento para no duplicar.
@@ -240,6 +242,88 @@ function actualizarResultadosBoca() {
     updates,
     inserts,
   );
+
+  // Deja grabado el global del cruce en la fila de la Vuelta (antes de podar el Ida).
+  calcularGlobales();
+}
+
+/* --------------------- resultado global (ida y vuelta) --------------------- */
+
+/**
+ * Calcula el resultado global de los cruces de ida y vuelta y lo escribe en las
+ * columnas `Global Boca` / `Global Rival` de la fila de la **Vuelta**.
+ *
+ * Así el global queda guardado en la fila de la Vuelta y sobrevive aunque
+ * `limpiarHistorial()` pode después la fila del Ida. Si el Ida todavía no tiene
+ * resultado, no escribe nada (se completará cuando se juegue).
+ *
+ * No toca `Penales Boca` / `Penales Rival` (son de carga manual).
+ */
+function calcularGlobales() {
+  var ctx = _ctx();
+  var data = ctx.data;
+  var idx = ctx.idx;
+
+  if (idx["global boca"] === undefined || idx["global rival"] === undefined) {
+    Logger.log("calcularGlobales → faltan columnas Global Boca / Global Rival");
+    return;
+  }
+
+  var sheet = _sheet();
+  var escritos = 0;
+
+  for (var r = 1; r < data.length; r++) {
+    var fase = String(data[r][idx["fase"]] || "");
+    if (!/\bvuelta\b/i.test(fase)) continue;
+
+    var base = _faseBase(fase);
+    var torneo = _norm(data[r][idx["torneo"]]);
+    var ida = _buscarPata(data, idx, base, torneo, "ida");
+    if (ida < 0) continue;
+
+    var gbIda = _num(data[ida][idx["goles boca"]]);
+    var grIda = _num(data[ida][idx["goles rival"]]);
+    if (gbIda === null && grIda === null) continue; // Ida sin resultado todavía
+
+    var gbVuelta = _num(data[r][idx["goles boca"]]);
+    var grVuelta = _num(data[r][idx["goles rival"]]);
+
+    var gb = (gbIda || 0) + (gbVuelta || 0);
+    var gr = (grIda || 0) + (grVuelta || 0);
+
+    sheet.getRange(r + 1, idx["global boca"] + 1).setValue(gb);
+    sheet.getRange(r + 1, idx["global rival"] + 1).setValue(gr);
+    escritos++;
+  }
+
+  Logger.log("calcularGlobales → escritos=%s", escritos);
+}
+
+/** "Cuartos de Final - Vuelta" → "cuartos de final" (sin ida/vuelta ni separadores). */
+function _faseBase(fase) {
+  var s = String(fase || "").replace(/\b(ida|vuelta)\b/gi, "");
+  s = s.replace(/[\-–—·]/g, " ").replace(/\s+/g, " ").trim();
+  return _norm(s);
+}
+
+/** Busca la fila de la otra pata del cruce (mismo torneo + fase base + leg). */
+function _buscarPata(data, idx, base, torneo, leg) {
+  var re = new RegExp("\\b" + leg + "\\b", "i");
+  for (var r = 1; r < data.length; r++) {
+    var fase = String(data[r][idx["fase"]] || "");
+    if (!re.test(fase)) continue;
+    if (_faseBase(fase) !== base) continue;
+    if (_norm(data[r][idx["torneo"]]) !== torneo) continue;
+    return r;
+  }
+  return -1;
+}
+
+/** Número o null (para celdas vacías o no numéricas). */
+function _num(v) {
+  if (v === "" || v === null || v === undefined) return null;
+  var n = Number(v);
+  return isFinite(n) ? n : null;
 }
 
 /* ------------------------- próximo partido (si falta) ------------------------- */

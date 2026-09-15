@@ -19,6 +19,10 @@ const COL = {
   fase: "Fase",
   canal: "Canal",
   lugar: "Lugar",
+  globalBoca: "Global Boca",
+  globalRival: "Global Rival",
+  penalesBoca: "Penales Boca",
+  penalesRival: "Penales Rival",
 };
 
 const DIAS = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
@@ -175,6 +179,20 @@ function rowToMatch(row, index) {
         ? "next"
         : "scheduled";
 
+  // Resultado global: solo en la pata de Vuelta, si el GAS cargó Global Boca/Rival.
+  const esVuelta = /\bvuelta\b/i.test(row.fase);
+  const gb = parseScore(row.globalBoca);
+  const gr = parseScore(row.globalRival);
+  const aggregate =
+    esVuelta && gb !== undefined && gr !== undefined
+      ? {
+          bocaScore: gb,
+          rivalScore: gr,
+          penaltyBoca: parseScore(row.penalesBoca),
+          penaltyRival: parseScore(row.penalesRival),
+        }
+      : undefined;
+
   return {
     id: `sheet-${index}`,
     date: iso || row.fecha.trim(),
@@ -188,6 +206,7 @@ function rowToMatch(row, index) {
     round: row.fase.trim() || undefined,
     channel: row.canal.trim() || undefined,
     status,
+    aggregate,
   };
 }
 
@@ -270,6 +289,10 @@ export function parseMatches(csvText) {
     else if (lower === COL.fase.toLowerCase()) idx.fase = i;
     else if (lower === COL.canal.toLowerCase()) idx.canal = i;
     else if (lower === COL.lugar.toLowerCase()) idx.lugar = i;
+    else if (lower === COL.globalBoca.toLowerCase()) idx.globalBoca = i;
+    else if (lower === COL.globalRival.toLowerCase()) idx.globalRival = i;
+    else if (lower === COL.penalesBoca.toLowerCase()) idx.penalesBoca = i;
+    else if (lower === COL.penalesRival.toLowerCase()) idx.penalesRival = i;
   });
 
   if (idx.estado === undefined || idx.rival === undefined) return [];
@@ -289,6 +312,10 @@ export function parseMatches(csvText) {
       fase: pickIdx(rows[r], idx.fase),
       canal: pickIdx(rows[r], idx.canal),
       lugar: pickIdx(rows[r], idx.lugar),
+      globalBoca: pickIdx(rows[r], idx.globalBoca),
+      globalRival: pickIdx(rows[r], idx.globalRival),
+      penalesBoca: pickIdx(rows[r], idx.penalesBoca),
+      penalesRival: pickIdx(rows[r], idx.penalesRival),
     };
     if (!row.estado && !row.rival) continue;
 

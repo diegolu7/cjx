@@ -31,6 +31,21 @@
 
 ---
 
+## ✅ Resultado global (ida/vuelta)
+
+- [x] **GAS `calcularGlobales()`**: suma ida + vuelta y escribe `Global Boca` / `Global Rival`
+  en la fila de la Vuelta (sobrevive a la poda del Ida). Corre dentro de `actualizarResultadosBoca()`.
+- [x] **Parser**: lee `Global Boca`/`Global Rival`/`Penales Boca`/`Penales Rival` y adjunta
+  `aggregate` solo a la Vuelta.
+- [x] **UI**: muestra "Global: Boca X - Y Rival" en la Vuelta (FeaturedCard + card normal),
+  con penales si existen.
+- [x] **Push**: el aviso de 1 h incluye rival + global + torneo.
+- [x] `docs/formato.md` documenta las 4 columnas nuevas.
+- [ ] **Manual:** agregar las columnas `Global Boca`, `Global Rival`, `Penales Boca`,
+  `Penales Rival` al Sheet y re-pegar `docs/auto_actualizar.gs` en Apps Script.
+
+---
+
 ## ✅ Analítica
 
 - [x] **Microsoft Clarity** (`yihrh0k6ab`) en `Analytics.astro`, gateado por consentimiento.

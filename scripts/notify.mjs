@@ -55,11 +55,23 @@ async function send(payload) {
 function buildNotification(m) {
   const rival = rivalOf(m);
   const matchId = `${m.date}-${slug(rival)}`;
+
+  const parts = [`Boca vs ${rival}`];
+  if (m.aggregate) {
+    const pen =
+      m.aggregate.penaltyBoca !== undefined && m.aggregate.penaltyRival !== undefined
+        ? ` (pen. ${m.aggregate.penaltyBoca}-${m.aggregate.penaltyRival})`
+        : "";
+    parts.push(`Global ${m.aggregate.bocaScore}-${m.aggregate.rivalScore}${pen}`);
+  }
+  if (m.time) parts.push(m.time);
+  if (m.competition) parts.push(m.competition);
+
   return {
     matchId,
     type: "h1",
     title: "Boca juega en 1 hora",
-    body: `Boca vs ${rival} · ${m.time}${m.competition ? ` · ${m.competition}` : ""}`,
+    body: parts.join(" · "),
     url: "./#partidos",
   };
 }

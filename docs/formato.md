@@ -49,6 +49,34 @@ Estado,Fecha,Hora,Condición,Rival,Goles Boca,Goles Rival,Torneo,Fase,Canal,Luga
 | **Fase** | No | Texto | `Cuartos de Final - Ida` | Instancia / fecha del torneo. |
 | **Canal** | No | Texto | `ESPN` | Si está vacío, no se muestra la línea de TV. |
 | **Lugar** | No | Texto | `La Bombonera` | No se muestra hoy en el front; se puede dejar igual. |
+| **Global Boca** | No | Número | `1` | **Lo escribe el script** (no cargar a mano). Global de Boca sumando ida + vuelta. |
+| **Global Rival** | No | Número | `0` | **Lo escribe el script** (no cargar a mano). Global del rival sumando ida + vuelta. |
+| **Penales Boca** | No | Número | `4` | Solo si el global termina **empatado**. Carga manual en la fila de la Vuelta. |
+| **Penales Rival** | No | Número | `3` | Idem anterior. |
+
+> Las columnas nuevas van **al final**, después de `Lugar`. El script escribe las columnas A–K por posición, así que no hay que reordenar.
+
+---
+
+## 3.1. Resultado global (cruces de ida y vuelta)
+
+En los torneos con partidos de **ida y vuelta**, el sitio muestra en la **Vuelta** el **resultado global** del cruce.
+
+- Lo calcula y lo guarda el script en las columnas `Global Boca` / `Global Rival` de la fila de la **Vuelta** (suma de goles de ida + vuelta).
+- El `Ida` **no se muestra** como resultado individual si ya es viejo; se usa para el global.
+- Si el global termina **empatado**, se define por **penales**: cargá a mano `Penales Boca` / `Penales Rival` en la fila de la Vuelta.
+- Requisitos para que aparezca:
+  - La `Fase` de las dos patas debe compartir el mismo texto base (ej. `Cuartos de Final - Ida` y `Cuartos de Final - Vuelta`).
+  - El `Ida` debe tener goles cargados.
+
+Ejemplo de cruce:
+
+```
+Finalizado,2026-09-08,21:30,Local,São Paulo,1,0,Copa Sudamericana,Cuartos de Final - Ida,,La Bombonera
+Confirmado,2026-09-15,21:30,Visitante,São Paulo,,,Copa Sudamericana,Cuartos de Final - Vuelta,ESPN,Morumbi
+```
+
+Con el `Ida` 1-0, el script escribe `Global Boca = 1` y `Global Rival = 0` en la fila de la Vuelta → el sitio muestra **"Global: Boca 1 - 0 São Paulo"**.
 
 ---
 
