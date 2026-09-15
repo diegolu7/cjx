@@ -1,53 +1,74 @@
 # Pendientes — Cuando Juega el Xeneize
 
 > Documento vivo con tareas pendientes, propuestas y decisiones abiertas.
-> Última actualización: 2026-09-14
+> Última actualización: 2026-09-15
 
 ---
 
-## ✅ Hecho (Etapa 1 — MVP pre-partido, 2026-09-14)
+## ✅ Hecho (Etapa 1 — MVP pre-partido)
 
 - **P2 — Solo aviso 1 h antes.** `scripts/notify.mjs` envía únicamente `h1` (≤60 min).
   Se eliminaron los recordatorios `h24` y `result`.
-- **P3 — Sección en home.** `<Notifications />` se muestra en `src/pages/index.astro`
-  debajo de la agenda; se oculta si faltan `PUBLIC_SUPABASE_URL`/`PUBLIC_VAPID_PUBLIC_KEY`.
+- **P3 — Sección en home.** `<Notifications />` en `src/pages/index.astro` debajo de la
+  agenda; se oculta si faltan `PUBLIC_SUPABASE_URL`/`PUBLIC_VAPID_PUBLIC_KEY`.
 - **P1 — Fix de duplicados.** `docs/auto_actualizar.gs`: `_rowExists()` identifica el
   partido por fecha (+ hora/torneo) y actualiza la fila existente; `limpiarDuplicados()`
-  ahora fusiona la fila "Próximo" con la "Finalizado" del mismo partido.
+  fusiona la fila "Próximo" con la "Finalizado" del mismo partido.
 - Migración `supabase/migrations/0002_webpush_prefs.sql` (default `{"h1": true}`).
-- Pusheado a `main` (commit `fa75998`).
-
-### Acciones manuales pendientes de la Etapa 1
-- [ ] **Pegar `docs/auto_actualizar.gs` en Apps Script** (Extensiones → Apps Script) y guardar.
-- [ ] **Correr la migración `0002` en Supabase** (SQL Editor o `supabase db push`).
+- Commits en `main`: `fa75998` (webpush), `ffd4e60` (dominio), `65a8458` (analítica).
 
 ---
 
-## 🌐 Dominio propio — `cuandojuegaelxeneize.com.ar`
+## ✅ Dominio — `cuandojuegaelxeneize.com.ar`
 
-Configuración del sitio (ya aplicada en el repo):
-- `astro.config.mjs`: `site = https://cuandojuegaelxeneize.com.ar`, `base = /`.
-- `public/CNAME` con `cuandojuegaelxeneize.com.ar`.
-- `public/robots.txt` y `public/llms.txt` con las URLs del dominio.
+- [x] DNS delegado a Cloudflare (`buck` / `selah.ns.cloudflare.com`) en NIC.ar.
+- [x] Registros: `A @` a GitHub Pages (4 IPs) + `CNAME www` → `diegolu7.github.io`.
+- [x] Proxy naranja activo; HTTPS con certificado Let's Encrypt válido.
+- [x] `www` → 301 → apex; `http` → 301 → `https` (**Always Use HTTPS**).
+- [x] **HSTS** activo (`max-age=15552000; includeSubDomains`, preload off).
+- [x] `astro.config.mjs`, `public/CNAME`, `robots.txt`, `llms.txt` y `sitemap` con el dominio.
+- [x] Sitio verificado en vivo: todas las rutas 200, `canonical`/`og:url` correctos.
 
-### Pasos en Cloudflare (DNS)
-- [ ] Apex `cuandojuegaelxeneize.com.ar` → **A** a GitHub Pages:
-  `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-- [ ] Apex IPv6 (opcional) → **AAAA**: `2606:50c0:8000::153`, `2606:50c0:8001::153`,
-  `2606:50c0:8002::153`, `2606:50c0:8003::153`.
-- [ ] `www` → **CNAME** a `diegolu7.github.io`.
-- [ ] Dejar los registros en **DNS only (nube gris)** hasta que GitHub emita el
-  certificado; luego se puede activar el proxy (naranja) con SSL **Full**.
-- [ ] SSL/TLS en Cloudflare: modo **Full (strict)**.
+---
 
-### Pasos en GitHub
-- [ ] Repo → **Settings → Pages → Custom domain**: `cuandojuegaelxeneize.com.ar`.
-- [ ] Activar **Enforce HTTPS** (puede tardar unos minutos).
-- [ ] Re-deploy (push o `workflow_dispatch`) para que tome `CNAME` y `site`.
+## ✅ Analítica
 
-### Post-dominio
-- [ ] **Google Search Console**: verificar por dominio (TXT en Cloudflare) y enviar sitemap.
+- [x] **Microsoft Clarity** (`yihrh0k6ab`) en `Analytics.astro`, gateado por consentimiento.
+- [x] **GA4** (`G-Y3RSGVB0D0`), mismo gate de consentimiento.
+- [x] Banner y páginas legales (`cookies`, `privacidad`) actualizados.
+- [ ] Verificar que GA4/Clarity empiecen a registrar datos con tráfico real.
+
+---
+
+## ⚠️ Acciones manuales pendientes (críticas)
+
+- [ ] **Pegar `docs/auto_actualizar.gs` en Apps Script** (Extensiones → Apps Script) y guardar.
+- [ ] **Correr la migración `0002` en Supabase** (SQL Editor o `supabase db push`).
+- [ ] **Google Search Console**: verificar propiedad por dominio (TXT en Cloudflare) y enviar sitemap.
 - [ ] **Bing Webmaster Tools**: verificar y enviar sitemap.
+- [ ] Revisar en Supabase `notification_sends`: posible **aviso h24** enviado el 2026-09-14 ~21:30 ART
+  (código viejo antes del deploy).
+
+---
+
+## 🎯 Checklist partido — 2026-09-15 21:30 (São Paulo vs Boca)
+
+- [ ] Confirmar que dispare y llegue el aviso de **1 h antes** (~20:30 ART).
+- [ ] Probar el endpoint `send` con un `matchId` de prueba (curl) para validar suscripciones.
+- [ ] Confirmar secrets: Supabase (`VAPID_*`, `SEND_SECRET`) y GitHub Actions
+  (`SUPABASE_URL`, `SEND_SECRET`, `PUBLIC_SUPABASE_URL`, `PUBLIC_VAPID_PUBLIC_KEY`).
+- [ ] Verificar el botón **"Activar notificaciones"** en la home desde el dominio nuevo.
+- [ ] Post-partido: confirmar que el resultado se actualiza sin duplicar filas.
+
+---
+
+## ☁️ Cloudflare — resto recomendado
+
+- [ ] Modo SSL/TLS en **Full (strict)** (SSL/TLS → Descripción general).
+- [ ] **Versión mínima de TLS: 1.2**.
+- [ ] **TLS 1.3** ON.
+- [ ] **Reescritura automática de HTTPS** ON.
+- [ ] HSTS **Preload**: dejar OFF por ahora.
 
 ---
 
@@ -97,22 +118,12 @@ corridas **09:00 / 12:00 / 17:00 ARG** + previa al partido (~90 min) y posterior
 
 ---
 
-## 📊 Analítica (2026-09-14)
-
-- [x] **Microsoft Clarity** instalado (`yihrh0k6ab`) en `src/components/Analytics.astro`,
-  gateado por consentimiento de cookies. Textos legales actualizados.
-- [x] **GA4** instalado (`G-Y3RSGVB0D0`), mismo gate de consentimiento.
-- [ ] Verificar en GA4 y Clarity que empiecen a verse datos tras el deploy y con el dominio activo.
-
----
-
 ## 💡 Propuestas
 
 - **Historial de resultados.** Hoy `limpiarHistorial()` deja solo los 2 `Finalizado`
   más recientes. Evaluar ampliar a 5–10 para dar más contexto SEO.
 - **Imagen descargable** para compartir la agenda en WhatsApp/Instagram (viralidad).
 - **Twitter/X + WhatsApp** para alertas antes de cada partido.
-- **Google Search Console + GA4** (verificar que estén activos).
 - **MCP reutilizable** (opcional, segunda etapa): exponer `get_boca_schedule`,
   `update_boca_schedule`, `validate_boca_schedule` como tools. No es obligatorio
   mantener un servidor MCP encendido.
