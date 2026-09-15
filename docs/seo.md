@@ -28,7 +28,7 @@
 
 1. **Google Search Console**: verificar propiedad por dominio `https://cuandojuegaelxeneize.com.ar/` (DNS TXT en Cloudflare), enviar `sitemap-index.xml`.
 2. **Bing Webmaster Tools**: verificar y enviar sitemap.
-3. **GA4**: reemplazar `G-XXXXXXXXXX` en `src/components/Analytics.astro` por el Measurement ID real.
+3. **Analítica**: GA4 (`G-Y3RSGVB0D0`) y Microsoft Clarity (`yihrh0k6ab`) instalados en `Analytics.astro`, ambos gateados por consentimiento de cookies.
 4. **Validaciones**: Rich Results Test (SportsEvent, FAQ, Breadcrumb) y PageSpeed/Lighthouse.
 5. **Dominio propio**: `site`, `base`, `robots.txt`, `llms.txt` y `public/CNAME` ya apuntan a `cuandojuegaelxeneize.com.ar`. Falta configurar DNS en Cloudflare y el custom domain en GitHub Pages (ver `pendientes.md`).
 

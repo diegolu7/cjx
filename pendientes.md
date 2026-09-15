@@ -97,6 +97,15 @@ corridas **09:00 / 12:00 / 17:00 ARG** + previa al partido (~90 min) y posterior
 
 ---
 
+## 📊 Analítica (2026-09-14)
+
+- [x] **Microsoft Clarity** instalado (`yihrh0k6ab`) en `src/components/Analytics.astro`,
+  gateado por consentimiento de cookies. Textos legales actualizados.
+- [x] **GA4** instalado (`G-Y3RSGVB0D0`), mismo gate de consentimiento.
+- [ ] Verificar en GA4 y Clarity que empiecen a verse datos tras el deploy y con el dominio activo.
+
+---
+
 ## 💡 Propuestas
 
 - **Historial de resultados.** Hoy `limpiarHistorial()` deja solo los 2 `Finalizado`
