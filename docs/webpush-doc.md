@@ -1,6 +1,6 @@
 # Web Push (Supabase) — Documentación
 
-Notificaciones push para "Cuando Juega el Xeneize": aviso **1 hora antes** (y opcional **24 h antes**) y **resultado final**. Costo **$0** (Supabase Free + GitHub Actions en repo público + Web Push estándar).
+Notificaciones push para "Cuando Juega el Xeneize": un único aviso **1 hora antes** del inicio del partido. Sin recordatorios de 24 h ni de resultado final (quedan como evolutivo). Costo **$0** (Supabase Free + GitHub Actions en repo público + Web Push estándar).
 
 ---
 
@@ -101,9 +101,9 @@ Copiar `.env.example` a `.env` y completar. (`.env` está gitignoreado.)
 
 ## 5. Componente del sitio
 
-- `src/components/Notifications.astro`: botón **Activar/Desactivar** + preferencias (1 h / 24 h / resultado).
-- Se muestra en **`/info`** (`#notificaciones`).
-- Si faltan `PUBLIC_SUPABASE_URL`/`PUBLIC_VAPID_PUBLIC_KEY`, muestra el texto "Próximamente" (el sitio no se rompe).
+- `src/components/Notifications.astro`: botón **Activar/Desactivar** (un solo aviso, 1 h antes).
+- Se muestra en la **home** (debajo de la agenda) y en **`/info`** (`#notificaciones`).
+- En la home, si faltan `PUBLIC_SUPABASE_URL`/`PUBLIC_VAPID_PUBLIC_KEY`, no se renderiza. En `/info` muestra "Próximamente" (el sitio no se rompe).
 - Flujo: pide permiso → `subscribe()` → guarda la suscripción en Supabase.
 - **iOS**: requiere la PWA **instalada** (iOS 16.4+); si no, muestra las instrucciones.
 
@@ -112,9 +112,7 @@ Copiar `.env.example` a `.env` y completar. (`.env` está gitignoreado.)
 ## 6. Emisor de avisos
 
 - `scripts/notify.mjs`: lee `src/data/matches.json` y, según la hora actual (Argentina, UTC-3):
-  - **h1**: faltan ≤ 60 min para el inicio.
-  - **h24**: faltan entre 23 y 24 h.
-  - **result**: partido `finished` con goles.
+  - **h1**: faltan ≤ 60 min para el inicio (único aviso que se envía).
   - Llama a `POST /functions/v1/send` con `{ matchId, type, title, body, url }`.
 - `.github/workflows/notify.yml`: corre **cada 15 min** (snapshot + envío).
 - **Dedupe**: la Edge Function `send` registra `(match_id, type)` en `notification_sends`; si ya existe, **no repite**.
@@ -181,7 +179,7 @@ supabase/
    ├─ subscribe/index.ts            # registra/actualiza suscripción (pública)
    └─ send/index.ts                 # fan-out + dedupe + cleanup (SEND_SECRET)
 src/
-├─ components/Notifications.astro   # UI + suscripción + preferencias
+├─ components/Notifications.astro   # UI + suscripción (aviso 1 h antes)
 └─ pages/privacidad.astro           # mención de datos de push
 scripts/notify.mjs                  # emisor (cron)
 .github/workflows/notify.yml        # cron cada 15 min

@@ -1,57 +1,54 @@
 ---
+interface Props {
+  hideWhenUnconfigured?: boolean;
+}
+
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const vapidPublic = import.meta.env.PUBLIC_VAPID_PUBLIC_KEY;
 const configured = Boolean(supabaseUrl && vapidPublic);
+const { hideWhenUnconfigured = false } = Astro.props;
 ---
 
-<section id="notificaciones" class="not-scroll-mt">
-  <h2>Notificaciones</h2>
+{(!configured && hideWhenUnconfigured) ? null : (
+  <section id="notificaciones" class="mt-8 scroll-mt-6">
+    <h2 class="text-[17px] font-bold tracking-[0.02em] text-text-primary">Notificaciones</h2>
 
-  {configured ? (
-    <div id="notify-box" data-supabase={supabaseUrl} data-vapid={vapidPublic}>
-      <p>
-        Activá avisos y te notificamos antes de que juegue Boca y con el resultado final. Podés
-        elegir qué querés recibir.
-      </p>
+    {configured ? (
+      <div
+        id="notify-box"
+        data-supabase={supabaseUrl}
+        data-vapid={vapidPublic}
+        class="mt-3 rounded-lg border border-border bg-surface p-4 shadow-card"
+      >
+        <p class="text-[13px] leading-[1.6] text-text-secondary">
+          Activá los avisos y te notificamos <strong class="text-text-primary">1 hora antes</strong> de
+          que juegue Boca. Sin spam: un solo aviso por partido.
+        </p>
 
-      <div class="mt-3 flex flex-col gap-2">
-        <label class="flex items-center gap-2 text-[13px] text-text-secondary">
-          <input type="checkbox" data-pref="h1" checked class="h-4 w-4 accent-[#D9A441]" />
-          1 hora antes del partido
-        </label>
-        <label class="flex items-center gap-2 text-[13px] text-text-secondary">
-          <input type="checkbox" data-pref="h24" class="h-4 w-4 accent-[#D9A441]" />
-          24 horas antes
-        </label>
-        <label class="flex items-center gap-2 text-[13px] text-text-secondary">
-          <input type="checkbox" data-pref="result" checked class="h-4 w-4 accent-[#D9A441]" />
-          Resultado final
-        </label>
+        <div class="mt-4">
+          <button
+            type="button"
+            id="notify-toggle"
+            class="h-10 rounded-[6px] border border-accent bg-accent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong"
+          >
+            Activar notificaciones
+          </button>
+        </div>
+
+        <p id="notify-status" class="mt-3 text-[12px] text-text-muted"></p>
+        <p id="notify-ios" hidden class="mt-2 text-[12px] text-text-muted">
+          En iPhone/iPad primero instalá la app (Compartir → Agregar a pantalla de inicio) y luego
+          activá las notificaciones desde el ícono instalado.
+        </p>
       </div>
-
-      <div class="mt-4">
-        <button
-          type="button"
-          id="notify-toggle"
-          class="h-10 rounded-[6px] border border-accent bg-accent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong"
-        >
-          Activar notificaciones
-        </button>
-      </div>
-
-      <p id="notify-status" class="mt-3 text-[12px] text-text-muted"></p>
-      <p id="notify-ios" hidden class="mt-2 text-[12px] text-text-muted">
-        En iPhone/iPad primero instalá la app (Compartir → Agregar a pantalla de inicio) y luego
-        activá las notificaciones desde el ícono instalado.
+    ) : (
+      <p class="mt-3 text-[13px] leading-[1.6] text-text-secondary">
+        <strong class="text-text-primary">Próximamente:</strong> vas a poder activar avisos para que te
+        notifiquemos cuando esté por jugar Boca.
       </p>
-    </div>
-  ) : (
-    <p>
-      <strong>Próximamente:</strong> vas a poder activar avisos para que te notifiquemos cuando esté
-      por jugar Boca y con el resultado final.
-    </p>
-  )}
-</section>
+    )}
+  </section>
+)}
 
 <script>
   (function () {
@@ -63,17 +60,9 @@ const configured = Boolean(supabaseUrl && vapidPublic);
     var statusEl = document.getElementById("notify-status");
     var toggleBtn = document.getElementById("notify-toggle") as HTMLButtonElement | null;
     var iosEl = document.getElementById("notify-ios");
-    var prefEls = Array.from(box.querySelectorAll<HTMLInputElement>("[data-pref]"));
 
     function setStatus(msg: string) {
       if (statusEl) statusEl.textContent = msg;
-    }
-    function getPrefs(): Record<string, boolean> {
-      var p: Record<string, boolean> = {};
-      prefEls.forEach(function (el) {
-        p[el.dataset.pref as string] = el.checked;
-      });
-      return p;
     }
     function urlBase64ToUint8Array(base64String: string): Uint8Array {
       var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -103,7 +92,7 @@ const configured = Boolean(supabaseUrl && vapidPublic);
       return reg.pushManager.getSubscription();
     }
 
-    async function save(sub: PushSubscription, prefs: Record<string, boolean>, enabled: boolean) {
+    async function save(sub: PushSubscription, enabled: boolean) {
       var json = sub.toJSON();
       await fetch(supabaseUrl + "/functions/v1/subscribe", {
         method: "POST",
@@ -111,7 +100,7 @@ const configured = Boolean(supabaseUrl && vapidPublic);
         body: JSON.stringify({
           endpoint: json.endpoint,
           keys: json.keys,
-          prefs: prefs,
+          prefs: { h1: true },
           enabled: enabled,
         }),
       });
@@ -130,7 +119,7 @@ const configured = Boolean(supabaseUrl && vapidPublic);
       try {
         var existing = await currentSubscription();
         if (existing) {
-          await save(existing, getPrefs(), false);
+          await save(existing, false);
           await existing.unsubscribe();
           setStatus("Notificaciones desactivadas.");
           btn.textContent = "Activar notificaciones";
@@ -146,22 +135,12 @@ const configured = Boolean(supabaseUrl && vapidPublic);
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(vapid) as unknown as BufferSource,
         });
-        await save(sub, getPrefs(), true);
-        setStatus("¡Listo! Vas a recibir los avisos.");
+        await save(sub, true);
+        setStatus("¡Listo! Vas a recibir el aviso 1 hora antes.");
         btn.textContent = "Desactivar notificaciones";
       } catch (e) {
         setStatus("No se pudo activar: " + ((e as Error).message || e));
       }
-    });
-
-    prefEls.forEach(function (el) {
-      el.addEventListener("change", async function () {
-        var sub = await currentSubscription();
-        if (sub) {
-          await save(sub, getPrefs(), true);
-          setStatus("Preferencias guardadas.");
-        }
-      });
     });
 
     refresh();

@@ -1,5 +1,6 @@
 // Emisor de Web Push (build/cron).
-// Lee src/data/matches.json y, para los avisos debidos, llama a la Edge Function "send".
+// Lee src/data/matches.json y avisa ÚNICAMENTE 1 hora antes del inicio del partido.
+// No se envían recordatorios de 24 h ni de resultado final (evolutivo futuro).
 //
 // Variables de entorno:
 //   SUPABASE_URL   (ej. https://xxxx.supabase.co)
@@ -51,32 +52,14 @@ async function send(payload) {
   return { status: res.status, body: text };
 }
 
-function buildNotification(m, type) {
+function buildNotification(m) {
   const rival = rivalOf(m);
   const matchId = `${m.date}-${slug(rival)}`;
-  if (type === "h1") {
-    return {
-      matchId,
-      type,
-      title: "Boca juega en 1 hora",
-      body: `Boca vs ${rival} · ${m.time}${m.competition ? ` · ${m.competition}` : ""}`,
-      url: "./#partidos",
-    };
-  }
-  if (type === "h24") {
-    return {
-      matchId,
-      type,
-      title: "Boca juega mañana",
-      body: `Boca vs ${rival}${m.competition ? ` · ${m.competition}` : ""}`,
-      url: "./#partidos",
-    };
-  }
   return {
     matchId,
-    type: "result",
-    title: "Resultado final",
-    body: `${m.homeTeam} ${m.homeScore}-${m.awayScore} ${m.awayTeam}${m.competition ? ` · ${m.competition}` : ""}`,
+    type: "h1",
+    title: "Boca juega en 1 hora",
+    body: `Boca vs ${rival} · ${m.time}${m.competition ? ` · ${m.competition}` : ""}`,
     url: "./#partidos",
   };
 }
@@ -95,21 +78,15 @@ async function main() {
   const due = [];
 
   for (const m of matches) {
-    if (m.status === "finished") {
-      if (m.homeScore !== undefined && m.awayScore !== undefined) {
-        due.push(buildNotification(m, "result"));
-      }
-      continue;
-    }
+    if (m.status === "finished") continue;
 
     const start = startDate(m);
     if (!start) continue;
     const diff = start.getTime() - now.getTime();
 
+    // Único aviso: 1 hora antes del inicio.
     if (diff > 0 && diff <= HOUR) {
-      due.push(buildNotification(m, "h1"));
-    } else if (diff > 23 * HOUR && diff <= 24 * HOUR) {
-      due.push(buildNotification(m, "h24"));
+      due.push(buildNotification(m));
     }
   }
 

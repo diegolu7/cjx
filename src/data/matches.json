@@ -1,19 +1,6 @@
 {
-  "updatedAt": "2026-09-10T02:43:04.875Z",
+  "updatedAt": "2026-09-15T02:13:35.335Z",
   "matches": [
-    {
-      "id": "sheet-4",
-      "date": "2026-09-02",
-      "time": "21:30",
-      "homeTeam": "Vélez Sarsfield",
-      "awayTeam": "Boca",
-      "homeScore": 0,
-      "awayScore": 0,
-      "competition": "Copa Argentina",
-      "round": "Octavos de Final",
-      "channel": "-",
-      "status": "finished"
-    },
     {
       "id": "sheet-2",
       "date": "2026-09-08",
@@ -28,16 +15,16 @@
       "status": "finished"
     },
     {
-      "id": "sheet-1",
+      "id": "sheet-4",
       "date": "2026-09-11",
-      "dayLabel": "VIE",
       "time": "21:30",
       "homeTeam": "Boca",
-      "awayTeam": "Central Córdoba (SdE)",
+      "awayTeam": "Central Córdoba de Santiago del Estero",
+      "homeScore": 3,
+      "awayScore": 1,
       "competition": "Liga Profesional",
       "round": "Fecha 9",
-      "channel": "Por definir",
-      "status": "next"
+      "status": "finished"
     },
     {
       "id": "sheet-3",
@@ -48,6 +35,28 @@
       "competition": "Copa Sudamericana",
       "round": "Cuartos de Final - Vuelta",
       "channel": "ESPN",
+      "status": "next"
+    },
+    {
+      "id": "sheet-5",
+      "date": "2026-09-20",
+      "time": "21:30",
+      "homeTeam": "Boca",
+      "awayTeam": "Racing",
+      "competition": "Copa Argentina",
+      "round": "Octavos de Final",
+      "channel": "-",
+      "status": "scheduled"
+    },
+    {
+      "id": "sheet-6",
+      "date": "2026-09-22",
+      "time": "21:30",
+      "homeTeam": "Boca",
+      "awayTeam": "San Lorenzo",
+      "competition": "Liga Profesional",
+      "round": "Fecha 10",
+      "channel": "-",
       "status": "scheduled"
     }
   ]

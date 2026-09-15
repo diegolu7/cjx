@@ -118,13 +118,41 @@ function _fase(ev) {
   return "";
 }
 
+/**
+ * Busca la fila de un evento de la API en la hoja.
+ *
+ * Clave del fix (bug de duplicados): NO se identifica por rival exacto, porque
+ * el mismo partido puede venir escrito distinto ("Central Córdoba (SdE)" vs
+ * "Central Córdoba de Santiago del Estero") y eso generaba una fila nueva.
+ * Estrategia:
+ *   1) candidatas por fecha (la API mezcla UTC/local);
+ *   2) coincidencia exacta de rival normalizado;
+ *   3) si hay una única fila en esa fecha, es ese partido;
+ *   4) desempate por hora de inicio.
+ */
 function _rowExists(data, ev) {
   var rival = _norm(_rival(ev).rival);
   var dates = _candidateDates(ev);
+
+  var candidatas = [];
   for (var r = 1; r < data.length; r++) {
-    var rowF = _cellDate(data[r][1]);
-    if (dates.indexOf(rowF) !== -1 && _norm(data[r][4]) === rival) return r;
+    if (dates.indexOf(_cellDate(data[r][1])) !== -1) candidatas.push(r);
   }
+  if (candidatas.length === 0) return -1;
+
+  for (var i = 0; i < candidatas.length; i++) {
+    if (_norm(data[candidatas[i]][4]) === rival) return candidatas[i];
+  }
+
+  if (candidatas.length === 1) return candidatas[0];
+
+  var hora = _argDateTime(ev).hora;
+  if (hora) {
+    for (var j = 0; j < candidatas.length; j++) {
+      if (_cellTime(data[candidatas[j]][2]) === hora) return candidatas[j];
+    }
+  }
+
   return -1;
 }
 
@@ -132,6 +160,14 @@ function _cellDate(v) {
   if (v instanceof Date) return Utilities.formatDate(v, TZ, "yyyy-MM-dd");
   var s = String(v || "").slice(0, 10);
   return /^\d{4}-\d{2}-\d{2}$/.test(s) ? s : "";
+}
+
+function _cellTime(v) {
+  if (v instanceof Date) return Utilities.formatDate(v, TZ, "HH:mm");
+  var s = String(v || "").trim();
+  var m = /^(\d{1,2}):(\d{2})/.exec(s);
+  if (!m) return s.slice(0, 5);
+  return (m[1].length === 1 ? "0" + m[1] : m[1]) + ":" + m[2];
 }
 
 /* --------------------------- resultados (goles) --------------------------- */
@@ -306,9 +342,13 @@ function actualizarTodo() {
 /* ------------------------- limpieza de duplicados ------------------------- */
 
 /**
- * Borra filas duplicadas exactas (misma Estado/Fecha/Hora/Condición/Rival/
- * Goles/Torneo/Fase) dejando la primera de cada una. Arregla duplicados que
- * hayan quedado por errores previos o por la API.
+ * Borra filas duplicadas.
+ *
+ * Detecta dos casos:
+ *   1) filas exactamente iguales (mismos 9 primeros campos);
+ *   2) MISMO PARTIDO (misma Fecha + Hora) con distinto rival/estado, p. ej. la
+ *      fila "Próximo" y la "Finalizado" del mismo partido. En ese caso conserva
+ *      la fila que tiene resultado y borra la otra.
  */
 function limpiarDuplicados() {
   var sheet = _sheet();
@@ -316,7 +356,9 @@ function limpiarDuplicados() {
   if (data.length < 2) return;
 
   var seen = {};
+  var porPartido = {}; // "fecha|hora" -> índice de la fila buena
   var aBorrar = [];
+
   for (var r = 1; r < data.length; r++) {
     // Ignora filas totalmente vacías.
     var filaVacia = data[r].every(function (c) {
@@ -324,11 +366,31 @@ function limpiarDuplicados() {
     });
     if (filaVacia) continue;
 
+    // 1) Duplicado exacto.
     var key = data[r].slice(0, 9).join("|").toLowerCase();
     if (seen[key]) {
       aBorrar.push(r);
+      continue;
+    }
+    seen[key] = true;
+
+    // 2) Mismo partido (fecha + hora).
+    var fecha = _cellDate(data[r][1]);
+    var hora = _cellTime(data[r][2]);
+    if (!fecha || !hora) continue;
+    var pk = fecha + "|" + hora;
+
+    if (porPartido[pk] === undefined) {
+      porPartido[pk] = r;
+      continue;
+    }
+
+    var prev = porPartido[pk];
+    if (_tieneResultado(data[r]) && !_tieneResultado(data[prev])) {
+      aBorrar.push(prev);
+      porPartido[pk] = r;
     } else {
-      seen[key] = true;
+      aBorrar.push(r);
     }
   }
 
@@ -341,6 +403,14 @@ function limpiarDuplicados() {
 
   if (aBorrar.length > 0)
     Logger.log("limpiarDuplicados → borradas=%s", aBorrar.length);
+}
+
+/** ¿La fila ya tiene resultado o está marcada como Finalizado? */
+function _tieneResultado(row) {
+  var estado = _norm(row[0]);
+  var gb = String(row[5] || "").trim();
+  var gr = String(row[6] || "").trim();
+  return estado === "finalizado" || (gb !== "" && gr !== "");
 }
 
 /* ------------------------- limpieza de historial ------------------------- */

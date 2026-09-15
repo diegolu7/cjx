@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import MatchesTimeline from "../components/MatchesTimeline.tsx";
+import Notifications from "../components/Notifications.astro";
 import type { Match } from "../types/match";
 import data from "../data/matches.json";
 
@@ -43,6 +44,8 @@ const sportsEvent = next
   <div id="partidos" class="scroll-mt-6">
     <MatchesTimeline client:visible matches={matches} />
   </div>
+
+  <Notifications hideWhenUnconfigured />
 
   {sportsEvent && (
     <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />
