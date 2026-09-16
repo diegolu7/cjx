@@ -71,6 +71,17 @@
 
 ---
 
+## 🐛 Fixes de datos
+
+- [x] **Vigencia en hora Argentina:** el parser ya no usa la fecha del runner (UTC), que
+  dropeaba partidos de la noche antes/después del inicio. Ahora usa el datetime del
+  partido (UTC-3) con **gracia de 6 h**.
+- [x] **Solo 2 finalizados visibles** (el parser recorta a los 2 más recientes, sin
+  depender de la poda del GAS).
+- [x] Cargado el resultado de la Vuelta a mano (São Paulo 1-1 Boca → **Global Boca 2-1**).
+
+---
+
 ## ✅ Resultado global (ida/vuelta)
 
 - [x] **GAS `calcularGlobales()`**: suma ida + vuelta y escribe `Global Boca` / `Global Rival`

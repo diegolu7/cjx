@@ -165,4 +165,5 @@ Configurar **activador por horas (cada 1 hora)** sobre `actualizarTodo` (que cor
 - Si en la hoja hay **solo resultados** (todo `Finalizado`) y ningún `Próximo`/`Confirmado`, el sitio muestra un aviso *"No hay próximos partidos por el momento…"* arriba y conserva los resultados visibles.
 - Si la hoja está **totalmente vacía**, el sitio muestra *"No hay partidos disponibles por el momento."*
 - Mientras exista al menos un `Confirmado` (o `previsto`), el sitio toma el de fecha más cercana como **próximo destacado** automáticamente.
-- Las filas `Próximo`/`Confirmado`/`previsto` con **fecha ya pasada** se **ignoran** en el sitio (no se muestran), para evitar partidos "zombie". Conviene igual borrarlas o marcarlas `Finalizado` en la hoja.
+- Las filas `Próximo`/`Confirmado`/`previsto` con **fecha ya pasada** se **ignoran** en el sitio (no se muestran), para evitar partidos "zombie". Se mantienen visibles hasta **6 h después de su inicio** (hora Argentina) por si el resultado todavía no se cargó. Conviene igual borrarlas o marcarlas `Finalizado` en la hoja.
+- El sitio muestra **solo los 2 `Finalizado` más recientes** (el resto no se lista, aunque estén en la hoja). Los cruces de ida y vuelta conservan su global aunque el Ida no se muestre.

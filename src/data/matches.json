@@ -1,20 +1,6 @@
 {
-  "updatedAt": "2026-09-15T15:46:56.965Z",
+  "updatedAt": "2026-09-16T03:05:38.398Z",
   "matches": [
-    {
-      "id": "sheet-1",
-      "date": "2026-09-08",
-      "time": "21:30",
-      "homeTeam": "Boca",
-      "awayTeam": "São Paulo",
-      "homeScore": 1,
-      "awayScore": 0,
-      "competition": "Copa Sudamericana",
-      "round": "Cuartos de Final - Ida",
-      "channel": "-",
-      "venue": "La Bombonera",
-      "status": "finished"
-    },
     {
       "id": "sheet-2",
       "date": "2026-09-11",
@@ -35,14 +21,16 @@
       "time": "21:30",
       "homeTeam": "São Paulo",
       "awayTeam": "Boca",
+      "homeScore": 1,
+      "awayScore": 1,
       "competition": "Copa Sudamericana",
       "round": "Cuartos de Final - Vuelta",
-      "channel": "ESPN",
+      "channel": "DSport",
       "venue": "Estadio Morumbi",
-      "status": "next",
+      "status": "finished",
       "aggregate": {
-        "bocaScore": 1,
-        "rivalScore": 0
+        "bocaScore": 2,
+        "rivalScore": 1
       }
     },
     {
@@ -55,7 +43,7 @@
       "round": "Octavos de Final",
       "channel": "-",
       "venue": "Por definir",
-      "status": "scheduled"
+      "status": "next"
     },
     {
       "id": "sheet-5",

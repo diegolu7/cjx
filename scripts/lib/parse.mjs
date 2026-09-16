@@ -264,10 +264,30 @@ function parseDisplayDate(date) {
   return Number.isNaN(ms) ? new Date(0) : new Date(ms);
 }
 
-function isTodayOrFuture(date) {
-  const now = new Date();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  return parseDisplayDate(date).getTime() >= today.getTime();
+// Ventana de gracia: un partido NO finalizado sigue visible hasta 6 h después
+// de su inicio (hora Argentina), para no dropearlo durante/justo después del
+// partido si todavía no está marcado como Finalizado.
+const GRACE_MS = 6 * 60 * 60 * 1000;
+
+/** Fecha+hora del partido en hora Argentina (UTC-3). Sin hora → 23:59 ART. */
+function matchDateTime(m) {
+  const iso = normalizeToISO(m.date);
+  if (!iso) return null;
+  const time = /^\d{1,2}:\d{2}/.test(String(m.time || "")) ? m.time : "23:59";
+  const d = new Date(`${iso}T${time}:00-03:00`);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/**
+ * ¿El partido debe mostrarse? Los finalizados siempre; los no finalizados,
+ * mientras no hayan pasado más de 6 h desde su inicio (hora Argentina).
+ * Ojo: NO usar la fecha del runner (UTC), que dropeaba partidos de la noche.
+ */
+function esVigente(m) {
+  if (m.status === "finished") return true;
+  const dt = matchDateTime(m);
+  if (!dt) return true; // sin fecha parseable: no filtrar
+  return dt.getTime() >= Date.now() - GRACE_MS;
 }
 
 /** CSV → Match[] ordenado y filtrado. */
@@ -327,6 +347,15 @@ export function parseMatches(csvText) {
     matches.push(rowToMatch(row, r));
   }
 
-  const vigentes = matches.filter((m) => m.status === "finished" || isTodayOrFuture(m.date));
-  return ordenarCronologico(keepSingleNext(vigentes));
+  const vigentes = matches.filter(esVigente);
+
+  // Mostrar solo los 2 finalizados más recientes (independiente de la poda del GAS).
+  const MAX_FINISHED = 2;
+  const finished = vigentes
+    .filter((m) => m.status === "finished")
+    .sort((a, b) => sortDateAsc(b.date, a.date))
+    .slice(0, MAX_FINISHED);
+  const upcoming = vigentes.filter((m) => m.status !== "finished");
+
+  return ordenarCronologico(keepSingleNext([...finished, ...upcoming]));
 }
