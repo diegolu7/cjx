@@ -5,6 +5,46 @@
 
 ---
 
+## 🚨 URGENTE — Crecimiento SEO (hoy: página ~6 de Google)
+
+> Diagnóstico: dominio nuevo (4 días), **contenido fino** (~280 palabras en la home, 6
+> páginas casi todas legales), **sin backlinks** y **212 KB de React** en la isla.
+> On-page, structured data y GEO ya están bien. Para subir hay 4 frentes.
+
+### A) Contenido — páginas por partido ⭐ (mayor impacto sostenido)
+- [ ] Crear ruta `/partidos/{slug}` (ej. `boca-vs-racing-2026-09-20`) con:
+  - ficha (fecha, hora, estadio, canal, cómo ver);
+  - **historial Boca vs rival** (head-to-head) + forma reciente;
+  - texto único por partido (evitar thin content);
+  - resultado + **global** post-partido.
+- [ ] Páginas de **calendario** y **resultados** completos.
+- [ ] **Enlazado interno** home ↔ partido ↔ rival.
+- [ ] Definir fuente de datos extra (historial/forma) — puede reusar la IA de la Etapa 3.
+- [ ] Title/description por partido con long-tail ("Boca vs Racing: fecha, hora y cómo ver").
+
+### B) Autoridad / off-page ⭐ (factor #1 para el head term)
+- [ ] **Backlinks**: difundir en X, grupos de WhatsApp/Telegram de Boca, foros, Reddit,
+  directorios deportivos.
+- [ ] Buscar menciones de marca (generan búsquedas de marca = autoridad).
+
+### C) Performance / Core Web Vitals
+- [ ] **Reemplazar la isla React** (`client.Buyw3Q1S.js`, ~212 KB) por JS vanilla o Preact
+  (~10-20 KB). Las tabs/filtros son simples.
+- [ ] **Self-host** de IBM Plex Mono (o recortar pesos) para quitar Google Fonts.
+- [ ] Medir LCP/CLS/TBT con PageSpeed/Lighthouse y anotar baseline.
+
+### D) Long-tail + CTR
+- [ ] Optimizar títulos/descripciones hacia consultas long-tail.
+- [ ] Mantener el rich result de `SportsEvent` (ya válido).
+
+### E) Medición
+- [ ] GSC → **Rendimiento**: ver consultas, impresiones y posición; ajustar contenido a
+  las queries que ya traen impresiones.
+
+**Expectativas:** head term = meses (autoridad); long-tail = semanas (con A).
+
+---
+
 ## ✅ Hecho (Etapa 1 — MVP pre-partido)
 
 - **P2 — Solo aviso 1 h antes.** `scripts/notify.mjs` envía únicamente `h1` (≤60 min).
