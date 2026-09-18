@@ -1,35 +1,61 @@
 ---
-import { splitByFormation } from "../../lib/match";
-
-interface Props {
+interface Team {
+  name: string;
   formation?: string;
-  players: string[];
+  lines: { label: string; players: string[] }[];
 }
-const { formation, players } = Astro.props;
+interface Props {
+  local: Team;
+  visitor: Team;
+}
+const { local, visitor } = Astro.props;
 
-const lines = splitByFormation(formation, players);
-// Válido solo si se pudo dividir en líneas (Arquero/Defensores/…).
-const valid = lines.length > 1;
-// Delanteros arriba, arquero abajo.
-const rows = valid ? [...lines].reverse() : [];
+function dotClass(team: Team): string {
+  // Boca: azul y oro (tokens inspirados, no institucionales). Rival: blanco.
+  return team.name === "Boca"
+    ? "border-2 border-accent bg-accent-secondary"
+    : "border border-white/70 bg-white/10";
+}
 ---
 
-{valid && (
-  <div class="relative overflow-hidden rounded-lg border border-border bg-[#0c2117] px-2 py-4">
-    <!-- Líneas de cancha (decorativas) -->
-    <span class="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/10"></span>
-    <span
-      class="pointer-events-none absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10"
-    ></span>
-    <span class="pointer-events-none absolute left-1/2 top-0 h-full w-px -translate-x-1/2 bg-white/[0.06]"></span>
+<div class="relative overflow-hidden rounded-lg border border-border bg-[#0c2117]">
+  <!-- Líneas mobile (cancha vertical) -->
+  <span class="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/10 lg:hidden"></span>
+  <span
+    class="pointer-events-none absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 lg:hidden"
+  ></span>
 
-    <div class="relative flex flex-col gap-5">
-      {rows.map((line) => (
-        <div class="flex items-start justify-around gap-1">
+  <!-- Líneas desktop (cancha horizontal) -->
+  <span class="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-white/10 lg:block"></span>
+  <span
+    class="pointer-events-none absolute left-1/2 top-1/2 hidden h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 lg:block"
+  ></span>
+
+  <div class="relative flex min-h-[440px] flex-col lg:min-h-[340px] lg:flex-row">
+    <!-- LOCAL: mobile arriba (GK arriba) / desktop izquierda (GK izq) -->
+    <div class="flex flex-1 flex-col items-stretch justify-around gap-1 px-2 py-3 lg:flex-row lg:px-3 lg:py-2">
+      {local.lines.map((line) => (
+        <div class="flex flex-1 flex-row items-center justify-around gap-1 lg:flex-col">
           {line.players.map((p) => (
-            <div class="flex w-14 min-w-0 flex-col items-center">
-              <span class="flex h-7 w-7 items-center justify-center rounded-full border border-accent-secondary/60 bg-surface"></span>
-              <span class="mt-1 w-full truncate text-center text-[10px] leading-tight text-text-primary">
+            <div class="flex w-12 min-w-0 flex-col items-center lg:w-14">
+              <span class:list={["h-5 w-5 shrink-0 rounded-full lg:h-6 lg:w-6", dotClass(local)]}></span>
+              <span class="mt-0.5 w-full truncate text-center text-[9px] leading-tight text-text-primary lg:text-[10px]">
+                {p}
+              </span>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+
+    <!-- VISITANTE: mobile abajo (GK abajo) / desktop derecha (GK der) -->
+    <div class="flex flex-1 flex-col-reverse items-stretch justify-around gap-1 px-2 py-3 lg:flex-row-reverse lg:px-3 lg:py-2">
+      {visitor.lines.map((line) => (
+        <div class="flex flex-1 flex-row items-center justify-around gap-1 lg:flex-col">
+          {line.players.map((p) => (
+            <div class="flex w-12 min-w-0 flex-col items-center lg:w-14">
+              <span class:list={["h-5 w-5 shrink-0 rounded-full lg:h-6 lg:w-6", dotClass(visitor)]}></span>
+              <span class="mt-0.5 w-full truncate text-center text-[9px] leading-tight text-text-primary lg:text-[10px]">
                 {p}
               </span>
             </div>
@@ -38,4 +64,4 @@ const rows = valid ? [...lines].reverse() : [];
       ))}
     </div>
   </div>
-)}
+</div>
