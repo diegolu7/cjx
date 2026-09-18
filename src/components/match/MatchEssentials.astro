@@ -1,14 +1,13 @@
 ---
-import type { Match, MatchDetails } from "../../types/match";
+import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
 import { fechaLarga } from "../../lib/match";
 
 interface Props {
   match: Match;
-  details?: MatchDetails;
   includeDate?: boolean;
 }
-const { match, details, includeDate = false } = Astro.props;
+const { match, includeDate = false } = Astro.props;
 
 const items = [
   ...(includeDate
@@ -16,7 +15,6 @@ const items = [
     : []),
   { icon: "mapPin", label: "Estadio", value: match.venue || "A confirmar", sub: undefined },
   { icon: "trophy", label: "Torneo", value: match.competition, sub: match.round },
-  { icon: "user", label: "Árbitro", value: details?.referee || "A confirmar", sub: undefined },
   { icon: "tv", label: "TV", value: match.channel || "A confirmar", sub: undefined },
 ];
 ---

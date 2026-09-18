@@ -1,0 +1,60 @@
+---
+import type { Match } from "../../types/match";
+import Icon from "./Icon.astro";
+import { rivalOf, marcador, diaMes } from "../../lib/match";
+
+interface Props {
+  match: Match;
+}
+const { match } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const finished = match.status === "finished";
+const rival = rivalOf(match);
+const { day, month } = diaMes(match.date);
+
+const badge = finished ? "Final" : match.status === "next" ? "Próximo" : "Previsto";
+const badgeClass = finished
+  ? "border-border text-text-secondary bg-[rgba(167,182,200,0.03)]"
+  : match.status === "next"
+    ? "border-accent bg-accent text-bg"
+    : "border-[rgba(95,168,211,0.72)] text-accent-secondary bg-[rgba(95,168,211,0.05)]";
+---
+
+<a
+  href={`${base}partidos/${match.slug}`}
+  class="group block rounded-lg border border-border bg-surface shadow-card px-3 py-3 transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-accent-secondary hover:shadow-hover"
+>
+  <div class="grid grid-cols-[56px_minmax(0,1fr)_auto] gap-3 items-center">
+    <div class="flex flex-col justify-center self-stretch border-r border-border pr-3 min-w-0">
+      <span class="text-[18px] leading-[1.05] font-semibold text-text-primary">{day}</span>
+      <span class="mt-[2px] text-[12px] leading-[1.45] text-text-secondary">{month}</span>
+    </div>
+
+    <div class="min-w-0">
+      <p class="text-[15px] leading-[1.25] font-semibold text-text-primary truncate">
+        {finished ? marcador(match) : `Boca vs ${rival}`}
+      </p>
+      <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">
+        {match.competition}
+      </p>
+      {match.round && (
+        <p class="text-[12px] leading-[1.45] text-text-muted truncate">{match.round}</p>
+      )}
+    </div>
+
+    <div class="justify-self-end flex items-center gap-2">
+      <span
+        class:list={[
+          "inline-flex h-7 items-center justify-center rounded-[4px] border px-[10px] text-[10px] font-semibold uppercase tracking-[0.03em]",
+          badgeClass,
+        ]}
+      >
+        {badge}
+      </span>
+      <span class="text-text-muted transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px] group-hover:text-accent-secondary">
+        <Icon name="chevronRight" size={16} />
+      </span>
+    </div>
+  </div>
+</a>

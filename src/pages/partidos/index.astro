@@ -1,14 +1,15 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import MatchListCard from "../../components/match/MatchListCard.astro";
 import type { Match } from "../../types/match";
-import { rivalOf, marcador, fechaLarga, condicion } from "../../lib/match";
 import data from "../../data/matches.json";
 
-const base = import.meta.env.BASE_URL;
 const matches = data.matches as Match[];
-
-const proximos = matches.filter((m) => m.status === "next" || m.status === "scheduled");
-const anteriores = matches.filter((m) => m.status === "finished");
+const proximos = matches.filter((m) => m.status !== "finished");
+const anteriores = matches
+  .filter((m) => m.status === "finished")
+  .slice()
+  .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 ---
 
 <Layout
@@ -27,29 +28,15 @@ const anteriores = matches.filter((m) => m.status === "finished");
 
   {proximos.length > 0 && (
     <section class="mb-8">
-      <h2 class="text-[17px] font-bold tracking-[0.02em] text-text-primary mb-3">Próximos partidos</h2>
+      <h2
+        class="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-text-secondary"
+      >
+        Próximos partidos
+      </h2>
       <ol class="list-none p-0 m-0 flex flex-col gap-3">
         {proximos.map((m) => (
           <li>
-            <a
-              href={`${base}partidos/${m.slug}`}
-              class="group block rounded-lg border border-border bg-surface shadow-card px-4 py-3 transition-all duration-[160ms] hover:-translate-y-px hover:bg-surface-hover hover:border-border-strong"
-            >
-              <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="text-[15px] font-semibold text-text-primary truncate">
-                    Boca vs {rivalOf(m)}
-                  </p>
-                  <p class="mt-1 text-[12px] text-text-secondary truncate">{m.competition}</p>
-                  {m.round && <p class="text-[12px] text-text-muted truncate">{m.round}</p>}
-                  <p class="text-[12px] text-text-muted">{condicion(m)}</p>
-                </div>
-                <div class="text-right shrink-0">
-                  <p class="text-[12px] text-text-secondary">{fechaLarga(m.date)}</p>
-                  {m.time && <p class="text-[12px] text-text-muted">{m.time}</p>}
-                </div>
-              </div>
-            </a>
+            <MatchListCard match={m} />
           </li>
         ))}
       </ol>
@@ -58,23 +45,15 @@ const anteriores = matches.filter((m) => m.status === "finished");
 
   {anteriores.length > 0 && (
     <section>
-      <h2 class="text-[17px] font-bold tracking-[0.02em] text-text-primary mb-3">Resultados</h2>
+      <h2
+        class="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-text-secondary"
+      >
+        Resultados
+      </h2>
       <ol class="list-none p-0 m-0 flex flex-col gap-3">
         {anteriores.map((m) => (
           <li>
-            <a
-              href={`${base}partidos/${m.slug}`}
-              class="group block rounded-lg border border-border bg-surface shadow-card px-4 py-3 transition-all duration-[160ms] hover:-translate-y-px hover:bg-surface-hover hover:border-border-strong"
-            >
-              <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                  <p class="text-[15px] font-semibold text-text-primary truncate">{marcador(m)}</p>
-                  <p class="mt-1 text-[12px] text-text-secondary truncate">{m.competition}</p>
-                  {m.round && <p class="text-[12px] text-text-muted truncate">{m.round}</p>}
-                </div>
-                <p class="text-[12px] text-text-secondary shrink-0">{fechaLarga(m.date)}</p>
-              </div>
-            </a>
+            <MatchListCard match={m} />
           </li>
         ))}
       </ol>

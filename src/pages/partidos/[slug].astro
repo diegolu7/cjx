@@ -69,9 +69,15 @@ const sportsEvent = {
       {finished ? `${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}` : `Boca vs ${rival}`}
     </h1>
 
-    <MatchHero match={match} details={d} />
+    <MatchHero match={match} />
 
-    {previa && <MatchPreview title={previewTitle} text={previa} />}
+    {previa && (
+      <MatchPreview
+        title={previewTitle}
+        text={previa}
+        referee={finished ? d?.referee : undefined}
+      />
+    )}
 
     <MatchKeyFacts facts={d?.facts} h2h={d?.h2h} notes={d?.notes} />
 

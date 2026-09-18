@@ -38,6 +38,28 @@ export function condicion(m: Match): string {
   return m.homeTeam === "Boca" ? "Local" : "Visitante";
 }
 
+const MESES_CORTOS = [
+  "ENE",
+  "FEB",
+  "MAR",
+  "ABR",
+  "MAY",
+  "JUN",
+  "JUL",
+  "AGO",
+  "SEP",
+  "OCT",
+  "NOV",
+  "DIC",
+];
+
+/** "20" / "SEP" a partir de "2026-09-20". */
+export function diaMes(iso: string): { day: string; month: string } {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
+  if (!m) return { day: iso, month: "" };
+  return { day: m[3], month: MESES_CORTOS[Number(m[2]) - 1] ?? "" };
+}
+
 /** Marcador desde la perspectiva de Boca: "Boca 2 - 1 Rival". */
 export function marcador(m: Match): string {
   const b = bocaGoles(m);

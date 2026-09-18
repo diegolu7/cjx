@@ -2,8 +2,9 @@
 interface Props {
   title: string;
   text: string;
+  referee?: string;
 }
-const { title, text } = Astro.props;
+const { title, text, referee } = Astro.props;
 ---
 
 <section class="mb-6">
@@ -11,4 +12,9 @@ const { title, text } = Astro.props;
   {text.split(/\n+/).map((p) => (
     <p class="text-[14px] leading-[1.7] text-text-secondary mt-2">{p}</p>
   ))}
+  {referee && (
+    <p class="text-[14px] leading-[1.7] text-text-secondary mt-2">
+      Dirigido por el árbitro {referee}.
+    </p>
+  )}
 </section>
