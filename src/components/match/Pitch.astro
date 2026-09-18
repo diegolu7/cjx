@@ -10,25 +10,44 @@ interface Props {
 }
 const { local, visitor } = Astro.props;
 
-function dotClass(team: Team): string {
-  // Boca: azul y oro (tokens inspirados, no institucionales). Rival: blanco.
-  return team.name === "Boca"
-    ? "border-2 border-accent bg-accent-secondary"
-    : "border border-white/70 bg-white/10";
-}
+const isBoca = (t: Team) => t.name === "Boca";
 ---
 
 <div class="relative overflow-hidden rounded-lg border border-border bg-[#0c2117]">
-  <!-- Líneas mobile (cancha vertical) -->
+  <!-- ==== Líneas MOBILE (cancha vertical) ==== -->
   <span class="pointer-events-none absolute inset-x-0 top-1/2 h-px bg-white/10 lg:hidden"></span>
   <span
     class="pointer-events-none absolute left-1/2 top-1/2 h-20 w-20 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 lg:hidden"
   ></span>
+  <span
+    class="pointer-events-none absolute left-1/2 top-0 h-14 w-36 -translate-x-1/2 border border-white/10 border-t-0 lg:hidden"
+  ></span>
+  <span
+    class="pointer-events-none absolute left-1/2 top-0 h-6 w-20 -translate-x-1/2 border border-white/10 border-t-0 lg:hidden"
+  ></span>
+  <span
+    class="pointer-events-none absolute bottom-0 left-1/2 h-14 w-36 -translate-x-1/2 border border-white/10 border-b-0 lg:hidden"
+  ></span>
+  <span
+    class="pointer-events-none absolute bottom-0 left-1/2 h-6 w-20 -translate-x-1/2 border border-white/10 border-b-0 lg:hidden"
+  ></span>
 
-  <!-- Líneas desktop (cancha horizontal) -->
+  <!-- ==== Líneas DESKTOP (cancha horizontal) ==== -->
   <span class="pointer-events-none absolute inset-y-0 left-1/2 hidden w-px bg-white/10 lg:block"></span>
   <span
     class="pointer-events-none absolute left-1/2 top-1/2 hidden h-24 w-24 -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10 lg:block"
+  ></span>
+  <span
+    class="pointer-events-none absolute left-0 top-1/2 hidden h-36 w-14 -translate-y-1/2 border border-white/10 border-l-0 lg:block"
+  ></span>
+  <span
+    class="pointer-events-none absolute left-0 top-1/2 hidden h-20 w-6 -translate-y-1/2 border border-white/10 border-l-0 lg:block"
+  ></span>
+  <span
+    class="pointer-events-none absolute right-0 top-1/2 hidden h-36 w-14 -translate-y-1/2 border border-white/10 border-r-0 lg:block"
+  ></span>
+  <span
+    class="pointer-events-none absolute right-0 top-1/2 hidden h-20 w-6 -translate-y-1/2 border border-white/10 border-r-0 lg:block"
   ></span>
 
   <div class="relative flex min-h-[440px] flex-col lg:min-h-[340px] lg:flex-row">
@@ -38,7 +57,16 @@ function dotClass(team: Team): string {
         <div class="flex flex-1 flex-row items-center justify-around gap-1 lg:flex-col">
           {line.players.map((p) => (
             <div class="flex w-12 min-w-0 flex-col items-center lg:w-14">
-              <span class:list={["h-5 w-5 shrink-0 rounded-full lg:h-6 lg:w-6", dotClass(local)]}></span>
+              <span
+                class:list={[
+                  "relative h-5 w-5 shrink-0 overflow-hidden rounded-full lg:h-6 lg:w-6",
+                  isBoca(local) ? "border border-accent bg-accent-secondary" : "border border-white/70 bg-white/10",
+                ]}
+              >
+                {isBoca(local) && (
+                  <span class="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 bg-accent"></span>
+                )}
+              </span>
               <span class="mt-0.5 w-full truncate text-center text-[9px] leading-tight text-text-primary lg:text-[10px]">
                 {p}
               </span>
@@ -54,7 +82,16 @@ function dotClass(team: Team): string {
         <div class="flex flex-1 flex-row items-center justify-around gap-1 lg:flex-col">
           {line.players.map((p) => (
             <div class="flex w-12 min-w-0 flex-col items-center lg:w-14">
-              <span class:list={["h-5 w-5 shrink-0 rounded-full lg:h-6 lg:w-6", dotClass(visitor)]}></span>
+              <span
+                class:list={[
+                  "relative h-5 w-5 shrink-0 overflow-hidden rounded-full lg:h-6 lg:w-6",
+                  isBoca(visitor) ? "border border-accent bg-accent-secondary" : "border border-white/70 bg-white/10",
+                ]}
+              >
+                {isBoca(visitor) && (
+                  <span class="absolute inset-x-0 top-1/2 h-[3px] -translate-y-1/2 bg-accent"></span>
+                )}
+              </span>
               <span class="mt-0.5 w-full truncate text-center text-[9px] leading-tight text-text-primary lg:text-[10px]">
                 {p}
               </span>

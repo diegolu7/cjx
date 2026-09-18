@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import Notifications from "../../components/Notifications.astro";
 import MatchHero from "../../components/match/MatchHero.astro";
-import MatchEssentials from "../../components/match/MatchEssentials.astro";
 import MatchPreview from "../../components/match/MatchPreview.astro";
 import MatchKeyFacts from "../../components/match/MatchKeyFacts.astro";
 import RecentForm from "../../components/match/RecentForm.astro";
@@ -71,17 +70,13 @@ const sportsEvent = {
       {finished ? `${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}` : `Boca vs ${rival}`}
     </h1>
 
-    <MatchHero match={match} />
+    <MatchHero match={match} details={d} />
 
     {upcoming && (
       <div class="mt-4">
         <Notifications compact />
       </div>
     )}
-
-    <div class="mt-6">
-      <MatchEssentials match={match} details={d} />
-    </div>
 
     {previa && <MatchPreview title={previewTitle} text={previa} />}
 

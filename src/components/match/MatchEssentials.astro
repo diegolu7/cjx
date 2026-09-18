@@ -1,14 +1,19 @@
 ---
 import type { Match, MatchDetails } from "../../types/match";
 import Icon from "./Icon.astro";
+import { fechaLarga } from "../../lib/match";
 
 interface Props {
   match: Match;
   details?: MatchDetails;
+  includeDate?: boolean;
 }
-const { match, details } = Astro.props;
+const { match, details, includeDate = false } = Astro.props;
 
 const items = [
+  ...(includeDate
+    ? [{ icon: "calendar", label: "Fecha", value: fechaLarga(match.date), sub: undefined }]
+    : []),
   { icon: "mapPin", label: "Estadio", value: match.venue || "A confirmar", sub: undefined },
   { icon: "trophy", label: "Torneo", value: match.competition, sub: match.round },
   { icon: "user", label: "Árbitro", value: details?.referee || "A confirmar", sub: undefined },
@@ -16,20 +21,17 @@ const items = [
 ];
 ---
 
-<section class="mb-6">
-  <h2 class="sr-only">Datos del partido</h2>
-  <div class="grid grid-cols-2 gap-x-4 gap-y-4 rounded-lg border border-border bg-surface shadow-card px-4 py-4">
-    {items.map((it) => (
-      <div class="flex items-start gap-2.5">
-        <span class="mt-[2px] text-accent-secondary">
-          <Icon name={it.icon} size={18} />
-        </span>
-        <div class="min-w-0">
-          <p class="text-[11px] uppercase tracking-[0.04em] text-text-muted">{it.label}</p>
-          <p class="text-[13px] leading-[1.4] text-text-primary">{it.value}</p>
-          {it.sub && <p class="text-[12px] leading-[1.4] text-text-secondary">{it.sub}</p>}
-        </div>
+<div class="grid grid-cols-2 gap-x-4 gap-y-3 lg:grid-cols-4">
+  {items.map((it) => (
+    <div class="flex items-start gap-2.5">
+      <span class="mt-[2px] text-accent-secondary">
+        <Icon name={it.icon} size={16} />
+      </span>
+      <div class="min-w-0">
+        <p class="text-[11px] uppercase tracking-[0.04em] text-text-muted">{it.label}</p>
+        <p class="text-[13px] leading-[1.4] text-text-primary">{it.value}</p>
+        {it.sub && <p class="text-[12px] leading-[1.4] text-text-secondary">{it.sub}</p>}
       </div>
-    ))}
-  </div>
-</section>
+    </div>
+  ))}
+</div>
