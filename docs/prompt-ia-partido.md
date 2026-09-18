@@ -78,3 +78,14 @@ DATOS: Racing no le gana a Boca desde 2023; Es el 5.º cruce del año; Boca gan�
 4. Revisá que no haya datos inventados antes de guardar.
 
 > Recordá: la IA puede equivocarse. Verificá nombres y hechos antes de publicar.
+
+---
+
+## Notas según el estado del partido
+
+- **Próximo:** lo que genera el prompt va a la sección **"Previa del partido"**.
+- **Finalizado:** el mismo texto se muestra como **"Resumen del partido"** (mismo campo
+  `Preview`). Ajustá el prompt para que redacte en pasado si el partido ya se jugó, por ej.:
+  *"Escribí un resumen de lo que pasó, no una previa."*
+- **`DatosCuriosos` + `Antecedentes` + `Notas`** se muestran juntos en **"Claves del
+  partido"**. Evitá repetir en `Notas` lo que ya está en `Antecedentes` o en el `Preview`.

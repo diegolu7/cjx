@@ -1,15 +1,21 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import Notifications from "../../components/Notifications.astro";
+import MatchHero from "../../components/match/MatchHero.astro";
+import MatchEssentials from "../../components/match/MatchEssentials.astro";
+import MatchPreview from "../../components/match/MatchPreview.astro";
+import MatchKeyFacts from "../../components/match/MatchKeyFacts.astro";
+import RecentForm from "../../components/match/RecentForm.astro";
+import Lineups from "../../components/match/Lineups.astro";
+import MatchEvents from "../../components/match/MatchEvents.astro";
+import TechnicalDetails from "../../components/match/TechnicalDetails.astro";
 import type { Match } from "../../types/match";
 import {
   rivalOf,
-  marcador,
-  fechaLarga,
-  condicion,
   titleFor,
   descriptionFor,
   autoPrevia,
+  recentResults,
 } from "../../lib/match";
 import data from "../../data/matches.json";
 
@@ -18,30 +24,27 @@ export async function getStaticPaths() {
   return matches.map((m) => ({ params: { slug: m.slug }, props: { match: m } }));
 }
 
-interface Props {
-  match: Match;
-}
-const { match } = Astro.props;
+const { match } = Astro.props as { match: Match };
 const base = import.meta.env.BASE_URL;
 
+const allMatches = data.matches as Match[];
 const rival = rivalOf(match);
 const d = match.details;
-const noindex = !match.indexable;
 const finished = match.status === "finished";
 const upcoming = !finished;
+const noindex = !match.indexable;
 
-const eventos = d?.events ?? [];
-const formaciones = Boolean(d?.startersBoca?.length || d?.startersRival?.length);
 const previa = d?.preview ?? (upcoming ? autoPrevia(match) : undefined);
+const previewTitle = finished ? "Resumen del partido" : "Previa del partido";
+const form = recentResults(allMatches, 3);
+const eventos = d?.events ?? [];
 
 const sportsEvent = {
   "@context": "https://schema.org",
   "@type": "SportsEvent",
   name: `Boca vs ${rival}`,
   startDate: `${match.date}T${match.time ?? "00:00"}:00-03:00`,
-  eventStatus: finished
-    ? "https://schema.org/EventScheduled"
-    : "https://schema.org/EventScheduled",
+  eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   sport: "Soccer",
   url: new URL(Astro.url.pathname, Astro.site).href,
@@ -54,22 +57,6 @@ const sportsEvent = {
   ],
   organizer: { "@type": "Organization", name: match.competition },
 };
-
-const fichaLabels: [string, string | undefined][] = [
-  ["Fecha", fechaLarga(match.date)],
-  ["Hora", match.time ? `${match.time} hs` : undefined],
-  ["Condición", condicion(match)],
-  ["Torneo", match.competition],
-  ["Fase", match.round],
-  ["Estadio", match.venue],
-  ["Canal", match.channel],
-  ["Árbitro", d?.referee],
-];
-const ficha = fichaLabels.filter(([, v]) => v);
-
-function formLabel(x: string): string {
-  return x === "W" ? "G" : x === "L" ? "P" : "E";
-}
 ---
 
 <Layout title={titleFor(match)} description={descriptionFor(match)} noindex={noindex}>
@@ -80,187 +67,33 @@ function formLabel(x: string): string {
   </nav>
 
   <article>
-    <header class="mb-5">
-      <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
-        {finished ? marcador(match) : `Boca vs ${rival}`}
-      </h1>
-      <p class="mt-2 text-[13px] text-text-secondary">
-        {match.competition}{match.round ? ` · ${match.round}` : ""} · {fechaLarga(match.date)}
-        {match.time ? ` · ${match.time} hs` : ""}
-      </p>
+    <h1 class="sr-only">
+      {finished ? `${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}` : `Boca vs ${rival}`}
+    </h1>
 
-      {match.aggregate && (
-        <p class="mt-2 text-[13px] font-semibold text-accent-secondary">
-          Global: Boca {match.aggregate.bocaScore} - {match.aggregate.rivalScore} {rival}
-          {match.aggregate.penaltyBoca !== undefined &&
-            match.aggregate.penaltyRival !== undefined &&
-            ` · Penales ${match.aggregate.penaltyBoca}-${match.aggregate.penaltyRival}`}
-        </p>
-      )}
-    </header>
-
-    <!-- Ficha -->
-    {ficha.length > 0 && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Ficha del partido</h2>
-        <dl class="rounded-lg border border-border bg-surface shadow-card px-4 py-3 grid grid-cols-2 gap-x-4 gap-y-2">
-          {ficha.map(([k, v]) => (
-            <div>
-              <dt class="text-[11px] uppercase tracking-[0.04em] text-text-muted">{k}</dt>
-              <dd class="text-[13px] text-text-primary">{v}</dd>
-            </div>
-          ))}
-        </dl>
-      </section>
-    )}
-
-    <!-- Forma reciente -->
-    {match.bocaForm && match.bocaForm.length > 0 && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Forma reciente de Boca</h2>
-        <p class="flex items-center gap-2">
-          {match.bocaForm.map((x) => (
-            <span
-              class:list={[
-                "inline-flex h-7 w-7 items-center justify-center rounded-[4px] text-[12px] font-semibold",
-                x === "W"
-                  ? "bg-accent text-bg"
-                  : x === "L"
-                    ? "border border-border-strong text-text-secondary"
-                    : "border border-border-strong text-text-secondary",
-              ]}
-              title={x === "W" ? "Ganó" : x === "L" ? "Perdió" : "Empató"}
-            >
-              {formLabel(x)}
-            </span>
-          ))}
-          <span class="text-[11px] text-text-muted ml-1">últimos {match.bocaForm.length}</span>
-        </p>
-      </section>
-    )}
-
-    <!-- Previa (manual o automática) -->
-    {previa && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Previa</h2>
-        {previa.split(/\n+/).map((p) => (
-          <p class="text-[14px] leading-[1.7] text-text-secondary mt-2">{p}</p>
-        ))}
-      </section>
-    )}
-
-    <!-- Datos curiosos -->
-    {d?.facts && d.facts.length > 0 && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Datos curiosos</h2>
-        <ul class="list-disc pl-5">
-          {d.facts.map((f) => (
-            <li class="text-[14px] leading-[1.7] text-text-secondary mt-1">{f}</li>
-          ))}
-        </ul>
-      </section>
-    )}
-
-    <!-- Formaciones -->
-    {formaciones && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Formaciones</h2>
-        <div class="grid gap-4 lg:grid-cols-2">
-          <div class="rounded-lg border border-border bg-surface shadow-card px-4 py-3">
-            <p class="text-[13px] font-semibold text-text-primary">
-              Boca {d?.formationBoca ? `· ${d.formationBoca}` : ""}
-            </p>
-            {d?.startersBoca && d.startersBoca.length > 0 && (
-              <p class="mt-2 text-[13px] leading-[1.7] text-text-secondary">
-                {d.startersBoca.join(" · ")}
-              </p>
-            )}
-            {d?.subsBoca && d.subsBoca.length > 0 && (
-              <p class="mt-2 text-[12px] leading-[1.6] text-text-muted">
-                <span class="uppercase tracking-[0.04em]">Suplentes:</span> {d.subsBoca.join(" · ")}
-              </p>
-            )}
-          </div>
-          <div class="rounded-lg border border-border bg-surface shadow-card px-4 py-3">
-            <p class="text-[13px] font-semibold text-text-primary">
-              {rival} {d?.formationRival ? `· ${d.formationRival}` : ""}
-            </p>
-            {d?.startersRival && d.startersRival.length > 0 && (
-              <p class="mt-2 text-[13px] leading-[1.7] text-text-secondary">
-                {d.startersRival.join(" · ")}
-              </p>
-            )}
-            {d?.subsRival && d.subsRival.length > 0 && (
-              <p class="mt-2 text-[12px] leading-[1.6] text-text-muted">
-                <span class="uppercase tracking-[0.04em]">Suplentes:</span> {d.subsRival.join(" · ")}
-              </p>
-            )}
-          </div>
-        </div>
-      </section>
-    )}
-
-    {!formaciones && upcoming && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Formaciones</h2>
-        <p class="text-[13px] leading-[1.6] text-text-muted">
-          A confirmar. Se publican cerca del inicio del partido.
-        </p>
-      </section>
-    )}
-
-    <!-- Eventos -->
-    {eventos.length > 0 && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Eventos</h2>
-        <ol class="list-none p-0 m-0 rounded-lg border border-border bg-surface shadow-card divide-y divide-border">
-          {eventos.map((e) => (
-            <li class="flex items-baseline gap-3 px-4 py-2">
-              <span class="w-12 shrink-0 text-[12px] font-semibold text-accent-secondary">
-                {e.minute}
-              </span>
-              <span class="text-[13px] text-text-primary">
-                {e.type} · {e.team === "Boca" ? "Boca" : rival} · {e.player}
-                {e.detail ? ` (${e.detail})` : ""}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
-    )}
-
-    {eventos.length === 0 && upcoming && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Eventos</h2>
-        <p class="text-[13px] leading-[1.6] text-text-muted">
-          A confirmar. Se publican cuando empieza el partido.
-        </p>
-      </section>
-    )}
-
-    <!-- Antecedentes -->
-    {d?.h2h && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Antecedentes</h2>
-        <p class="text-[14px] leading-[1.7] text-text-secondary">{d.h2h}</p>
-      </section>
-    )}
-
-    <!-- Notas -->
-    {d?.notes && (
-      <section class="mb-6">
-        <h2 class="text-[15px] font-bold text-text-primary mb-2">Notas</h2>
-        {d.notes.split(/\n+/).map((p) => (
-          <p class="text-[14px] leading-[1.7] text-text-secondary mt-2">{p}</p>
-        ))}
-      </section>
-    )}
+    <MatchHero match={match} />
 
     {upcoming && (
-      <section class="mb-6">
+      <div class="mt-4">
         <Notifications compact />
-      </section>
+      </div>
     )}
+
+    <div class="mt-6">
+      <MatchEssentials match={match} details={d} />
+    </div>
+
+    {previa && <MatchPreview title={previewTitle} text={previa} />}
+
+    <MatchKeyFacts facts={d?.facts} h2h={d?.h2h} notes={d?.notes} />
+
+    <RecentForm results={form} />
+
+    <Lineups match={match} details={d} upcoming={upcoming} />
+
+    {finished && eventos.length > 0 && <MatchEvents events={eventos} rival={rival} />}
+
+    {finished && <TechnicalDetails match={match} details={d} />}
 
     {!d && finished && (
       <p class="text-[13px] leading-[1.6] text-text-muted border border-border bg-surface rounded-md px-4 py-3">
@@ -274,7 +107,7 @@ function formLabel(x: string): string {
         href={`${base}partidos`}
         class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
       >
-        ← Ver todos los partidos
+        ← Volver a todos los partidos
       </a>
     </p>
   </article>

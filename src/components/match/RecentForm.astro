@@ -1,0 +1,33 @@
+---
+interface Props {
+  results: { result: string; text: string }[];
+}
+const { results } = Astro.props;
+const label: Record<string, string> = { G: "Ganó", E: "Empató", P: "Perdió" };
+---
+
+{results.length > 0 && (
+  <section class="mb-6">
+    <h2 class="text-[15px] font-bold text-text-primary mb-2">Forma reciente de Boca</h2>
+    <ul class="list-none p-0 m-0 flex flex-col gap-2">
+      {results.map((r) => (
+        <li class="flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2">
+          <span
+            class:list={[
+              "inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-[4px] text-[12px] font-bold",
+              r.result === "G"
+                ? "bg-accent text-bg"
+                : r.result === "E"
+                  ? "border border-accent-secondary text-accent-secondary"
+                  : "border border-[rgba(201,112,112,0.5)] text-[#c97070]",
+            ]}
+          >
+            {r.result}
+          </span>
+          <span class="min-w-0 flex-1 text-[13px] text-text-primary truncate">{r.text}</span>
+          <span class="shrink-0 text-[11px] text-text-muted">{label[r.result]}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+)}

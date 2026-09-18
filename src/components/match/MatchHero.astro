@@ -1,0 +1,111 @@
+---
+import type { Match } from "../../types/match";
+import Icon from "./Icon.astro";
+import {
+  rivalOf,
+  diaSemana,
+  fechaLarga,
+  countdownText,
+  bocaAdvances,
+} from "../../lib/match";
+
+interface Props {
+  match: Match;
+}
+const { match } = Astro.props;
+
+const rival = rivalOf(match);
+const finished = match.status === "finished";
+const countdown = countdownText(match);
+const advances = bocaAdvances(match);
+const agg = match.aggregate;
+
+const badge = finished ? "Final" : match.status === "next" ? "Próximo" : "Previsto";
+const badgeClass = finished
+  ? "border-border text-text-secondary"
+  : match.status === "next"
+    ? "border-accent bg-accent text-bg"
+    : "border-accent-secondary text-accent-secondary";
+---
+
+{finished ? (
+  <article class="rounded-lg border border-border bg-surface shadow-card px-4 py-5">
+    <div class="flex items-center justify-between gap-3">
+      <span class:list={["inline-flex h-7 items-center rounded-[4px] border px-2 text-[10px] font-semibold uppercase tracking-[0.03em]", badgeClass]}>
+        {badge}
+      </span>
+    </div>
+
+    <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <span class="text-right text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
+        {match.homeTeam}
+      </span>
+      <span class="text-[30px] lg:text-[36px] font-bold leading-none text-text-primary">
+        {match.homeScore} — {match.awayScore}
+      </span>
+      <span class="text-left text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
+        {match.awayTeam}
+      </span>
+    </div>
+
+    {agg && (
+      <p class="mt-3 text-center text-[13px] font-semibold text-accent-secondary">
+        Global: Boca {agg.bocaScore} - {agg.rivalScore} {rival}
+        {agg.penaltyBoca !== undefined &&
+          agg.penaltyRival !== undefined &&
+          ` · Penales ${agg.penaltyBoca}-${agg.penaltyRival}`}
+      </p>
+    )}
+
+    {advances && (
+      <p class="mt-2 flex items-center justify-center gap-1.5 text-center text-[14px] font-semibold text-accent-strong">
+        <Icon name="check" size={16} />
+        Boca clasificó a la siguiente fase
+      </p>
+    )}
+
+    <div class="mt-3 text-center text-[12px] leading-[1.6] text-text-secondary">
+      <p>{match.competition}{match.round ? ` · ${match.round}` : ""}</p>
+      <p class="capitalize">
+        {fechaLarga(match.date)}{match.venue ? ` · ${match.venue}` : ""}
+      </p>
+    </div>
+  </article>
+) : (
+  <article class="rounded-lg border-2 border-accent bg-gradient-to-br from-surface to-surface-elevated shadow-featured px-4 py-5">
+    <div class="flex items-center justify-between gap-3">
+      <span class:list={["inline-flex h-7 items-center rounded-[4px] border px-2 text-[10px] font-semibold uppercase tracking-[0.03em]", badgeClass]}>
+        {badge}
+      </span>
+      {countdown && <span class="text-[12px] font-semibold text-accent-secondary">{countdown}</span>}
+    </div>
+
+    <div class="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+      <span class="text-right text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
+        Boca
+      </span>
+      <span class="text-[13px] uppercase tracking-[0.06em] text-text-muted">vs</span>
+      <span class="text-left text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
+        {rival}
+      </span>
+    </div>
+
+    <div class="mt-5 text-center">
+      <p class="text-[12px] uppercase tracking-[0.06em] text-text-secondary capitalize">
+        {diaSemana(match.date)} {fechaLarga(match.date)}
+      </p>
+      {match.time ? (
+        <p class="mt-1 text-[36px] lg:text-[42px] font-bold leading-none text-accent-strong">
+          {match.time}
+        </p>
+      ) : (
+        <p class="mt-1 text-[15px] text-text-secondary">Horario a confirmar</p>
+      )}
+    </div>
+
+    <div class="mt-4 text-center text-[13px] leading-[1.6] text-text-secondary">
+      <p>{match.competition}{match.round ? ` · ${match.round}` : ""}</p>
+      {match.venue && <p class="mt-0.5">{match.venue}</p>}
+    </div>
+  </article>
+)}

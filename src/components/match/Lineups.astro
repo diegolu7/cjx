@@ -1,0 +1,81 @@
+---
+import type { Match, MatchDetails } from "../../types/match";
+import { splitByFormation, rivalOf } from "../../lib/match";
+
+interface Props {
+  match: Match;
+  details?: MatchDetails;
+  upcoming: boolean;
+}
+const { match, details, upcoming } = Astro.props;
+
+const rival = rivalOf(match);
+const available = (details?.startersBoca?.length ?? 0) > 0 || (details?.startersRival?.length ?? 0) > 0;
+
+const teams = [
+  {
+    name: "Boca",
+    formation: details?.formationBoca,
+    lines: splitByFormation(details?.formationBoca, details?.startersBoca ?? []),
+    subs: details?.subsBoca ?? [],
+  },
+  {
+    name: rival,
+    formation: details?.formationRival,
+    lines: splitByFormation(details?.formationRival, details?.startersRival ?? []),
+    subs: details?.subsRival ?? [],
+  },
+];
+---
+
+<section class="mb-6">
+  <h2 class="text-[15px] font-bold text-text-primary mb-2">
+    Formaciones{upcoming && available ? " (probable)" : ""}
+  </h2>
+
+  {!available ? (
+    <div class="rounded-lg border border-border bg-surface shadow-card px-4 py-4">
+      <p class="text-[13px] leading-[1.6] text-text-secondary">
+        Se publicarán cerca del inicio del partido.
+      </p>
+      {upcoming && (
+        <p class="mt-1 text-[12px] text-text-muted">
+          Te avisamos por notificación cuando estén confirmadas.
+        </p>
+      )}
+    </div>
+  ) : (
+    <>
+      {upcoming && (
+        <p class="mb-3 text-[11px] text-text-muted">
+          No oficial · puede variar hasta la confirmación.
+        </p>
+      )}
+      <div class="grid gap-4 lg:grid-cols-2">
+        {teams.map((t) => (
+          <div class="rounded-lg border border-border bg-surface shadow-card px-4 py-3">
+            <p class="text-[13px] font-semibold text-text-primary">
+              {t.name}{t.formation ? ` · ${t.formation}` : ""}
+            </p>
+            <div class="mt-2 flex flex-col gap-2.5">
+              {t.lines.map((line) => (
+                <div>
+                  <p class="text-[11px] uppercase tracking-[0.04em] text-text-muted">{line.label}</p>
+                  <p class="text-[13px] leading-[1.6] text-text-secondary">{line.players.join(" · ")}</p>
+                </div>
+              ))}
+            </div>
+            {t.subs.length > 0 && (
+              <details class="mt-3">
+                <summary class="cursor-pointer text-[12px] text-text-muted">
+                  Suplentes ({t.subs.length})
+                </summary>
+                <p class="mt-1 text-[12px] leading-[1.6] text-text-muted">{t.subs.join(" · ")}</p>
+              </details>
+            )}
+          </div>
+        ))}
+      </div>
+    </>
+  )}
+</section>

@@ -1,0 +1,36 @@
+---
+import type { Match, MatchDetails } from "../../types/match";
+import { fechaLarga } from "../../lib/match";
+
+interface Props {
+  match: Match;
+  details?: MatchDetails;
+}
+const { match, details } = Astro.props;
+
+const rows: [string, string | undefined][] = [
+  ["Fecha", `${fechaLarga(match.date)}${match.time ? ` · ${match.time} hs` : ""}`],
+  ["Estadio", match.venue || "A confirmar"],
+  ["Torneo", match.competition],
+  ["Fase", match.round],
+  ["Árbitro", details?.referee || "A confirmar"],
+  ["TV", match.channel || "A confirmar"],
+];
+const ficha = rows.filter(([, v]) => v);
+---
+
+<section class="mb-6">
+  <details class="rounded-lg border border-border bg-surface shadow-card">
+    <summary class="cursor-pointer px-4 py-3 text-[13px] font-semibold text-text-primary">
+      Ver ficha técnica
+    </summary>
+    <dl class="px-4 pb-4 grid grid-cols-2 gap-x-4 gap-y-2">
+      {ficha.map(([k, v]) => (
+        <div>
+          <dt class="text-[11px] uppercase tracking-[0.04em] text-text-muted">{k}</dt>
+          <dd class="text-[13px] text-text-primary">{v}</dd>
+        </div>
+      ))}
+    </dl>
+  </details>
+</section>

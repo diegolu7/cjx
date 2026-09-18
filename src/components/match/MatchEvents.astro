@@ -1,0 +1,58 @@
+---
+import type { MatchEvent } from "../../types/match";
+import Icon from "./Icon.astro";
+
+interface Props {
+  events: MatchEvent[];
+  rival: string;
+}
+const { events, rival } = Astro.props;
+
+function isGoal(type: string): boolean {
+  const t = type.toLowerCase();
+  return t.includes("gol") || t.includes("penal");
+}
+function isSub(type: string): boolean {
+  return type.toLowerCase().includes("cambio");
+}
+function isYellow(type: string): boolean {
+  return type.toLowerCase().includes("amarilla");
+}
+function isCard(type: string): boolean {
+  const t = type.toLowerCase();
+  return t.includes("amarilla") || t.includes("roja");
+}
+---
+
+{events.length > 0 && (
+  <section class="mb-6">
+    <h2 class="text-[15px] font-bold text-text-primary mb-2">Eventos del partido</h2>
+    <ol class="list-none p-0 m-0 rounded-lg border border-border bg-surface shadow-card divide-y divide-border">
+      {events.map((e) => (
+        <li class="flex items-center gap-3 px-4 py-2.5">
+          <span class="w-12 shrink-0 text-[12px] font-semibold text-accent-secondary">{e.minute}</span>
+          <span class="shrink-0">
+            {isCard(e.type) ? (
+              <span
+                class:list={[
+                  "inline-block h-3.5 w-2.5 rounded-[2px]",
+                  isYellow(e.type) ? "bg-[#e0c341]" : "bg-[#d9534f]",
+                ]}
+              />
+            ) : (
+              <span class="text-accent-strong">
+                <Icon name={isGoal(e.type) ? "ball" : isSub(e.type) ? "arrowLeftRight" : "ball"} size={16} />
+              </span>
+            )}
+          </span>
+          <span class="min-w-0 flex-1 text-[13px] text-text-primary">
+            {e.type} · {e.player}{e.detail ? ` (${e.detail})` : ""}
+          </span>
+          <span class="shrink-0 text-[11px] uppercase tracking-[0.04em] text-text-muted">
+            {e.team === "Boca" ? "Boca" : rival}
+          </span>
+        </li>
+      ))}
+    </ol>
+  </section>
+)}

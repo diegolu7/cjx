@@ -1,0 +1,14 @@
+---
+interface Props {
+  title: string;
+  text: string;
+}
+const { title, text } = Astro.props;
+---
+
+<section class="mb-6">
+  <h2 class="text-[15px] font-bold text-text-primary mb-2">{title}</h2>
+  {text.split(/\n+/).map((p) => (
+    <p class="text-[14px] leading-[1.7] text-text-secondary mt-2">{p}</p>
+  ))}
+</section>

@@ -90,13 +90,23 @@ Notas: Boca necesita ganar para avanzar de ronda; en caso de empate, se define p
 
 | Dato | Dónde aparece |
 |---|---|
-| `Preview`, `Notas` | Secciones de texto (contenido único → SEO) |
-| `DatosCuriosos` | Lista de datos |
-| `Arbitro`, `Antecedentes` | Ficha / H2H |
-| Formaciones + titulares/suplentes | Sección de formaciones |
-| `Eventos` | Cronología del partido |
+| `Preview` | **"Previa del partido"** (próximo) o **"Resumen del partido"** (finalizado) |
+| `DatosCuriosos` + `Antecedentes` + `Notas` | Se fusionan en **"Claves del partido"** |
+| `Arbitro` | Datos esenciales (próximo) y Ficha técnica (finalizado) |
+| `FormacionBoca`/`Rival` + titulares | Sección **Formaciones**, agrupada por líneas (Arquero/Defensores/Mediocampistas/Delanteros) |
+| `SuplentesBoca`/`Rival` | Acordeón **Suplentes** dentro de Formaciones |
+| `Eventos` | **Eventos del partido** (solo en finalizados) |
 
-Si una sección no tiene datos (`-`), **no se muestra**.
+**Estados de Formaciones (sin columna extra):**
+- Sin titulares (`-`/vacío) → nota **"Se publicarán cerca del inicio del partido"**.
+- Con titulares y partido **próximo** → se muestran como **"Formación probable"** (aviso "No oficial").
+- Con titulares y partido **finalizado** → se muestran como **Formaciones** (confirmadas).
+
+Si una sección no tiene datos (`-`), **no se muestra**. Los datos que aún no están se
+muestran como **"A confirmar"** (nunca `-`).
+
+> El **countdown** ("Faltan X días"), el **resultado global** y el **"Boca clasificó"** se
+> calculan solos a partir de la ficha y del global; no hay que cargarlos.
 
 ---
 

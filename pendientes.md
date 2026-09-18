@@ -130,6 +130,19 @@
 
 ---
 
+## ✅ Rediseño de la página del partido (UX/UI)
+
+- [x] Componentes en `src/components/match/`: `MatchHero`, `MatchEssentials`,
+  `MatchPreview`, `MatchKeyFacts`, `RecentForm`, `Lineups`, `MatchEvents`, `TechnicalDetails`.
+- [x] **Próximo**: hero con hora grande + countdown + CTA; datos esenciales (con "A confirmar");
+  previa; claves; forma reciente (partidos reales); formaciones (pendiente/probable).
+- [x] **Finalizado**: hero con marcador + global + "Boca clasificó"; resumen; eventos; formaciones
+  (lista por líneas); ficha técnica (acordeón); claves; forma reciente.
+- [x] Íconos **Lucide** (sin emojis); sin secciones vacías (se ocultan).
+- [x] Formaciones "list by lines" usando la formación + orden de titulares.
+
+---
+
 ## ✅ Resultado global (ida/vuelta)
 
 - [x] **GAS `calcularGlobales()`**: suma ida + vuelta y escribe `Global Boca` / `Global Rival`

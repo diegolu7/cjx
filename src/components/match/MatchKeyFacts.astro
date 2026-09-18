@@ -1,0 +1,23 @@
+---
+interface Props {
+  facts?: string[];
+  h2h?: string;
+  notes?: string;
+}
+const { facts = [], h2h, notes } = Astro.props;
+
+const items = [...facts];
+if (h2h) items.push(h2h);
+if (notes) items.push(notes);
+---
+
+{items.length > 0 && (
+  <section class="mb-6">
+    <h2 class="text-[15px] font-bold text-text-primary mb-2">Claves del partido</h2>
+    <ul class="list-disc pl-5">
+      {items.map((t) => (
+        <li class="text-[14px] leading-[1.7] text-text-secondary mt-1">{t}</li>
+      ))}
+    </ul>
+  </section>
+)}

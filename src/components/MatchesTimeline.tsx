@@ -79,6 +79,24 @@ function TvIcon() {
   );
 }
 
+function ChevronRight() {
+  return (
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="m9 18 6-6-6-6" />
+    </svg>
+  );
+}
+
 function teamsLine(m: Match, featured: boolean): string {
   if (featured) {
     return `${m.homeTeam.toUpperCase()} vs ${m.awayTeam.toUpperCase()}`;
@@ -349,14 +367,14 @@ function MatchRow({
       {/* Card (enlaza a la página del partido) */}
       <a
         href={`${BASE}partidos/${match.slug}`}
-        className="block rounded-lg focus-visible:outline-none"
+        className="group block rounded-lg"
         aria-label={`Ver detalle: ${teamsLine(match, featured)}`}
       >
         {featured ? (
           <FeaturedCard match={match} />
         ) : (
-          <article className="group match-card rounded-lg border border-border bg-surface shadow-card px-3 py-[14px] lg:px-[14px] lg:py-[10px] min-h-[78px] lg:min-h-[64px] transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-border-strong hover:shadow-hover">
-            <div className="grid grid-cols-[64px_minmax(0,1fr)_auto] lg:grid-cols-[64px_minmax(0,1fr)_104px] gap-3 items-center">
+          <article className="match-card rounded-lg border border-border bg-surface shadow-card px-3 py-[14px] lg:px-[14px] lg:py-[10px] min-h-[78px] lg:min-h-[64px] transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-accent-secondary hover:shadow-hover">
+            <div className="grid grid-cols-[64px_minmax(0,1fr)_auto] lg:grid-cols-[64px_minmax(0,1fr)_auto] gap-3 items-center">
               <StandardDateBlock match={match} />
               <div className="min-w-0">
                 <p className="text-[15px] leading-[1.25] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis">
@@ -365,8 +383,11 @@ function MatchRow({
                 <p className="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">{meta}</p>
                 <GlobalLine match={match} compact />
               </div>
-              <div className="justify-self-end">
+              <div className="justify-self-end flex items-center gap-2">
                 <StatusBadge status={match.status} />
+                <span className="text-text-muted transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px] group-hover:text-accent-secondary">
+                  <ChevronRight />
+                </span>
               </div>
             </div>
           </article>
@@ -427,15 +448,21 @@ function FeaturedCard({ match }: { match: Match }) {
               </p>
             )}
             {/* Badge PRÓXIMO en mobile (design.md §26) */}
-            <span className="ml-auto lg:hidden">
+            <span className="ml-auto flex items-center gap-2 lg:hidden">
               <StatusBadge status="next" />
+              <span className="text-accent-strong transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px]">
+                <ChevronRight />
+              </span>
             </span>
           </div>
         </div>
 
         {/* Badge PRÓXIMO en desktop */}
-        <div className="hidden lg:flex items-center justify-end">
+        <div className="hidden lg:flex items-center justify-end gap-2">
           <StatusBadge status="next" />
+          <span className="text-accent-strong transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px]">
+            <ChevronRight />
+          </span>
         </div>
       </div>
     </article>
