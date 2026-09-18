@@ -1,6 +1,7 @@
 ---
 import type { Match, MatchDetails } from "../../types/match";
 import { splitByFormation, rivalOf } from "../../lib/match";
+import Notifications from "../Notifications.astro";
 import Pitch from "./Pitch.astro";
 
 interface Props {
@@ -103,5 +104,11 @@ const chip =
         )}
       </div>
     </>
+  )}
+
+  {upcoming && (
+    <div class="mt-3">
+      <Notifications compact />
+    </div>
   )}
 </section>

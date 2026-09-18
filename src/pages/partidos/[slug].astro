@@ -1,6 +1,5 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import Notifications from "../../components/Notifications.astro";
 import MatchHero from "../../components/match/MatchHero.astro";
 import MatchPreview from "../../components/match/MatchPreview.astro";
 import MatchKeyFacts from "../../components/match/MatchKeyFacts.astro";
@@ -71,12 +70,6 @@ const sportsEvent = {
     </h1>
 
     <MatchHero match={match} details={d} />
-
-    {upcoming && (
-      <div class="mt-4">
-        <Notifications compact />
-      </div>
-    )}
 
     {previa && <MatchPreview title={previewTitle} text={previa} />}
 
