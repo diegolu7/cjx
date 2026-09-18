@@ -11,16 +11,24 @@
 > páginas casi todas legales), **sin backlinks** y **212 KB de React** en la isla.
 > On-page, structured data y GEO ya están bien. Para subir hay 4 frentes.
 
-### A) Contenido — páginas por partido ⭐ (mayor impacto sostenido)
-- [ ] Crear ruta `/partidos/{slug}` (ej. `boca-vs-racing-2026-09-20`) con:
-  - ficha (fecha, hora, estadio, canal, cómo ver);
-  - **historial Boca vs rival** (head-to-head) + forma reciente;
-  - texto único por partido (evitar thin content);
-  - resultado + **global** post-partido.
-- [ ] Páginas de **calendario** y **resultados** completos.
-- [ ] **Enlazado interno** home ↔ partido ↔ rival.
-- [ ] Definir fuente de datos extra (historial/forma) — puede reusar la IA de la Etapa 3.
-- [ ] Title/description por partido con long-tail ("Boca vs Racing: fecha, hora y cómo ver").
+### A) Contenido — páginas por partido ⭐ (mayor impacto sostenido) — ✅ implementado
+- [x] Ruta `/partidos/{slug}` (ej. `/partidos/2026-09-20-san-lorenzo`) con: ficha,
+  resultado + **global**, **previa**, **datos curiosos**, **formaciones**, **eventos**,
+  **antecedentes** y **notas** (secciones que se ocultan si están vacías).
+- [x] Listado `/partidos` (próximos + resultados) con enlaces.
+- [x] **Enlazado interno**: home → partido, partido → listado → partido, y "Ver todos".
+- [x] **Forma reciente** de Boca (últimos 3) automática.
+- [x] Title/description por partido (long-tail) + `SportsEvent` por página.
+- [x] **`noindex`** si el score de contenido < 3 (evita thin content).
+- [x] **Previa automática** desde la ficha para partidos próximos (texto único).
+- [x] **"A confirmar"** en Formaciones/Eventos de partidos próximos.
+- [x] **CTA de notificaciones** (compacto, suscripción global h1) en partidos próximos.
+- [x] **Indexación**: finalizados con score ≥ 3; **hasta 2 próximos** con ficha válida.
+- [ ] **Manual:** crear la pestaña **`Detalles`** en el Sheet y pegar su **gid** en
+  `SHEET_DETAILS_GID` (`scripts/lib/parse.mjs`). Ver `docs/cargar-detalle-partido.md`.
+- [ ] **Manual:** cargar el contenido rico (previa, formaciones, eventos, etc.) usando el
+  prompt de `docs/prompt-ia-partido.md`.
+- [ ] **Manual:** re-pegar `docs/auto_actualizar.gs` (ahora retiene **3** finalizados).
 
 ### B) Autoridad / off-page ⭐ (factor #1 para el head term)
 - [ ] **Backlinks**: difundir en X, grupos de WhatsApp/Telegram de Boca, foros, Reddit,
@@ -219,12 +227,15 @@ corridas **09:00 / 12:00 / 17:00 ARG** + previa al partido (~90 min) y posterior
 
 ---
 
-## 🔜 Etapa 4 — Sección por partido (evolutivo)
+## ✅ Etapa 4 — Páginas por partido (implementado)
 
-- [ ] Página/detalle por partido: formaciones de los equipos, datos curiosos,
-  historial entre equipos, etc.
-- [ ] Definir fuente de esos datos (puede reusar la pipeline de IA de la Etapa 3).
-- [ ] SEO: `SportsEvent` por cada partido + navegación interna.
+Ver la sección **"🚨 URGENTE → A) Contenido"** arriba. Resumen:
+- Páginas `/partidos/{slug}` con ficha, resultado/global, previa, datos curiosos,
+  formaciones, eventos, antecedentes, notas y forma reciente.
+- Contenido rico **manual** vía pestaña `Detalles` del Sheet (`docs/cargar-detalle-partido.md`)
+  y prompt de IA (`docs/prompt-ia-partido.md`).
+- SEO: `SportsEvent` por página, title/description long-tail, `noindex` por score.
+- Pendiente manual: crear la pestaña `Detalles` + pegar su `gid`.
 
 ---
 

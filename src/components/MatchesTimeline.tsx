@@ -10,6 +10,8 @@ const MESES = ["ENE", "FEB", "MAR", "ABR", "MAY", "JUN", "JUL", "AGO", "SEP", "O
 
 const cn = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(" ");
 
+const BASE = import.meta.env.BASE_URL;
+
 function parseISO(date: string): { y: number; m: number; d: number } | null {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(date);
   return m ? { y: Number(m[1]), m: Number(m[2]), d: Number(m[3]) } : null;
@@ -344,26 +346,32 @@ function MatchRow({
       {/* Node + línea continua (desktop) */}
       <NodeCell active={featured} isFirst={isFirst} isLast={isLast} />
 
-      {/* Card */}
-      {featured ? (
-        <FeaturedCard match={match} />
-      ) : (
-        <article className="group match-card rounded-lg border border-border bg-surface shadow-card px-3 py-[14px] lg:px-[14px] lg:py-[10px] min-h-[78px] lg:min-h-[64px] transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-border-strong hover:shadow-hover">
-          <div className="grid grid-cols-[64px_minmax(0,1fr)_auto] lg:grid-cols-[64px_minmax(0,1fr)_104px] gap-3 items-center">
-            <StandardDateBlock match={match} />
-            <div className="min-w-0">
-              <p className="text-[15px] leading-[1.25] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis">
-                {teamsLine(match, false)}
-              </p>
-              <p className="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">{meta}</p>
-              <GlobalLine match={match} compact />
+      {/* Card (enlaza a la página del partido) */}
+      <a
+        href={`${BASE}partidos/${match.slug}`}
+        className="block rounded-lg focus-visible:outline-none"
+        aria-label={`Ver detalle: ${teamsLine(match, featured)}`}
+      >
+        {featured ? (
+          <FeaturedCard match={match} />
+        ) : (
+          <article className="group match-card rounded-lg border border-border bg-surface shadow-card px-3 py-[14px] lg:px-[14px] lg:py-[10px] min-h-[78px] lg:min-h-[64px] transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-border-strong hover:shadow-hover">
+            <div className="grid grid-cols-[64px_minmax(0,1fr)_auto] lg:grid-cols-[64px_minmax(0,1fr)_104px] gap-3 items-center">
+              <StandardDateBlock match={match} />
+              <div className="min-w-0">
+                <p className="text-[15px] leading-[1.25] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis">
+                  {teamsLine(match, false)}
+                </p>
+                <p className="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">{meta}</p>
+                <GlobalLine match={match} compact />
+              </div>
+              <div className="justify-self-end">
+                <StatusBadge status={match.status} />
+              </div>
             </div>
-            <div className="justify-self-end">
-              <StatusBadge status={match.status} />
-            </div>
-          </div>
-        </article>
-      )}
+          </article>
+        )}
+      </a>
     </li>
   );
 }

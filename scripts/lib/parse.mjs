@@ -4,8 +4,22 @@
 export const SHEET_ID = "1kqtU0JAyqtQ9NY2Jm-94eXxHQCNMLnc2C9Sd_hM69Xw";
 export const SHEET_GID = "0";
 
+// gid de la pestaña "Detalles" (contenido rico por partido).
+// Ver docs/cargar-detalle-partido.md
+export const SHEET_DETAILS_GID = "1085190956";
+
 export const SHEET_CSV_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_GID}`;
 export const SHEET_CSV_URL_ALIAS = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_GID}`;
+
+export function detailsCsvUrl() {
+  if (!SHEET_DETAILS_GID) return null;
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv&gid=${SHEET_DETAILS_GID}`;
+}
+
+export function detailsCsvUrlAlias() {
+  if (!SHEET_DETAILS_GID) return null;
+  return `https://docs.google.com/spreadsheets/d/${SHEET_ID}/export?format=csv&gid=${SHEET_DETAILS_GID}`;
+}
 
 const COL = {
   estado: "Estado",
@@ -23,6 +37,22 @@ const COL = {
   globalRival: "Global Rival",
   penalesBoca: "Penales Boca",
   penalesRival: "Penales Rival",
+};
+
+const DCOL = {
+  fecha: "Fecha",
+  preview: "Preview",
+  datos: "DatosCuriosos",
+  arbitro: "Arbitro",
+  antecedentes: "Antecedentes",
+  formacionBoca: "FormacionBoca",
+  formacionRival: "FormacionRival",
+  titularesBoca: "TitularesBoca",
+  suplentesBoca: "SuplentesBoca",
+  titularesRival: "TitularesRival",
+  suplentesRival: "SuplentesRival",
+  eventos: "Eventos",
+  notas: "Notas",
 };
 
 const DIAS = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
@@ -90,7 +120,7 @@ export const DEMO_MATCHES = [
     channel: "ESPN",
     status: "scheduled",
   },
-];
+].map((m) => ({ ...m, slug: matchSlug(m) }));
 
 export function parseCSV(text) {
   const rows = [];
@@ -166,6 +196,110 @@ function parseScore(raw) {
   return Number.isFinite(n) ? n : undefined;
 }
 
+export function slugify(s) {
+  return String(s || "")
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function matchSlug(m) {
+  const rival = m.homeTeam === "Boca" ? m.awayTeam : m.homeTeam;
+  return `${m.date}-${slugify(rival)}`;
+}
+
+function cleanText(raw) {
+  const v = String(raw || "").trim();
+  return v && v !== "-" ? v : undefined;
+}
+
+function splitList(raw) {
+  return String(raw || "")
+    .split(";")
+    .map((x) => x.trim())
+    .filter((x) => x && x !== "-");
+}
+
+function parseEvents(raw) {
+  return splitList(raw)
+    .map((item) => {
+      const p = item.split("|").map((x) => x.trim());
+      if (p.length < 4) return null;
+      return {
+        minute: p[0],
+        type: p[1],
+        team: p[2],
+        player: p[3],
+        detail: p[4] || undefined,
+      };
+    })
+    .filter(Boolean);
+}
+
+function computeDetailsScore(d) {
+  let s = 0;
+  if ((d.preview?.length ?? 0) >= 200) s += 2;
+  if ((d.facts?.length ?? 0) >= 1) s += 1;
+  if ((d.startersBoca?.length ?? 0) > 0 && (d.startersRival?.length ?? 0) > 0) s += 2;
+  if ((d.events?.length ?? 0) >= 1) s += 1;
+  if ((d.notes?.length ?? 0) >= 200) s += 1;
+  return s;
+}
+
+/** CSV de la pestaña "Detalles" → Map<fechaISO, details>. */
+export function parseDetailsCSV(csvText) {
+  const map = new Map();
+  if (!csvText) return map;
+
+  const rows = parseCSV(csvText);
+  if (rows.length < 2) return map;
+
+  const header = rows[0].map((h) => h.trim().toLowerCase());
+  const idx = {};
+  header.forEach((h, i) => {
+    if (h === DCOL.fecha.toLowerCase()) idx.fecha = i;
+    else if (h === DCOL.preview.toLowerCase()) idx.preview = i;
+    else if (h === DCOL.datos.toLowerCase()) idx.datos = i;
+    else if (h === DCOL.arbitro.toLowerCase()) idx.arbitro = i;
+    else if (h === DCOL.antecedentes.toLowerCase()) idx.antecedentes = i;
+    else if (h === DCOL.formacionBoca.toLowerCase()) idx.formacionBoca = i;
+    else if (h === DCOL.formacionRival.toLowerCase()) idx.formacionRival = i;
+    else if (h === DCOL.titularesBoca.toLowerCase()) idx.titularesBoca = i;
+    else if (h === DCOL.suplentesBoca.toLowerCase()) idx.suplentesBoca = i;
+    else if (h === DCOL.titularesRival.toLowerCase()) idx.titularesRival = i;
+    else if (h === DCOL.suplentesRival.toLowerCase()) idx.suplentesRival = i;
+    else if (h === DCOL.eventos.toLowerCase()) idx.eventos = i;
+    else if (h === DCOL.notas.toLowerCase()) idx.notas = i;
+  });
+
+  if (idx.fecha === undefined) return map;
+
+  for (let r = 1; r < rows.length; r++) {
+    const fecha = normalizeToISO(rows[r][idx.fecha]);
+    if (!fecha) continue;
+
+    const details = {
+      preview: cleanText(rows[r][idx.preview]),
+      facts: splitList(rows[r][idx.datos]),
+      referee: cleanText(rows[r][idx.arbitro]),
+      h2h: cleanText(rows[r][idx.antecedentes]),
+      formationBoca: cleanText(rows[r][idx.formacionBoca]),
+      formationRival: cleanText(rows[r][idx.formacionRival]),
+      startersBoca: splitList(rows[r][idx.titularesBoca]),
+      subsBoca: splitList(rows[r][idx.suplentesBoca]),
+      startersRival: splitList(rows[r][idx.titularesRival]),
+      subsRival: splitList(rows[r][idx.suplentesRival]),
+      events: parseEvents(rows[r][idx.eventos]),
+      notes: cleanText(rows[r][idx.notas]),
+    };
+    details.score = computeDetailsScore(details);
+    map.set(fecha, details);
+  }
+  return map;
+}
+
 function rowToMatch(row, index) {
   const estado = row.estado.trim().toLowerCase();
   const rival = row.rival.trim() || "—";
@@ -193,7 +327,7 @@ function rowToMatch(row, index) {
         }
       : undefined;
 
-  return {
+  const match = {
     id: `sheet-${index}`,
     date: iso || row.fecha.trim(),
     dayLabel: status === "next" ? weekdayLabel(iso) : undefined,
@@ -209,6 +343,8 @@ function rowToMatch(row, index) {
     status,
     aggregate,
   };
+  match.slug = matchSlug(match);
+  return match;
 }
 
 function pickIdx(row, idx) {
@@ -290,8 +426,21 @@ function esVigente(m) {
   return dt.getTime() >= Date.now() - GRACE_MS;
 }
 
-/** CSV → Match[] ordenado y filtrado. */
-export function parseMatches(csvText) {
+/** Forma reciente de Boca (últimos N finalizados): "W" | "D" | "L". */
+export function computeBocaForm(matches, n = 3) {
+  return matches
+    .filter((m) => m.status === "finished" && m.homeScore !== undefined && m.awayScore !== undefined)
+    .sort((a, b) => sortDateAsc(b.date, a.date))
+    .slice(0, n)
+    .map((m) => {
+      const boca = m.homeTeam === "Boca" ? m.homeScore : m.awayScore;
+      const rival = m.homeTeam === "Boca" ? m.awayScore : m.homeScore;
+      return boca > rival ? "W" : boca < rival ? "L" : "D";
+    });
+}
+
+/** CSV → Match[] ordenado y filtrado. `detailsCsvText` es opcional. */
+export function parseMatches(csvText, detailsCsvText) {
   const rows = parseCSV(csvText);
   if (rows.length < 2) return [];
 
@@ -317,6 +466,8 @@ export function parseMatches(csvText) {
   });
 
   if (idx.estado === undefined || idx.rival === undefined) return [];
+
+  const detailsMap = parseDetailsCSV(detailsCsvText);
 
   const matches = [];
   const seen = new Set();
@@ -344,18 +495,40 @@ export function parseMatches(csvText) {
     if (seen.has(key)) continue;
     seen.add(key);
 
-    matches.push(rowToMatch(row, r));
+    const match = rowToMatch(row, r);
+    const det = detailsMap.get(normalizeToISO(match.date));
+    if (det) match.details = det;
+    matches.push(match);
   }
 
   const vigentes = matches.filter(esVigente);
 
-  // Mostrar solo los 2 finalizados más recientes (independiente de la poda del GAS).
-  const MAX_FINISHED = 2;
+  // Forma reciente de Boca (últimos 3 finalizados), para las páginas por partido.
+  const bocaForm = computeBocaForm(vigentes, 3);
+
+  // Mostrar hasta 3 finalizados (acceso a las páginas por partido).
+  const MAX_FINISHED = 3;
   const finished = vigentes
     .filter((m) => m.status === "finished")
     .sort((a, b) => sortDateAsc(b.date, a.date))
     .slice(0, MAX_FINISHED);
   const upcoming = vigentes.filter((m) => m.status !== "finished");
 
-  return ordenarCronologico(keepSingleNext([...finished, ...upcoming]));
+  const result = ordenarCronologico(keepSingleNext([...finished, ...upcoming]));
+
+  // Indexación: finalizados con contenido suficiente; próximos con ficha (hasta 2).
+  const upcomingSorted = result
+    .filter((m) => m.status !== "finished")
+    .slice()
+    .sort((a, b) => sortDateAsc(a.date, b.date));
+  const indexableUpcoming = new Set(upcomingSorted.slice(0, 2).map((m) => m.slug));
+
+  return result.map((m) => ({
+    ...m,
+    bocaForm,
+    indexable:
+      m.status === "finished"
+        ? (m.details?.score ?? 0) >= 3
+        : indexableUpcoming.has(m.slug),
+  }));
 }

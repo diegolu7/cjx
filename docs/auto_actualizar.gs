@@ -24,7 +24,7 @@
  *   - Deduplica por rival + fecha (normalizado).
  *   - calcularGlobales() escribe el resultado global (ida + vuelta) en la fila de la
  *     Vuelta (columnas `Global Boca` / `Global Rival`), así sobrevive a la poda del Ida.
- *   - Mantiene automáticamente solo los 2 Finalizado más recientes (podas el historial viejo).
+ *   - Mantiene automáticamente solo los 3 Finalizado más recientes (podas el historial viejo).
  *   - Dedupe en caliente: limpiarDuplicados() borra filas duplicadas exactas y
  *     actualizarResultadosBoca relee la hoja en cada evento para no duplicar.
  *
@@ -500,7 +500,7 @@ function _tieneResultado(row) {
 /* ------------------------- limpieza de historial ------------------------- */
 
 /**
- * Borra filas Finalizado que NO estén entre las 2 más recientes por fecha.
+ * Borra filas Finalizado que NO estén entre las 3 más recientes por fecha.
  * Nunca toca Próximo / Confirmado / previsto.
  */
 function limpiarHistorial() {
@@ -515,14 +515,14 @@ function limpiarHistorial() {
       if (fecha) finalizados.push({ row: r, fecha: fecha });
     }
   }
-  if (finalizados.length <= 2) return;
+  if (finalizados.length <= 3) return;
 
   finalizados.sort(function (a, b) {
     return a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0;
   });
 
   var aBorrar = finalizados
-    .slice(2) // descarta los 2 más recientes
+    .slice(3) // descarta los 3 más recientes
     .map(function (x) {
       return x.row;
     })

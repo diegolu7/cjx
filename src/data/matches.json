@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-09-16T03:05:38.398Z",
+  "updatedAt": "2026-09-18T18:19:53.123Z",
   "matches": [
     {
-      "id": "sheet-2",
+      "id": "sheet-1",
       "date": "2026-09-11",
       "time": "21:30",
       "homeTeam": "Boca",
@@ -13,10 +13,91 @@
       "round": "Fecha 9",
       "channel": "-",
       "venue": "La Bombonera",
-      "status": "finished"
+      "status": "finished",
+      "slug": "2026-09-11-central-cordoba-sde",
+      "details": {
+        "preview": "Boca superó a Central Córdoba por 3 a 1 en La Bombonera por la Fecha 9 de la Liga Profesional.",
+        "facts": [
+          "Boca mantiene el invicto como local frente al Ferroviario en los últimos enfrentamientos."
+        ],
+        "referee": "Yael Falcón Pérez",
+        "h2h": "Último: Boca 2-0 Central Córdoba",
+        "formationBoca": "4-3-3",
+        "formationRival": "4-4-2",
+        "startersBoca": [
+          "Montero",
+          "Lozano",
+          "Di Lollo",
+          "F. Herrera",
+          "Blanco",
+          "Ascacíbar",
+          "Paredes",
+          "Delgado",
+          "Velasco",
+          "Merentiel",
+          "L. Flores"
+        ],
+        "subsBoca": [
+          "Marchesín",
+          "Lema",
+          "Costa",
+          "Miramón"
+        ],
+        "startersRival": [
+          "Ingolotti",
+          "Torrent",
+          "Valdez",
+          "Goñi",
+          "Rivero",
+          "Soraire",
+          "Kalinski",
+          "Atencio",
+          "Montoya",
+          "Sanabria",
+          "Molina"
+        ],
+        "subsRival": [
+          "Mansilla",
+          "Pillud",
+          "Minissale"
+        ],
+        "events": [
+          {
+            "minute": "15'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Merentiel"
+          },
+          {
+            "minute": "38'",
+            "type": "Gol",
+            "team": "Rival",
+            "player": "Sanabria"
+          },
+          {
+            "minute": "55'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "L. Flores"
+          },
+          {
+            "minute": "82'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Velasco"
+          }
+        ],
+        "notes": "Victoria clave para mantenerse en la pelea de la Liga Profesional.",
+        "score": 4
+      },
+      "bocaForm": [
+        "D",
+        "W"
+      ],
+      "indexable": true
     },
     {
-      "id": "sheet-3",
+      "id": "sheet-2",
       "date": "2026-09-15",
       "time": "21:30",
       "homeTeam": "São Paulo",
@@ -31,31 +112,193 @@
       "aggregate": {
         "bocaScore": 2,
         "rivalScore": 1
-      }
+      },
+      "slug": "2026-09-15-sao-paulo",
+      "details": {
+        "preview": "Boca empató 1-1 en Morumbí ante São Paulo y logró la clasificación a semifinales de la Copa Sudamericana tras ganar 2-1 en el global.",
+        "facts": [
+          "Boca se metió entre los cuatro mejores del certamen continental eliminando al equipo paulista en Brasil."
+        ],
+        "referee": "Esteban Ostojich",
+        "h2h": "Ida: Boca 1-0 São Paulo",
+        "formationBoca": "4-3-3",
+        "formationRival": "4-2-3-1",
+        "startersBoca": [
+          "Montero",
+          "Lozano",
+          "Di Lollo",
+          "F. Herrera",
+          "Blanco",
+          "Ascacíbar",
+          "Paredes",
+          "Delgado",
+          "Velasco",
+          "Merentiel",
+          "L. Flores"
+        ],
+        "subsBoca": [
+          "Marchesín",
+          "Lema",
+          "Costa",
+          "Miramón",
+          "Palacios"
+        ],
+        "startersRival": [
+          "Carlos Coronel",
+          "Rafael Toloi",
+          "Arboleda",
+          "Wendell",
+          "Cauly",
+          "Pablo Maia",
+          "Djhordney",
+          "Lucas Moura",
+          "Luciano",
+          "Calleri",
+          "Ferrairinha"
+        ],
+        "subsRival": [
+          "Jandrei",
+          "Igor Vinícius",
+          "Diego Costa"
+        ],
+        "events": [
+          {
+            "minute": "22'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "L. Flores"
+          },
+          {
+            "minute": "64'",
+            "type": "Gol",
+            "team": "Rival",
+            "player": "Calleri"
+          },
+          {
+            "minute": "88'",
+            "type": "Roja",
+            "team": "Rival",
+            "player": "Arboleda"
+          }
+        ],
+        "notes": "Clasificación a semifinales de la Copa Sudamericana (Global 2-1).",
+        "score": 4
+      },
+      "bocaForm": [
+        "D",
+        "W"
+      ],
+      "indexable": true
     },
     {
-      "id": "sheet-4",
+      "id": "sheet-3",
       "date": "2026-09-20",
-      "time": "21:30",
-      "homeTeam": "Boca",
-      "awayTeam": "Racing",
-      "competition": "Copa Argentina",
-      "round": "Octavos de Final",
-      "channel": "-",
-      "venue": "Por definir",
-      "status": "next"
-    },
-    {
-      "id": "sheet-5",
-      "date": "2026-09-22",
-      "time": "21:30",
+      "time": "14:45",
       "homeTeam": "Boca",
       "awayTeam": "San Lorenzo",
       "competition": "Liga Profesional",
       "round": "Fecha 10",
       "channel": "-",
       "venue": "La Bombonera",
-      "status": "scheduled"
+      "status": "next",
+      "slug": "2026-09-20-san-lorenzo",
+      "details": {
+        "preview": "Boca recibe a San Lorenzo por la Liga Profesional. El Xeneize busca sumar de local para seguir prendido en la pelea del torneo.",
+        "facts": [
+          "San Lorenzo no gana en La Bombonera desde 2022",
+          "Boca ganó 2 de los últimos 3 en casa"
+        ],
+        "referee": "Darío Herrera",
+        "h2h": "Último: Boca 1-0 San Lorenzo (2026)",
+        "formationBoca": "4-3-3",
+        "formationRival": "4-2-3-1",
+        "startersBoca": [
+          "Montero",
+          "Lozano",
+          "Di Lollo",
+          "F. Herrera",
+          "Blanco",
+          "Ascacíbar",
+          "Paredes",
+          "Delgado",
+          "Velasco",
+          "Merentiel",
+          "L. Flores"
+        ],
+        "subsBoca": [
+          "Marchesín",
+          "Lema",
+          "Costa",
+          "Miramón"
+        ],
+        "startersRival": [
+          "Ger",
+          "Rafinha",
+          "Arboleda"
+        ],
+        "subsRival": [
+          "Volpi",
+          "Luciano"
+        ],
+        "events": [
+          {
+            "minute": "12'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Merentiel"
+          },
+          {
+            "minute": "45'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "Pérez"
+          },
+          {
+            "minute": "70'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Merentiel",
+            "detail": "Entra Giménez"
+          }
+        ],
+        "notes": "Boca necesita ganar para seguir en la pelea.",
+        "score": 4
+      },
+      "bocaForm": [
+        "D",
+        "W"
+      ],
+      "indexable": true
+    },
+    {
+      "id": "sheet-4",
+      "date": "2026-09-27",
+      "time": "19:00",
+      "homeTeam": "Boca",
+      "awayTeam": "Racing",
+      "competition": "Copa Argentina",
+      "round": "Octavos de Final",
+      "channel": "DGO",
+      "venue": "Por definir",
+      "status": "scheduled",
+      "slug": "2026-09-27-racing",
+      "details": {
+        "preview": "Racing vs Boca por Copa Argentina.",
+        "facts": [],
+        "formationBoca": "4-3-3",
+        "formationRival": "4-2-3-1",
+        "startersBoca": [],
+        "subsBoca": [],
+        "startersRival": [],
+        "subsRival": [],
+        "events": [],
+        "score": 0
+      },
+      "bocaForm": [
+        "D",
+        "W"
+      ],
+      "indexable": true
     }
   ]
 }

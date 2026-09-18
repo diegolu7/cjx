@@ -144,7 +144,7 @@ Hay un script listo en [`docs/auto_actualizar.gs`](./auto_actualizar.gs) que se 
 1. **`actualizarResultadosBoca()`** — completa goles y marca `Finalizado` los partidos cargados, e inserta resultados recientes de TheSportsDB que falten (relee la hoja en cada evento para no duplicar).
 2. **`limpiarDuplicados()`** — borra filas duplicadas exactas y deja la primera.
 3. **`insertarProximoSiFalta()`** — si la hoja no tiene ningún partido futuro, inserta el próximo que reporta la API como `Próximo`.
-4. **`limpiarHistorial()`** — borra los `Finalizado` viejos y deja solo los **2 más recientes** (nunca toca los futuros/`Próximo`).
+4. **`limpiarHistorial()`** — borra los `Finalizado` viejos y deja solo los **3 más recientes** (nunca toca los futuros/`Próximo`).
 
 Configurar **activador por horas (cada 1 hora)** sobre `actualizarTodo` (que corre las tres en orden).
 
@@ -154,7 +154,7 @@ Configurar **activador por horas (cada 1 hora)** sobre `actualizarTodo` (que cor
 2. El script (cada 1 hora) hace el resto solo:
    - completa goles y marca `Finalizado` los que se jugaron;
    - inserta resultados recientes que falten;
-   - borra duplicados y deja solo los 2 `Finalizado` más recientes;
+   - borra duplicados y deja solo los 3 `Finalizado` más recientes;
    - **red de seguridad**: si la hoja queda sin ningún futuro, inserta el próximo que reporta la API (revisalo una vez al verlo).
 3. Vos solo tocás la hoja para **cargar/corregir el calendario futuro** (y repúblicás como CSV si Google lo pide).
 
@@ -166,4 +166,4 @@ Configurar **activador por horas (cada 1 hora)** sobre `actualizarTodo` (que cor
 - Si la hoja está **totalmente vacía**, el sitio muestra *"No hay partidos disponibles por el momento."*
 - Mientras exista al menos un `Confirmado` (o `previsto`), el sitio toma el de fecha más cercana como **próximo destacado** automáticamente.
 - Las filas `Próximo`/`Confirmado`/`previsto` con **fecha ya pasada** se **ignoran** en el sitio (no se muestran), para evitar partidos "zombie". Se mantienen visibles hasta **6 h después de su inicio** (hora Argentina) por si el resultado todavía no se cargó. Conviene igual borrarlas o marcarlas `Finalizado` en la hoja.
-- El sitio muestra **solo los 2 `Finalizado` más recientes** (el resto no se lista, aunque estén en la hoja). Los cruces de ida y vuelta conservan su global aunque el Ida no se muestre.
+- El sitio muestra **hasta 3 `Finalizado`** (los más recientes); el resto no se lista aunque esté en la hoja. Los cruces de ida y vuelta conservan su global aunque el Ida no se muestre.

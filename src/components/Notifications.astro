@@ -1,15 +1,43 @@
 ---
 interface Props {
   hideWhenUnconfigured?: boolean;
+  compact?: boolean;
 }
 
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const vapidPublic = import.meta.env.PUBLIC_VAPID_PUBLIC_KEY;
 const configured = Boolean(supabaseUrl && vapidPublic);
-const { hideWhenUnconfigured = false } = Astro.props;
+const { hideWhenUnconfigured = false, compact = false } = Astro.props;
 ---
 
-{(!configured && hideWhenUnconfigured) ? null : (
+{(!configured && hideWhenUnconfigured) ? null : compact ? (
+  <div
+    id="notify-box"
+    data-supabase={supabaseUrl}
+    data-vapid={vapidPublic}
+    class="rounded-lg border border-border bg-surface p-4 shadow-card"
+  >
+    <p class="text-[13px] leading-[1.6] text-text-secondary">
+      ¿Querés que te avisemos? Activá las notificaciones y te enterás
+      <strong class="text-text-primary">1 hora antes</strong> del partido, cuando salen las
+      formaciones.
+    </p>
+    <div class="mt-3">
+      <button
+        type="button"
+        id="notify-toggle"
+        class="h-10 rounded-[6px] border border-accent bg-accent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong"
+      >
+        Activar avisos
+      </button>
+    </div>
+    <p id="notify-status" class="mt-3 text-[12px] text-text-muted"></p>
+    <p id="notify-ios" hidden class="mt-2 text-[12px] text-text-muted">
+      En iPhone/iPad primero instalá la app (Compartir → Agregar a pantalla de inicio) y luego
+      activá las notificaciones desde el ícono instalado.
+    </p>
+  </div>
+) : (
   <section id="notificaciones" class="mt-8 scroll-mt-6">
     <h2 class="text-[17px] font-bold tracking-[0.02em] text-text-primary">Notificaciones</h2>
 

@@ -57,6 +57,15 @@ const sportsEvent = next
     <MatchesTimeline client:visible matches={matches} />
   </div>
 
+  <p class="mt-4">
+    <a
+      href={`${base}partidos`}
+      class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+    >
+      Ver todos los partidos →
+    </a>
+  </p>
+
   <Notifications hideWhenUnconfigured />
 
   {sportsEvent && (

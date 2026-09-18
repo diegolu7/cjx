@@ -1,8 +1,12 @@
 // Snapshot build-time: baja el Google Sheet publicado (CSV), lo parsea y
 // escribe src/data/matches.json para que Astro lo use en build (SSG).
 //
+// Baja DOS pestañas:
+//   - "Partidos" (fixture/resultado) → obligatoria
+//   - "Detalles" (contenido rico por partido) → opcional (si SHEET_DETAILS_GID está set)
+//
 // Uso:  node scripts/snapshot.mjs
-// Lo ejecutan los GitHub Actions (deploy y cron cada 15 min) antes del build.
+// Lo ejecutan los GitHub Actions (deploy y cron) antes del build.
 
 import { writeFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
@@ -13,6 +17,8 @@ import {
   DEMO_MATCHES,
   SHEET_CSV_URL,
   SHEET_CSV_URL_ALIAS,
+  detailsCsvUrl,
+  detailsCsvUrlAlias,
 } from "./lib/parse.mjs";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -26,9 +32,9 @@ async function fetchCSV(url) {
   return res.text();
 }
 
-async function getCSV() {
-  // 1º export (más estable), 2º gviz.
-  for (const url of [SHEET_CSV_URL_ALIAS, SHEET_CSV_URL]) {
+async function getCSV(urls) {
+  for (const url of urls) {
+    if (!url) continue;
     try {
       const text = await fetchCSV(url);
       if (text && text.trim()) return text;
@@ -40,11 +46,12 @@ async function getCSV() {
 }
 
 async function main() {
-  const csv = await getCSV();
-  let matches = null;
+  const csv = await getCSV([SHEET_CSV_URL_ALIAS, SHEET_CSV_URL]);
+  const detailsCsv = await getCSV([detailsCsvUrlAlias(), detailsCsvUrl()]);
 
+  let matches = null;
   if (csv) {
-    matches = parseMatches(csv);
+    matches = parseMatches(csv, detailsCsv);
   }
 
   if (!matches || matches.length === 0) {
@@ -64,7 +71,11 @@ async function main() {
 
   await mkdir(dirname(OUT_FILE), { recursive: true });
   await writeFile(OUT_FILE, JSON.stringify(payload, null, 2) + "\n", "utf8");
-  console.log(`[snapshot] ${matches.length} partidos → ${OUT_FILE}`);
+
+  const withDetails = matches.filter((m) => m.details).length;
+  console.log(
+    `[snapshot] ${matches.length} partidos (${withDetails} con detalle) → ${OUT_FILE}`,
+  );
 }
 
 main().catch((err) => {
