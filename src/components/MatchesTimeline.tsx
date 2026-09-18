@@ -134,17 +134,19 @@ function GlobalLine({ match, compact = false }: { match: Match; compact?: boolea
     return (
       <p className="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
         Global {agg.bocaScore}-{agg.rivalScore}
-        {hasPens ? ` · Pen ${agg.penaltyBoca}-${agg.penaltyRival}` : ""}
+        {hasPens ? ` (pen. ${agg.penaltyBoca}-${agg.penaltyRival})` : ""}
       </p>
     );
   }
 
   return (
-    <p className="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
-      Global: Boca {agg.bocaScore} - {agg.rivalScore} {rival}
-      {hasPens ? ` · Penales ${agg.penaltyBoca}-${agg.penaltyRival}` : ""}
-      <span className="text-text-muted"> · {leader}</span>
-    </p>
+    <div className="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
+      <p>
+        Global: Boca {agg.bocaScore} - {agg.rivalScore} {rival}
+        {hasPens ? ` (pen. ${agg.penaltyBoca}-${agg.penaltyRival})` : ""}
+      </p>
+      <p className="text-text-muted">{leader}</p>
+    </div>
   );
 }
 
@@ -348,7 +350,7 @@ function MatchRow({
   isLast: boolean;
 }) {
   const featured = active;
-  const meta = match.round ? `${match.competition} · ${match.round}` : match.competition;
+  const meta = match.competition;
 
   return (
     <li className="grid grid-cols-1 lg:grid-cols-[120px_32px_minmax(0,1fr)] lg:gap-x-4 mb-3 lg:mb-[10px] last:mb-0 items-start">
@@ -381,6 +383,11 @@ function MatchRow({
                   {teamsLine(match, false)}
                 </p>
                 <p className="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">{meta}</p>
+                {match.round && (
+                  <p className="text-[12px] leading-[1.45] text-text-muted truncate">
+                    {match.round}
+                  </p>
+                )}
                 <GlobalLine match={match} compact />
               </div>
               <div className="justify-self-end flex items-center gap-2">

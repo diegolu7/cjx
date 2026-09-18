@@ -78,6 +78,9 @@ DATOS: Racing no le gana a Boca desde 2023; Es el 5.º cruce del año; Boca gan�
 4. Revisá que no haya datos inventados antes de guardar.
 
 > Recordá: la IA puede equivocarse. Verificá nombres y hechos antes de publicar.
+>
+> **SEO:** el prompt pide 120–200 palabras, que supera el umbral de **200 caracteres**
+> que da **+2** al score de indexación. Si escribís el `Preview` a mano, apuntá a 200+ caracteres.
 
 ---
 

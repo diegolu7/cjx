@@ -9,7 +9,7 @@ interface Props {
 const { match, details } = Astro.props;
 
 const rows: [string, string | undefined][] = [
-  ["Fecha", `${fechaLarga(match.date)}${match.time ? ` · ${match.time} hs` : ""}`],
+  ["Fecha", `${fechaLarga(match.date)}${match.time ? `, ${match.time} hs` : ""}`],
   ["Estadio", match.venue || "A confirmar"],
   ["Torneo", match.competition],
   ["Fase", match.round],

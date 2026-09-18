@@ -123,6 +123,9 @@ Cada página suma puntos de contenido:
 - **Score < 3** → `noindex, follow` (no se indexa; evita contenido fino).
 - Partidos con fecha > 60 días y **sin** contenido → no se genera la página.
 
+> **Tip:** escribí `Preview` de **200+ caracteres** (≈120–200 palabras) para sumar **+2**.
+> El prompt de `docs/prompt-ia-partido.md` ya pide esa extensión, así que si lo usás, cumplís.
+
 > Cargá al menos `Preview` (200+ caracteres) o `Notas` para que la página se indexe.
 
 ---

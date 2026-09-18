@@ -140,6 +140,11 @@
   (lista por líneas); ficha técnica (acordeón); claves; forma reciente.
 - [x] Íconos **Lucide** (sin emojis); sin secciones vacías (se ocultan).
 - [x] Formaciones "list by lines" usando la formación + orden de titulares.
+- [x] **Mini-cancha** (`Pitch.astro`): arqueros abajo, delanteros arriba, apellidos; chip de
+  formación; fallback a lista si la formación no parsea.
+- [x] **"Forma reciente de Boca" → "Últimos partidos"**.
+- [x] **Header**: se quitó el subtítulo (gana espacio).
+- [x] **Reducción de `·`**: metadata en líneas y listas con comas (0 `·` en todo el sitio).
 
 ---
 

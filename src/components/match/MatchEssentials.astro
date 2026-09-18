@@ -9,14 +9,10 @@ interface Props {
 const { match, details } = Astro.props;
 
 const items = [
-  { icon: "mapPin", label: "Estadio", value: match.venue || "A confirmar" },
-  {
-    icon: "trophy",
-    label: "Torneo",
-    value: `${match.competition}${match.round ? ` · ${match.round}` : ""}`,
-  },
-  { icon: "user", label: "Árbitro", value: details?.referee || "A confirmar" },
-  { icon: "tv", label: "TV", value: match.channel || "A confirmar" },
+  { icon: "mapPin", label: "Estadio", value: match.venue || "A confirmar", sub: undefined },
+  { icon: "trophy", label: "Torneo", value: match.competition, sub: match.round },
+  { icon: "user", label: "Árbitro", value: details?.referee || "A confirmar", sub: undefined },
+  { icon: "tv", label: "TV", value: match.channel || "A confirmar", sub: undefined },
 ];
 ---
 
@@ -31,6 +27,7 @@ const items = [
         <div class="min-w-0">
           <p class="text-[11px] uppercase tracking-[0.04em] text-text-muted">{it.label}</p>
           <p class="text-[13px] leading-[1.4] text-text-primary">{it.value}</p>
+          {it.sub && <p class="text-[12px] leading-[1.4] text-text-secondary">{it.sub}</p>}
         </div>
       </div>
     ))}
