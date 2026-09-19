@@ -14,18 +14,12 @@
     "snapshot": "node scripts/snapshot.mjs"
   },
   "dependencies": {
-    "@astrojs/react": "^6.0.5",
     "@astrojs/sitemap": "^3.7.4",
+    "@fontsource/ibm-plex-mono": "^5.3.0",
+    "@resvg/resvg-js": "^2.6.2",
     "@tailwindcss/vite": "^4.3.3",
-    "@types/react": "^19.3.0",
-    "@types/react-dom": "^19.3.0",
-    "aceternity-ui": "^0.2.2",
     "astro": "^7.3.2",
-    "clsx": "^2.1.1",
-    "motion": "^13.2.0",
-    "react": "^19.3.0",
-    "react-dom": "^19.3.0",
-    "tailwind-merge": "^3.6.0",
+    "satori": "^0.33.4",
     "tailwindcss": "^4.3.3",
     "twitter-api-v2": "^1.29.1"
   },

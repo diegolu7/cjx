@@ -1,6 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import MatchesTimeline from "../components/MatchesTimeline.tsx";
+import MatchesTimeline from "../components/MatchesTimeline.astro";
 import Notifications from "../components/Notifications.astro";
 import ShareButton from "../components/ShareButton.astro";
 import type { Match } from "../types/match";
@@ -55,7 +55,7 @@ const sportsEvent = next
   </section>
 
   <div id="partidos" class="scroll-mt-6">
-    <MatchesTimeline client:visible matches={matches} />
+    <MatchesTimeline matches={matches} />
   </div>
 
   <div class="mt-4 flex flex-wrap items-center gap-3">

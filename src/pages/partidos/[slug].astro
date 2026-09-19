@@ -69,7 +69,7 @@ const sportsEvent = {
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   sport: "Soccer",
   url: new URL(Astro.url.pathname, Astro.site).href,
-  image: new URL(`${base}og.png`, Astro.site).href,
+  image: new URL(`${base}og/${match.slug}.png`, Astro.site).href,
   description: descriptionFor(match),
   ...(match.venue ? { location: { "@type": "Place", name: match.venue } } : {}),
   competitor: [
@@ -80,7 +80,12 @@ const sportsEvent = {
 };
 ---
 
-<Layout title={titleFor(match)} description={descriptionFor(match)} noindex={noindex}>
+<Layout
+  title={titleFor(match)}
+  description={descriptionFor(match)}
+  image={`${base}og/${match.slug}.png`}
+  noindex={noindex}
+>
   <nav class="mb-4 text-[12px] text-text-muted" aria-label="Migas de pan">
     <a href={`${base}`} class="hover:text-accent underline underline-offset-2">Inicio</a>
     <span> / </span>
@@ -100,6 +105,7 @@ const sportsEvent = {
         title={shareTitle}
         text={shareText}
         label={finished ? "Compartir resultado" : "Compartir partido"}
+        image={new URL(`${base}og/${match.slug}.png`, Astro.site).href}
       />
     </div>
 

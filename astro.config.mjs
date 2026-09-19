@@ -2,7 +2,6 @@
 import { defineConfig } from 'astro/config';
 import { readFileSync } from 'node:fs';
 
-import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
@@ -32,7 +31,6 @@ export default defineConfig({
   site: SITE,
   base: '/',
   integrations: [
-    react(),
     sitemap({
       // Las páginas por partido sin contenido suficiente van con noindex → fuera del sitemap.
       filter: (page) => {

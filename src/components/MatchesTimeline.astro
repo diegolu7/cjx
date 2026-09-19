@@ -1,0 +1,333 @@
+---
+import type { Match, MatchStatus } from "../types/match";
+import Icon from "./match/Icon.astro";
+import { rivalOf, diaMes } from "../lib/match";
+
+interface Props {
+  matches: Match[];
+}
+const { matches } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const TABS = ["ANTERIORES", "TODOS", "PRÓXIMOS"];
+
+function teamsLine(m: Match, featured: boolean): string {
+  if (featured) return `${m.homeTeam.toUpperCase()} vs ${m.awayTeam.toUpperCase()}`;
+  if (m.status === "finished" && m.homeScore !== undefined && m.awayScore !== undefined) {
+    return `${m.homeTeam} ${m.homeScore} - ${m.awayScore} ${m.awayTeam}`;
+  }
+  return `${m.homeTeam} vs ${m.awayTeam}`;
+}
+
+function featuredDate(m: Match): { day: string; date: string; time?: string } {
+  const iso = /^(\d{4})-(\d{2})-(\d{2})/.exec(m.date);
+  const dd = iso ? iso[3] : (m.date.split("/")[0]?.trim() || m.date);
+  const mm = iso ? iso[2] : (m.date.split("/")[1]?.trim() || "");
+  return { day: m.dayLabel ?? "", date: `${dd}/${mm}`, time: m.time };
+}
+
+function badgeClass(s: MatchStatus): string {
+  const base = "inline-flex items-center justify-center h-7 px-[10px] rounded-[4px] text-[10px] font-semibold tracking-[0.03em] uppercase";
+  const styles =
+    s === "finished"
+      ? "text-text-secondary border border-border bg-[rgba(167,182,200,0.03)]"
+      : s === "next"
+        ? "text-bg border border-accent bg-accent"
+        : "text-accent-secondary border border-[rgba(95,168,211,0.72)] bg-[rgba(95,168,211,0.05)]";
+  return `${base} ${styles}`;
+}
+
+function badgeLabel(s: MatchStatus): string {
+  return s === "finished" ? "FINAL" : s === "next" ? "PRÓXIMO" : "PREVISTO";
+}
+
+function leaderOf(m: Match): string {
+  const a = m.aggregate;
+  if (!a) return "";
+  const hasPens = a.penaltyBoca !== undefined && a.penaltyRival !== undefined;
+  if (a.bocaScore > a.rivalScore) return "Boca lidera";
+  if (a.bocaScore < a.rivalScore) return "Boca abajo";
+  if (hasPens) return (a.penaltyBoca as number) > (a.penaltyRival as number) ? "Boca lidera" : "Boca abajo";
+  return "Serie igualada";
+}
+
+let seenAnteriores = false;
+let seenProximo = false;
+let seenProximos = false;
+const rows = matches.map((m) => {
+  let label = "";
+  if (m.status === "finished" && !seenAnteriores) {
+    label = "ANTERIORES";
+    seenAnteriores = true;
+  } else if (m.status === "next" && !seenProximo) {
+    label = "PRÓXIMO";
+    seenProximo = true;
+  } else if (m.status === "scheduled" && !seenProximos) {
+    label = "PRÓXIMOS";
+    seenProximos = true;
+  }
+  return { match: m, label, active: m.status === "next" };
+});
+
+const hasUpcoming = matches.some((m) => m.status === "next" || m.status === "scheduled");
+const showNoUpcoming = matches.length > 0 && !hasUpcoming;
+---
+
+<section aria-labelledby="matches-heading" class="w-full">
+  <h2 id="matches-heading" class="sr-only">Próximos partidos de Boca Juniors</h2>
+
+  <!-- Tabs mobile -->
+  <div
+    role="tablist"
+    aria-label="Filtrar partidos"
+    class="lg:hidden grid grid-cols-3 h-11 border border-border rounded-[6px] overflow-hidden mb-5"
+    data-cjx-tabs
+  >
+    {TABS.map((t, i) => (
+      <button
+        type="button"
+        role="tab"
+        id={`tab-${i}`}
+        data-tab={t}
+        aria-selected={t === "TODOS" ? "true" : "false"}
+        aria-controls="matches-panel"
+        tabindex={t === "TODOS" ? 0 : -1}
+        class:list={[
+          "flex items-center justify-center text-[12px] font-semibold tracking-[0.04em] transition-colors duration-[160ms] ease-linear cursor-pointer",
+          t === "TODOS"
+            ? "text-text-primary bg-[rgba(95,168,211,0.07)] shadow-[inset_0_-2px_0_var(--color-accent-secondary)]"
+            : "text-text-muted",
+        ]}
+      >
+        {t}
+      </button>
+    ))}
+  </div>
+
+  {showNoUpcoming && (
+    <p class="mb-5 text-[13px] leading-relaxed text-text-muted border border-border bg-surface rounded-md px-4 py-3">
+      No hay próximos partidos por el momento. La agenda se actualiza automáticamente cuando se
+      confirme una nueva fecha.
+    </p>
+  )}
+
+  <div
+    id="matches-panel"
+    role="tabpanel"
+    aria-labelledby="tab-1"
+    class="outline-none h-[64vh] overflow-y-auto lg:h-auto lg:overflow-visible"
+  >
+    {matches.length === 0 && (
+      <p class="text-text-secondary text-sm">No hay partidos disponibles por el momento.</p>
+    )}
+
+    {rows.length > 0 && (
+      <ol class="list-none p-0 m-0">
+        {rows.map(({ match, label, active }, i) => (
+          <li
+            data-status={match.status}
+            class="grid grid-cols-1 lg:grid-cols-[120px_32px_minmax(0,1fr)] lg:gap-x-4 mb-3 lg:mb-[10px] last:mb-0 items-start"
+          >
+            <!-- Timeline label (desktop) -->
+            <div class="hidden lg:flex self-stretch items-center">
+              {label && (
+                <span class="text-[13px] font-semibold tracking-[0.03em] uppercase text-text-secondary">
+                  {label}
+                </span>
+              )}
+            </div>
+
+            <!-- Node + línea (desktop) -->
+            <div class="hidden lg:block relative self-stretch" aria-hidden="true">
+              {i !== 0 && (
+                <span class="absolute top-0 bottom-1/2 left-1/2 -translate-x-1/2 w-px bg-border-strong" />
+              )}
+              {i !== rows.length - 1 && (
+                <span class="absolute top-1/2 -bottom-[10px] left-1/2 -translate-x-1/2 w-px bg-border-strong" />
+              )}
+              <span
+                class:list={[
+                  "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full",
+                  active
+                    ? "w-[14px] h-[14px] bg-accent shadow-[0_0_14px_rgba(217,164,65,0.30)]"
+                    : "w-[10px] h-[10px] border border-accent-secondary bg-bg",
+                ]}
+              />
+            </div>
+
+            <!-- Card -->
+            <a
+              href={`${base}partidos/${match.slug}`}
+              class="group block rounded-lg"
+              aria-label={`Ver detalle: ${teamsLine(match, active)}`}
+            >
+              {active ? (
+                <article class="featured-match rounded-lg border-2 border-accent bg-gradient-to-br from-surface to-surface-elevated shadow-featured px-3 py-4 lg:px-[18px] lg:py-4 min-h-[132px] lg:min-h-[126px] transition-[border-color] duration-[160ms] ease-linear hover:border-accent-strong">
+                  <div class="grid grid-cols-[76px_minmax(0,1fr)] lg:grid-cols-[82px_minmax(0,1fr)_112px] gap-3 items-center">
+                    <div class="flex flex-col justify-center self-stretch border-r border-border pr-3 min-w-0">
+                      <span class="text-[16px] lg:text-[17px] leading-[1.35] font-semibold tracking-[0.02em] text-accent-strong uppercase">
+                        {featuredDate(match).day}
+                      </span>
+                      <span class="mt-1 text-[16px] lg:text-[17px] leading-[1.35] font-semibold tracking-[0.02em] text-accent-strong">
+                        {featuredDate(match).date}
+                      </span>
+                      {match.time ? (
+                        <span class="mt-1 text-[16px] lg:text-[17px] leading-[1.35] font-semibold tracking-[0.02em] text-accent-strong">
+                          {match.time}
+                        </span>
+                      ) : (
+                        <span class="mt-1 text-[12px] leading-[1.35] text-text-secondary">
+                          Horario a confirmar
+                        </span>
+                      )}
+                    </div>
+
+                    <div class="min-w-0">
+                      <p class="text-[18px] lg:text-[20px] font-bold leading-[1.2] text-text-primary uppercase whitespace-nowrap overflow-hidden text-ellipsis">
+                        {teamsLine(match, true)}
+                      </p>
+                      <p class="mt-1.5 text-[12px] leading-[1.45] text-text-secondary">
+                        {match.competition}
+                      </p>
+                      {match.round && (
+                        <p class="text-[12px] leading-[1.45] text-text-secondary">{match.round}</p>
+                      )}
+                      {match.aggregate && (
+                        <div class="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
+                          <p>
+                            Global: Boca {match.aggregate.bocaScore} - {match.aggregate.rivalScore}{" "}
+                            {rivalOf(match)}
+                            {match.aggregate.penaltyBoca !== undefined &&
+                              match.aggregate.penaltyRival !== undefined &&
+                              ` (pen. ${match.aggregate.penaltyBoca}-${match.aggregate.penaltyRival})`}
+                          </p>
+                          <p class="text-text-muted">{leaderOf(match)}</p>
+                        </div>
+                      )}
+                      <div class="mt-2.5 flex items-center gap-3">
+                        {match.channel && (
+                          <p class="flex items-center gap-1.5 text-[12px] text-text-primary">
+                            <span class="text-accent-secondary">
+                              <Icon name="tv" size={16} />
+                            </span>
+                            {match.channel}
+                          </p>
+                        )}
+                        <span class="ml-auto flex items-center gap-2 lg:hidden">
+                          <span class={badgeClass("next")}>{badgeLabel("next")}</span>
+                          <span class="text-accent-strong transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px]">
+                            <Icon name="chevronRight" size={16} />
+                          </span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="hidden lg:flex items-center justify-end gap-2">
+                      <span class={badgeClass("next")}>{badgeLabel("next")}</span>
+                      <span class="text-accent-strong transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px]">
+                        <Icon name="chevronRight" size={16} />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              ) : (
+                <article class="match-card rounded-lg border border-border bg-surface shadow-card px-3 py-[14px] lg:px-[14px] lg:py-[10px] min-h-[78px] lg:min-h-[64px] transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-accent-secondary hover:shadow-hover">
+                  <div class="grid grid-cols-[64px_minmax(0,1fr)_auto] gap-3 items-center">
+                    <div class="flex flex-col justify-center self-stretch border-r border-border pr-3 pl-1 min-w-0">
+                      <span class="text-[18px] leading-[1.05] font-semibold text-text-primary">
+                        {diaMes(match.date).day}
+                      </span>
+                      <span class="mt-[2px] text-[12px] leading-[1.45] text-text-secondary">
+                        {diaMes(match.date).month}
+                      </span>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-[15px] leading-[1.25] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis">
+                        {teamsLine(match, false)}
+                      </p>
+                      <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">
+                        {match.competition}
+                      </p>
+                      {match.round && (
+                        <p class="text-[12px] leading-[1.45] text-text-muted truncate">
+                          {match.round}
+                        </p>
+                      )}
+                      {match.aggregate && (
+                        <p class="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
+                          Global {match.aggregate.bocaScore}-{match.aggregate.rivalScore}
+                          {match.aggregate.penaltyBoca !== undefined &&
+                            match.aggregate.penaltyRival !== undefined &&
+                            ` (pen. ${match.aggregate.penaltyBoca}-${match.aggregate.penaltyRival})`}
+                        </p>
+                      )}
+                    </div>
+                    <div class="justify-self-end flex items-center gap-2">
+                      <span class={badgeClass(match.status)}>{badgeLabel(match.status)}</span>
+                      <span class="text-text-muted transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px] group-hover:text-accent-secondary">
+                        <Icon name="chevronRight" size={16} />
+                      </span>
+                    </div>
+                  </div>
+                </article>
+              )}
+            </a>
+          </li>
+        ))}
+      </ol>
+    )}
+  </div>
+</section>
+
+<script>
+  (function () {
+    const root = document.querySelector("[data-cjx-tabs]")?.closest("section");
+    if (!root) return;
+    const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>("[data-tab]"));
+    const rows = Array.from(root.querySelectorAll<HTMLElement>("[data-status]"));
+    const panel = root.querySelector<HTMLElement>("#matches-panel");
+
+    function matchTab(status: string, tab: string): boolean {
+      if (tab === "TODOS") return true;
+      if (tab === "ANTERIORES") return status === "finished";
+      return status === "next" || status === "scheduled";
+    }
+
+    function setTab(tab: string, focus = false) {
+      tabs.forEach((b) => {
+        const on = b.dataset.tab === tab;
+        b.setAttribute("aria-selected", on ? "true" : "false");
+        b.tabIndex = on ? 0 : -1;
+        b.className = [
+          "flex items-center justify-center text-[12px] font-semibold tracking-[0.04em] transition-colors duration-[160ms] ease-linear cursor-pointer",
+          on
+            ? "text-text-primary bg-[rgba(95,168,211,0.07)] shadow-[inset_0_-2px_0_var(--color-accent-secondary)]"
+            : "text-text-muted",
+        ].join(" ");
+      });
+      rows.forEach((r) => {
+        const show = matchTab(r.dataset.status ?? "", tab);
+        r.style.display = show ? "" : "none";
+      });
+      if (panel) panel.scrollTop = 0;
+      if (focus) {
+        const idx = tabs.findIndex((b) => b.dataset.tab === tab);
+        requestAnimationFrame(() => tabs[idx]?.focus());
+      }
+    }
+
+    tabs.forEach((b, i) => {
+      b.addEventListener("click", () => setTab(b.dataset.tab ?? "TODOS"));
+      b.addEventListener("keydown", (e) => {
+        let next: number | null = null;
+        if (e.key === "ArrowRight") next = (i + 1) % tabs.length;
+        else if (e.key === "ArrowLeft") next = (i - 1 + tabs.length) % tabs.length;
+        else if (e.key === "Home") next = 0;
+        else if (e.key === "End") next = tabs.length - 1;
+        if (next === null) return;
+        e.preventDefault();
+        setTab(tabs[next].dataset.tab ?? "TODOS", true);
+      });
+    });
+  })();
+</script>

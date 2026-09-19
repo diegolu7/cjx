@@ -147,9 +147,14 @@
 - [ ] **Manual (X)**: crear la app en developer.x.com y cargar los secrets
   `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` (ver `docs/x-auto-post.md`).
 
-### Etapa 3
-- [ ] **`og:image` por partido** (Satori) + imagen vertical Stories.
-- [ ] **Performance**: reemplazar isla React (~212 KB) por vanilla/Preact; self-host de fuentes.
+### Etapa 3 — ✅ implementada
+- [x] **`og:image` por partido** (`src/pages/og/[slug].png.ts` con Satori + resvg): tarjeta visual
+  por estado (próximo/final). Se usa como `og:image` de la página.
+- [x] **Compartir/Descargar imagen** en el botón Compartir (Web Share de archivos con fallback).
+- [x] **Performance**: se **eliminó React** (~212 KB) → `MatchesTimeline.astro` con JS vanilla
+  (0 bundles JS externos); se quitaron deps sin uso (react, motion, clsx, etc.).
+- [x] **Self-host de fuentes** (`@fontsource/ibm-plex-mono`, subset latin) → sin Google Fonts.
+- [ ] **(Opcional futuro)** imagen vertical 1080×1920 para Stories; tracking de clics por canal.
 
 ---
 
