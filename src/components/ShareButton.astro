@@ -1,0 +1,206 @@
+---
+interface Props {
+  url: string;
+  title: string;
+  text: string;
+  label?: string;
+}
+const { url, title, text, label = "Compartir" } = Astro.props;
+---
+
+<div class="share-wrap" data-share-wrap data-url={url} data-title={title} data-text={text}>
+  <button
+    type="button"
+    data-share-open
+    class="inline-flex h-11 items-center gap-2 rounded-[6px] border border-border bg-transparent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-accent-secondary transition-colors duration-[160ms] hover:border-accent hover:text-accent"
+  >
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.75"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="18" cy="5" r="3"></circle>
+      <circle cx="6" cy="12" r="3"></circle>
+      <circle cx="18" cy="19" r="3"></circle>
+      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+    </svg>
+    {label}
+  </button>
+
+  <div
+    class="share-modal fixed inset-0 z-50 items-end justify-center bg-black/60 lg:items-center lg:p-4"
+    data-share-modal
+  >
+    <div
+      class="w-full rounded-t-lg border-t border-border-strong bg-surface p-4 lg:max-w-[420px] lg:rounded-lg lg:border"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Compartir"
+    >
+      <div class="mb-3 flex items-center justify-between">
+        <p class="text-[13px] font-semibold text-text-primary">Compartir</p>
+        <button
+          type="button"
+          data-share-close
+          aria-label="Cerrar"
+          class="flex h-8 w-8 items-center justify-center rounded-[4px] text-text-muted hover:bg-surface-hover hover:text-text-primary"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 lg:grid-cols-3">
+        <a
+          data-share-wa
+          target="_blank"
+          rel="noopener"
+          class="flex h-12 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+        >
+          <span class="text-[#25D366]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2Zm5.8 14.14c-.24.68-1.42 1.3-1.96 1.35-.5.05-1.13.07-1.82-.11-.42-.13-.96-.31-1.65-.61-2.9-1.25-4.79-4.17-4.93-4.36-.14-.19-1.18-1.57-1.18-3s.75-2.13 1.01-2.42c.26-.29.57-.36.76-.36l.55.01c.18.01.41-.07.64.49.24.57.81 1.98.88 2.13.07.14.12.31.02.5-.1.19-.14.31-.28.48-.14.17-.3.37-.43.5-.14.14-.29.29-.12.57.17.29.75 1.23 1.6 2 1.1.98 2.03 1.29 2.32 1.43.29.14.46.12.63-.07.17-.19.72-.84.91-1.13.19-.29.38-.24.64-.14.26.1 1.66.78 1.94.93.29.14.48.22.55.34.07.12.07.68-.17 1.36Z"/></svg>
+          </span>
+          WhatsApp
+        </a>
+
+        <a
+          data-share-fb
+          target="_blank"
+          rel="noopener"
+          class="flex h-12 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+        >
+          <span class="text-[#1877F2]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z"/></svg>
+          </span>
+          Facebook
+        </a>
+
+        <a
+          data-share-x
+          target="_blank"
+          rel="noopener"
+          class="flex h-12 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+        >
+          <span class="text-text-primary">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.9 2H22l-7.5 8.6L23 22h-6.8l-5.3-6.9L4.8 22H1.7l8-9.2L1 2h7l4.8 6.3L18.9 2Zm-1.2 18h1.7L7.4 3.8H5.6L17.7 20Z"/></svg>
+          </span>
+          X
+        </a>
+
+        <a
+          data-share-tg
+          target="_blank"
+          rel="noopener"
+          class="flex h-12 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+        >
+          <span class="text-[#2AABEE]">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M22 3 2 10.5l5.5 1.9L20 5.5 9.5 14.2l-.2 4.8 2.8-2.7 4.2 3.1L22 3Z"/></svg>
+          </span>
+          Telegram
+        </a>
+
+        <button
+          type="button"
+          data-share-copy
+          class="flex h-12 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
+        >
+          <span class="text-accent-secondary">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+          </span>
+          Copiar enlace
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    data-share-toast
+    hidden
+    class="fixed bottom-4 left-1/2 z-[60] -translate-x-1/2 rounded-[6px] border border-border-strong bg-surface px-4 py-2 text-[12px] text-text-primary shadow-featured"
+  >
+    Enlace copiado
+  </div>
+</div>
+
+<style>
+  .share-modal {
+    display: none;
+  }
+  .share-modal.is-open {
+    display: flex;
+  }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-share-wrap]").forEach((wrap) => {
+    const url = wrap.dataset.url ?? "";
+    const title = wrap.dataset.title ?? "";
+    const text = wrap.dataset.text ?? "";
+    const modal = wrap.querySelector<HTMLElement>("[data-share-modal]");
+    const toast = wrap.querySelector<HTMLElement>("[data-share-toast]");
+    const openBtn = wrap.querySelector<HTMLElement>("[data-share-open]");
+
+    function close() {
+      modal?.classList.remove("is-open");
+    }
+
+    function openModal() {
+      const wa = wrap.querySelector<HTMLAnchorElement>("[data-share-wa]");
+      const fb = wrap.querySelector<HTMLAnchorElement>("[data-share-fb]");
+      const x = wrap.querySelector<HTMLAnchorElement>("[data-share-x]");
+      const tg = wrap.querySelector<HTMLAnchorElement>("[data-share-tg]");
+      const enc = encodeURIComponent;
+      if (wa) wa.href = `https://wa.me/?text=${enc(`${text}\n${url}`)}`;
+      if (fb) fb.href = `https://www.facebook.com/sharer/sharer.php?u=${enc(url)}`;
+      if (x) x.href = `https://twitter.com/intent/tweet?text=${enc(text)}&url=${enc(url)}`;
+      if (tg) tg.href = `https://t.me/share/url?url=${enc(url)}&text=${enc(text)}`;
+      modal?.classList.add("is-open");
+    }
+
+    function showToast() {
+      if (!toast) return;
+      toast.hidden = false;
+      window.setTimeout(() => {
+        toast.hidden = true;
+      }, 1800);
+    }
+
+    openBtn?.addEventListener("click", async () => {
+      if (navigator.share) {
+        try {
+          await navigator.share({ title, text, url });
+        } catch {
+          /* cancelado por el usuario */
+        }
+        return;
+      }
+      openModal();
+    });
+
+    wrap.querySelectorAll<HTMLElement>("[data-share-close]").forEach((el) =>
+      el.addEventListener("click", close),
+    );
+
+    wrap.querySelector<HTMLElement>("[data-share-copy]")?.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(url);
+      } catch {
+        /* sin permiso de clipboard */
+      }
+      close();
+      showToast();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close();
+    });
+  });
+</script>

@@ -185,6 +185,49 @@ export function splitByFormation(
   return lines;
 }
 
+/** Preguntas frecuentes generadas desde la ficha (SEO + GEO). */
+export function faqFor(m: Match): { q: string; a: string }[] {
+  const rival = rivalOf(m);
+  const fecha = fechaLarga(m.date);
+  const dia = diaSemana(m.date);
+  const torneo = `${m.competition}${m.round ? ` (${m.round})` : ""}`;
+  const out: { q: string; a: string }[] = [];
+
+  out.push({
+    q: `¿Cuándo juega Boca vs ${rival}?`,
+    a: `El partido Boca vs ${rival} se juega el ${dia} ${fecha}${m.time ? ` a las ${m.time}` : ""}, por ${torneo}.`,
+  });
+
+  if (m.time) {
+    out.push({
+      q: `¿A qué hora juega Boca vs ${rival}?`,
+      a: `A las ${m.time} (hora Argentina).`,
+    });
+  }
+
+  if (m.venue && m.venue !== "Por definir" && m.venue !== "-") {
+    out.push({ q: `¿Dónde juega Boca vs ${rival}?`, a: `En ${m.venue}.` });
+  }
+
+  if (m.channel && m.channel !== "-") {
+    out.push({ q: `¿Por qué canal pasan Boca vs ${rival}?`, a: `Por ${m.channel}.` });
+  }
+
+  out.push({ q: `¿En qué torneo juega Boca vs ${rival}?`, a: `Por ${torneo}.` });
+
+  const b = bocaGoles(m);
+  const r = rivalGoles(m);
+  if (m.status === "finished" && b !== undefined && r !== undefined) {
+    let a = `Boca ${b} - ${r} ${rival}.`;
+    if (m.aggregate) {
+      a += ` Global: Boca ${m.aggregate.bocaScore} - ${m.aggregate.rivalScore} ${rival}.`;
+    }
+    out.push({ q: `¿Cómo salió Boca vs ${rival}?`, a });
+  }
+
+  return out;
+}
+
 /** Previa automática generada desde la ficha (texto único por partido). */
 export function autoPrevia(m: Match): string {
   const rival = rivalOf(m);

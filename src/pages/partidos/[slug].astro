@@ -1,11 +1,13 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import ShareButton from "../../components/ShareButton.astro";
 import MatchHero from "../../components/match/MatchHero.astro";
 import MatchPreview from "../../components/match/MatchPreview.astro";
 import MatchKeyFacts from "../../components/match/MatchKeyFacts.astro";
 import RecentForm from "../../components/match/RecentForm.astro";
 import Lineups from "../../components/match/Lineups.astro";
 import MatchEvents from "../../components/match/MatchEvents.astro";
+import MatchFaq from "../../components/match/MatchFaq.astro";
 import TechnicalDetails from "../../components/match/TechnicalDetails.astro";
 import type { Match } from "../../types/match";
 import {
@@ -14,6 +16,9 @@ import {
   descriptionFor,
   autoPrevia,
   recentResults,
+  faqFor,
+  fechaLarga,
+  marcador,
 } from "../../lib/match";
 import data from "../../data/matches.json";
 
@@ -36,6 +41,23 @@ const previa = d?.preview ?? (upcoming ? autoPrevia(match) : undefined);
 const previewTitle = finished ? "Resumen del partido" : "Previa del partido";
 const form = recentResults(allMatches, 3);
 const eventos = d?.events ?? [];
+
+const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
+const shareTitle = finished ? marcador(match) : `Boca vs ${rival}`;
+const shareText = finished
+  ? `Final: ${marcador(match)} · ${match.competition}`
+  : `Boca vs ${rival} · ${fechaLarga(match.date)}${match.time ? ` a las ${match.time}` : ""}${match.venue ? ` en ${match.venue}` : ""}`;
+
+const faqs = faqFor(match);
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
 
 const sportsEvent = {
   "@context": "https://schema.org",
@@ -71,6 +93,15 @@ const sportsEvent = {
 
     <MatchHero match={match} />
 
+    <div class="mt-4">
+      <ShareButton
+        url={shareUrl}
+        title={shareTitle}
+        text={shareText}
+        label={finished ? "Compartir resultado" : "Compartir partido"}
+      />
+    </div>
+
     {previa && (
       <MatchPreview
         title={previewTitle}
@@ -96,6 +127,8 @@ const sportsEvent = {
       </p>
     )}
 
+    <MatchFaq match={match} />
+
     <p class="mt-8">
       <a
         href={`${base}partidos`}
@@ -107,4 +140,5 @@ const sportsEvent = {
   </article>
 
   <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqLd)} />
 </Layout>

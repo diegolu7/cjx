@@ -130,6 +130,25 @@
 
 ---
 
+## ✅ SEO/GEO — Etapa 1 (FAQ + Compartir + llms.txt)
+
+- [x] **FAQ por partido** (`MatchFaq.astro`) generada desde la ficha (6 preguntas) + **`FAQPage`** JSON-LD.
+- [x] **Botón Compartir** (`ShareButton.astro`): Web Share API en mobile + **modal** (WhatsApp/Facebook/X/Telegram/Copiar) + toast. En **partido** y **home**.
+- [x] **`llms.txt` dinámico** (`src/pages/llms.txt.ts`): lista las páginas y los partidos actuales.
+- [ ] **Bing Webmaster Tools** (manual): alta + enviar sitemap.
+
+### Etapa 2 (próxima)
+- [ ] **Cuenta X del sitio + auto-post por partido** (backlinks/menciones).
+- [ ] **IndexNow** (ping a Bing/Yandex en cada deploy).
+- [ ] **Feed RSS/Atom** de partidos.
+- [ ] **Páginas de rivales y torneos** (contenido long-tail).
+
+### Etapa 3
+- [ ] **`og:image` por partido** (Satori) + imagen vertical Stories.
+- [ ] **Performance**: reemplazar isla React (~212 KB) por vanilla/Preact; self-host de fuentes.
+
+---
+
 ## ✅ Rediseño de la página del partido (UX/UI)
 
 - [x] Componentes en `src/components/match/`: `MatchHero`, `MatchEssentials`,

@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import MatchesTimeline from "../components/MatchesTimeline.tsx";
 import Notifications from "../components/Notifications.astro";
+import ShareButton from "../components/ShareButton.astro";
 import type { Match } from "../types/match";
 import data from "../data/matches.json";
 
@@ -57,14 +58,20 @@ const sportsEvent = next
     <MatchesTimeline client:visible matches={matches} />
   </div>
 
-  <p class="mt-4">
+  <div class="mt-4 flex flex-wrap items-center gap-3">
     <a
       href={`${base}partidos`}
       class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
     >
       Ver todos los partidos →
     </a>
-  </p>
+    <ShareButton
+      url={new URL(Astro.url.pathname, Astro.site).href}
+      title="Cuándo juega Boca Juniors"
+      text="Cuándo juega Boca: próximos partidos, horarios y resultados"
+      label="Compartir"
+    />
+  </div>
 
   <Notifications hideWhenUnconfigured />
 
