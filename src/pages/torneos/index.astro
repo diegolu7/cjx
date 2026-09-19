@@ -1,0 +1,37 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import type { Match } from "../../types/match";
+import { groupByTorneo } from "../../lib/taxonomy";
+import data from "../../data/matches.json";
+
+const base = import.meta.env.BASE_URL;
+const groups = groupByTorneo(data.matches as Match[]);
+---
+
+<Layout
+  title="Torneos de Boca Juniors — Fixture y Resultados | Cuando Juega el Xeneize"
+  description="Torneos y copas en los que juega Boca Juniors, con fixture y resultados. Sitio no oficial."
+>
+  <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
+    Torneos de Boca Juniors
+  </h1>
+  <p class="mt-2 text-[13px] leading-[1.6] text-text-secondary">
+    Torneos y copas en los que juega Boca, con fixture y resultados.
+  </p>
+
+  <ul class="mt-5 list-none p-0 m-0 grid grid-cols-1 gap-3 lg:grid-cols-2">
+    {groups.map((g) => (
+      <li>
+        <a
+          href={`${base}torneos/${g.slug}`}
+          class="group flex items-center justify-between gap-3 rounded-lg border border-border bg-surface shadow-card px-4 py-3 transition-all duration-[160ms] hover:-translate-y-px hover:bg-surface-hover hover:border-accent-secondary"
+        >
+          <span class="text-[14px] font-semibold text-text-primary">{g.name}</span>
+          <span class="text-[12px] text-text-muted">
+            {g.matches.length} {g.matches.length === 1 ? "partido" : "partidos"}
+          </span>
+        </a>
+      </li>
+    ))}
+  </ul>
+</Layout>

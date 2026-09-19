@@ -137,11 +137,15 @@
 - [x] **`llms.txt` dinámico** (`src/pages/llms.txt.ts`): lista las páginas y los partidos actuales.
 - [ ] **Bing Webmaster Tools** (manual): alta + enviar sitemap.
 
-### Etapa 2 (próxima)
-- [ ] **Cuenta X del sitio + auto-post por partido** (backlinks/menciones).
-- [ ] **IndexNow** (ping a Bing/Yandex en cada deploy).
-- [ ] **Feed RSS/Atom** de partidos.
-- [ ] **Páginas de rivales y torneos** (contenido long-tail).
+### Etapa 2 — ✅ implementada
+- [x] **Auto-post en X** (`scripts/lib/x.mjs` + `notify.mjs`): publica 1 post por partido
+  (solo si el push no fue dedupe). Cuenta: https://x.com/cuandojuegaCABJ
+- [x] **IndexNow** (`scripts/indexnow.mjs` + `public/<key>.txt`): ping a Bing/Yandex tras el deploy.
+- [x] **Feed RSS** (`/feed.xml`) + `<link rel="alternate">` en el layout.
+- [x] **Páginas de rivales** (`/rivales/`, `/rivales/{slug}/`) y **torneos**
+  (`/torneos/`, `/torneos/{slug}/`) + enlaces internos desde cada partido.
+- [ ] **Manual (X)**: crear la app en developer.x.com y cargar los secrets
+  `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` (ver `docs/x-auto-post.md`).
 
 ### Etapa 3
 - [ ] **`og:image` por partido** (Satori) + imagen vertical Stories.

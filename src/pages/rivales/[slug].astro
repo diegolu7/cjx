@@ -1,0 +1,55 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MatchListCard from "../../components/match/MatchListCard.astro";
+import type { Match } from "../../types/match";
+import { groupByRival } from "../../lib/taxonomy";
+import data from "../../data/matches.json";
+
+export async function getStaticPaths() {
+  const matches = data.matches as Match[];
+  return groupByRival(matches).map((g) => ({ params: { slug: g.slug }, props: { group: g } }));
+}
+
+const { group } = Astro.props as {
+  group: { name: string; slug: string; matches: Match[] };
+};
+const base = import.meta.env.BASE_URL;
+const list = group.matches
+  .slice()
+  .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+---
+
+<Layout
+  title={`Boca vs ${group.name} — Partidos y Resultados | Cuando Juega el Xeneize`}
+  description={`Todos los partidos de Boca Juniors contra ${group.name}: resultados, próximos encuentros y datos. Sitio no oficial.`}
+>
+  <nav class="mb-4 text-[12px] text-text-muted" aria-label="Migas de pan">
+    <a href={`${base}`} class="hover:text-accent underline underline-offset-2">Inicio</a>
+    <span> / </span>
+    <a href={`${base}rivales`} class="hover:text-accent underline underline-offset-2">Rivales</a>
+  </nav>
+
+  <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
+    Boca vs {group.name}
+  </h1>
+  <p class="mt-2 text-[13px] leading-[1.6] text-text-secondary">
+    Partidos de Boca Juniors contra {group.name}: resultados y próximos encuentros.
+  </p>
+
+  <ol class="mt-5 list-none p-0 m-0 flex flex-col gap-3">
+    {list.map((m) => (
+      <li>
+        <MatchListCard match={m} />
+      </li>
+    ))}
+  </ol>
+
+  <p class="mt-8">
+    <a
+      href={`${base}rivales`}
+      class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+    >
+      ← Todos los rivales
+    </a>
+  </p>
+</Layout>
