@@ -138,14 +138,14 @@
 - [ ] **Bing Webmaster Tools** (manual): alta + enviar sitemap.
 
 ### Etapa 2 — ✅ implementada
-- [x] **Auto-post en X** (`scripts/lib/x.mjs` + `notify.mjs`): publica 1 post por partido
-  (solo si el push no fue dedupe). Cuenta: https://x.com/cuandojuegaCABJ
+- [x] ~~**Auto-post en X**~~ **DESCARTADO**: X cobra ~USD 20/mes por publicar con URLs.
+  Se publica **a mano** partido a partido con el botón **Compartir** (cuenta:
+  https://x.com/cuandojuegaCABJ). Se removió el código de auto-post.
 - [x] **IndexNow** (`scripts/indexnow.mjs` + `public/<key>.txt`): ping a Bing/Yandex tras el deploy.
 - [x] **Feed RSS** (`/feed.xml`) + `<link rel="alternate">` en el layout.
 - [x] **Páginas de rivales** (`/rivales/`, `/rivales/{slug}/`) y **torneos**
   (`/torneos/`, `/torneos/{slug}/`) + enlaces internos desde cada partido.
-- [ ] **Manual (X)**: crear la app en developer.x.com y cargar los secrets
-  `X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_SECRET` (ver `docs/x-auto-post.md`).
+- [ ] **Manual (X)**: publicar cada partido a mano con el botón Compartir.
 
 ### Etapa 3 — ✅ implementada
 - [x] **`og:image` por partido** (`src/pages/og/[slug].png.ts` con Satori + resvg): tarjeta visual

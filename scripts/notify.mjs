@@ -11,9 +11,6 @@
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { postToX, xConfigured } from "./lib/x.mjs";
-
-const SITE = "https://cuandojuegaelxeneize.com.ar";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = resolve(__dirname, "../src/data/matches.json");
@@ -114,22 +111,6 @@ async function main() {
     try {
       const { status, body } = await send(payload);
       console.log(`[notify] ${payload.type} ${payload.matchId} → HTTP ${status} ${body}`);
-
-      // Auto-post en X (solo si el push no fue un dedupe).
-      let skipped = false;
-      try {
-        skipped = JSON.parse(body)?.skipped === true;
-      } catch {
-        /* body no JSON */
-      }
-      if (!skipped && xConfigured()) {
-        const url = `${SITE}/partidos/${payload.matchId}/`;
-        const tweet = `${payload.title}\n${payload.body}\n${url}`;
-        const r = await postToX(tweet);
-        console.log(
-          `[x] ${r.posted ? `publicado ${r.id}` : `no publicado (${r.reason})`}`,
-        );
-      }
     } catch (err) {
       console.error(`[notify] error enviando ${payload.type} ${payload.matchId}:`, err);
     }
