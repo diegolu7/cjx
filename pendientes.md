@@ -191,6 +191,15 @@
 
 ---
 
+## ✅ AdSense (monetización)
+
+- [x] Meta `google-adsense-account` en el Layout (todas las páginas) + `public/ads.txt`.
+- [x] Páginas legales (`cookies`, `privacidad`) declaran **publicidad (Google AdSense)**.
+- [ ] **Manual (AdSense):** crear el **mensaje de consentimiento (CMP)** de Google (3 opciones) y esperar la **aprobación**.
+- [ ] **Al aprobar:** agregar el **código de Auto ads** (`adsbygoogle.js`) al Layout (deploy).
+
+---
+
 ## ✅ Analítica
 
 - [x] **Microsoft Clarity** (`yihrh0k6ab`) en `Analytics.astro`, gateado por consentimiento.
