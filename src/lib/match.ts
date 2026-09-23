@@ -53,6 +53,18 @@ const MESES_CORTOS = [
   "DIC",
 ];
 
+/** "20/09/2026 21:30" (hora Argentina) a partir de un ISO. */
+export function fechaHoraCorta(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const art = new Date(d.getTime() - 3 * 3600000);
+  const dd = String(art.getUTCDate()).padStart(2, "0");
+  const mm = String(art.getUTCMonth() + 1).padStart(2, "0");
+  const hh = String(art.getUTCHours()).padStart(2, "0");
+  const mi = String(art.getUTCMinutes()).padStart(2, "0");
+  return `${dd}/${mm}/${art.getUTCFullYear()} ${hh}:${mi}`;
+}
+
 /** "20" / "SEP" a partir de "2026-09-20". */
 export function diaMes(iso: string): { day: string; month: string } {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);

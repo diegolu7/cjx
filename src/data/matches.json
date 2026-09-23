@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-09-18T20:45:33.050Z",
+  "updatedAt": "2026-09-23T20:21:33.333Z",
   "matches": [
     {
       "id": "sheet-1",
@@ -11,7 +11,7 @@
       "awayScore": 1,
       "competition": "Liga Profesional",
       "round": "Fecha 9",
-      "channel": "-",
+      "channel": "TNT Sports",
       "venue": "La Bombonera",
       "status": "finished",
       "slug": "2026-09-11-central-cordoba-sde",
@@ -104,6 +104,7 @@
         "score": 4
       },
       "bocaForm": [
+        "W",
         "D",
         "W"
       ],
@@ -263,6 +264,7 @@
         "score": 4
       },
       "bocaForm": [
+        "W",
         "D",
         "W"
       ],
@@ -274,31 +276,202 @@
       "time": "14:45",
       "homeTeam": "Boca",
       "awayTeam": "San Lorenzo",
+      "homeScore": 2,
+      "awayScore": 0,
       "competition": "Liga Profesional",
       "round": "Fecha 10",
-      "channel": "-",
+      "channel": "TNT Sports",
       "venue": "La Bombonera",
-      "status": "next",
+      "status": "finished",
       "slug": "2026-09-20-san-lorenzo",
       "details": {
-        "preview": "Boca Juniors recibe a San Lorenzo en La Bombonera por la Fecha 10 de la Liga Profesional en un clásico determinante para la tabla de posiciones.",
+        "preview": "Boca Juniors venció 2-0 a San Lorenzo en La Bombonera por la Fecha 10 de la Liga Profesional con goles de Merentiel y Flores.",
         "facts": [
-          "San Lorenzo no gana en La Bombonera desde 2022",
-          "Boca ganó 2 de los últimos 3 en casa."
+          "Boca sumó tres puntos clave de local para mantenerse en la pelea de la Liga Profesional."
         ],
-        "referee": "Darío Herrera",
-        "h2h": "Último: Boca 1-1 San Lorenzo (2026)",
-        "formationBoca": "4-3-1-2",
-        "formationRival": "4-2-3-1",
-        "startersBoca": [],
-        "subsBoca": [],
-        "startersRival": [],
-        "subsRival": [],
-        "events": [],
-        "notes": "Partido previsto correspondiente a la Fecha 10 de la Liga Profesional.",
-        "score": 1
+        "referee": "Nazareno Arasa",
+        "h2h": "Último: Boca Juniors 2-0 San Lorenzo (2026)",
+        "formationBoca": "4-3-3",
+        "formationRival": "3-4-1-2",
+        "startersBoca": [
+          "Montero",
+          "Lozano",
+          "Di Lollo",
+          "Herrera",
+          "Blanco",
+          "Delgado",
+          "Paredes",
+          "Ascacíbar",
+          "Velasco",
+          "Merentiel",
+          "Flores"
+        ],
+        "subsBoca": [
+          "Brey",
+          "Pellegrino",
+          "Figal",
+          "Gorosito",
+          "Braida",
+          "Alarcón",
+          "Belmonte",
+          "Palacios",
+          "Romero",
+          "Villa",
+          "Giménez",
+          "Bacidalupe"
+        ],
+        "startersRival": [
+          "Devecchi",
+          "Amor",
+          "Corujo",
+          "Arboleda",
+          "De Ritis",
+          "E. Herrera",
+          "Farías",
+          "M. Insaurralde",
+          "Tripichio",
+          "Cuello",
+          "Auzmendi"
+        ],
+        "subsRival": [
+          "Altamirano",
+          "Arias",
+          "Córdoba",
+          "Pagano",
+          "Gulli",
+          "Cardillo",
+          "Rattalino",
+          "Reali",
+          "Álvarez",
+          "Herazo",
+          "Ladstatter",
+          "Salas"
+        ],
+        "events": [
+          {
+            "minute": "31'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "M. Insaurralde"
+          },
+          {
+            "minute": "34'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "E. Herrera"
+          },
+          {
+            "minute": "35'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Cuello",
+            "detail": "Entra Rattalino"
+          },
+          {
+            "minute": "41'",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Lozano"
+          },
+          {
+            "minute": "46'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Herrera",
+            "detail": "Entra Pellegrino"
+          },
+          {
+            "minute": "46'",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Di Lollo"
+          },
+          {
+            "minute": "55'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Farías",
+            "detail": "Entra Álvarez"
+          },
+          {
+            "minute": "55'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Auzmendi",
+            "detail": "Entra Herazo"
+          },
+          {
+            "minute": "57'",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Flores"
+          },
+          {
+            "minute": "67'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Herrera",
+            "detail": "Entra Reali"
+          },
+          {
+            "minute": "68'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Tripichio",
+            "detail": "Entra Gulli"
+          },
+          {
+            "minute": "70'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Merentiel"
+          },
+          {
+            "minute": "72'",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Blanco"
+          },
+          {
+            "minute": "73'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Velasco",
+            "detail": "Entra Palacios"
+          },
+          {
+            "minute": "73'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Ascacíbar",
+            "detail": "Entra Romero"
+          },
+          {
+            "minute": "80'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Flores"
+          },
+          {
+            "minute": "83'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Merentiel",
+            "detail": "Entra Villa"
+          },
+          {
+            "minute": "83'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Flores",
+            "detail": "Entra Belmonte"
+          }
+        ],
+        "notes": "Gran victoria de local por la Fecha 10 de la Liga Profesional.",
+        "score": 4
       },
       "bocaForm": [
+        "W",
         "D",
         "W"
       ],
@@ -307,14 +480,14 @@
     {
       "id": "sheet-4",
       "date": "2026-09-27",
-      "time": "19:00",
+      "time": "17:00",
       "homeTeam": "Boca",
       "awayTeam": "Racing",
       "competition": "Copa Argentina",
       "round": "Octavos de Final",
-      "channel": "DGO",
-      "venue": "Por definir",
-      "status": "scheduled",
+      "channel": "TyC Sports",
+      "venue": "Gigante de Arroyito",
+      "status": "next",
       "slug": "2026-09-27-racing",
       "details": {
         "preview": "Boca Juniors enfrentará a Racing Club por los Octavos de Final de la Copa Argentina en busca del pase a la siguiente fase.",
@@ -333,10 +506,68 @@
         "score": 1
       },
       "bocaForm": [
+        "W",
         "D",
         "W"
       ],
       "indexable": true
+    },
+    {
+      "id": "sheet-6",
+      "date": "2026-10-04",
+      "time": "19:15",
+      "homeTeam": "Boca",
+      "awayTeam": "Unión (Sfe)",
+      "competition": "Liga Profesional",
+      "round": "Fecha 11",
+      "channel": "TNT Sports",
+      "venue": "La Bombonera",
+      "status": "scheduled",
+      "slug": "2026-10-04-union-sfe",
+      "bocaForm": [
+        "W",
+        "D",
+        "W"
+      ],
+      "indexable": true
+    },
+    {
+      "id": "sheet-5",
+      "date": "2026-10-13",
+      "time": "21:30",
+      "homeTeam": "Boca",
+      "awayTeam": "Vasco da Gama",
+      "competition": "Copa Sudamericana",
+      "round": "Semifinal - Ida",
+      "channel": "DGO",
+      "venue": "La Bombonera",
+      "status": "scheduled",
+      "slug": "2026-10-13-vasco-da-gama",
+      "bocaForm": [
+        "W",
+        "D",
+        "W"
+      ],
+      "indexable": false
+    },
+    {
+      "id": "sheet-7",
+      "date": "2026-10-20",
+      "time": "21:30",
+      "homeTeam": "Vasco da Gama",
+      "awayTeam": "Boca",
+      "competition": "Copa Sudamericana",
+      "round": "Semifinal - Vuelta",
+      "channel": "DGO",
+      "venue": "A confirmar",
+      "status": "scheduled",
+      "slug": "2026-10-20-vasco-da-gama",
+      "bocaForm": [
+        "W",
+        "D",
+        "W"
+      ],
+      "indexable": false
     }
   ]
 }

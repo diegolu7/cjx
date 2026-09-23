@@ -4,6 +4,7 @@ import MatchesTimeline from "../components/MatchesTimeline.astro";
 import Notifications from "../components/Notifications.astro";
 import ShareButton from "../components/ShareButton.astro";
 import type { Match } from "../types/match";
+import { fechaHoraCorta } from "../lib/match";
 import data from "../data/matches.json";
 
 const base = import.meta.env.BASE_URL;
@@ -74,6 +75,10 @@ const sportsEvent = next
   </div>
 
   <Notifications hideWhenUnconfigured />
+
+  <p class="mt-6 text-[11px] text-text-muted">
+    Datos actualizados: {fechaHoraCorta(data.updatedAt)} (hora Argentina).
+  </p>
 
   {sportsEvent && (
     <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />

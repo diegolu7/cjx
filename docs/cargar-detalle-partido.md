@@ -108,6 +108,14 @@ muestran como **"A confirmar"** (nunca `-`).
 > El **countdown** ("Faltan X días"), el **resultado global** y el **"Boca clasificó"** se
 > calculan solos a partir de la ficha y del global; no hay que cargarlos.
 
+### Estado del partido y redacción (importante para SEO/GEO)
+- **Próximo:** escribí el `Preview` en **futuro/presente** (se muestra como "Previa del partido").
+- **Finalizado:** escribí el `Preview` en **pasado** (se muestra como "Resumen del partido").
+  No dejes una previa en futuro en un partido ya jugado.
+- **Evitá claves genéricas** (ej. "es un partido de octavos"): preferí **sede confirmada,
+  contexto del cruce, antecedentes concretos y cambios de horario**.
+- La ficha muestra **"Datos actualizados: …"** (automático, del snapshot).
+
 ---
 
 ## 6. Indexación (SEO)

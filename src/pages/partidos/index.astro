@@ -2,6 +2,7 @@
 import Layout from "../../layouts/Layout.astro";
 import MatchListCard from "../../components/match/MatchListCard.astro";
 import type { Match } from "../../types/match";
+import { fechaHoraCorta } from "../../lib/match";
 import data from "../../data/matches.json";
 
 const matches = data.matches as Match[];
@@ -63,4 +64,8 @@ const anteriores = matches
   {matches.length === 0 && (
     <p class="text-text-secondary text-sm">No hay partidos disponibles por el momento.</p>
   )}
+
+  <p class="mt-8 text-[11px] text-text-muted">
+    Datos actualizados: {fechaHoraCorta(data.updatedAt)} (hora Argentina).
+  </p>
 </Layout>

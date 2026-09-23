@@ -19,6 +19,7 @@ import {
   faqFor,
   fechaLarga,
   marcador,
+  fechaHoraCorta,
 } from "../../lib/match";
 import { slugify } from "../../lib/taxonomy";
 import data from "../../data/matches.json";
@@ -60,12 +61,18 @@ const faqLd = {
   })),
 };
 
+const eventStart = `${match.date}T${match.time ?? "00:00"}:00-03:00`;
+const eventEnd = new Date(new Date(eventStart).getTime() + 2 * 60 * 60 * 1000).toISOString();
+
 const sportsEvent = {
   "@context": "https://schema.org",
   "@type": "SportsEvent",
   name: `Boca vs ${rival}`,
-  startDate: `${match.date}T${match.time ?? "00:00"}:00-03:00`,
-  eventStatus: "https://schema.org/EventScheduled",
+  startDate: eventStart,
+  endDate: eventEnd,
+  // En partidos finalizados no declaramos eventStatus: schema.org no tiene "finalizado"
+  // y decir "EventScheduled" contradice el resultado visible.
+  ...(finished ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   sport: "Soccer",
   url: new URL(Astro.url.pathname, Astro.site).href,
@@ -151,7 +158,11 @@ const sportsEvent = {
       </a>
     </div>
 
-    <p class="mt-8">
+    <p class="mt-6 text-[11px] text-text-muted">
+      Datos actualizados: {fechaHoraCorta(data.updatedAt)} (hora Argentina).
+    </p>
+
+    <p class="mt-6">
       <a
         href={`${base}partidos`}
         class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
