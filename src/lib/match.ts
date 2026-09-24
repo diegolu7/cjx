@@ -83,7 +83,7 @@ export function marcador(m: Match): string {
 export function titleFor(m: Match): string {
   const rival = rivalOf(m);
   if (m.status === "finished" && bocaGoles(m) !== undefined) {
-    return `Boca ${bocaGoles(m)} - ${rivalGoles(m)} ${rival} (${m.competition}) | Cuando Juega el Xeneize`;
+    return `Boca ${bocaGoles(m)} - ${rivalGoles(m)} ${rival}: resultado final (${m.competition}) | Cuando Juega el Xeneize`;
   }
   return `Boca vs ${rival}: fecha, hora y cómo ver (${m.competition}) | Cuando Juega el Xeneize`;
 }
@@ -94,7 +94,7 @@ export function descriptionFor(m: Match): string {
   const hora = m.time ? ` a las ${m.time}` : "";
   const lugar = m.venue ? ` en ${m.venue}` : "";
   if (m.status === "finished") {
-    return `Resultado de ${marcador(m)} por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}. Global, formaciones y datos del partido de Boca. Sitio no oficial.`;
+    return `Resultado de ${marcador(m)}: cómo salió Boca por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}. Global, formaciones y datos. Sitio no oficial.`;
   }
   return `Boca vs ${rival} por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}${hora}${lugar}. Formaciones, historial y cómo ver. Sitio no oficial.`;
 }
