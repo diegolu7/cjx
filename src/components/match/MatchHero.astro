@@ -2,7 +2,7 @@
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
 import MatchEssentials from "./MatchEssentials.astro";
-import { rivalOf, diaSemana, fechaLarga, countdownText, bocaAdvances } from "../../lib/match";
+import { rivalOf, diaSemana, fechaLarga, countdownText, bocaAdvances, horaDe } from "../../lib/match";
 
 interface Props {
   match: Match;
@@ -94,9 +94,9 @@ const badgeClass = finished
       <p class="text-[12px] uppercase tracking-[0.06em] text-text-secondary capitalize">
         {diaSemana(match.date)} {fechaLarga(match.date)}
       </p>
-      {match.time ? (
+      {horaDe(match) ? (
         <p class="mt-1 text-[36px] lg:text-[42px] font-bold leading-none text-accent-strong">
-          {match.time}
+          {horaDe(match)}
         </p>
       ) : (
         <p class="mt-1 text-[15px] text-text-secondary">Horario a confirmar</p>

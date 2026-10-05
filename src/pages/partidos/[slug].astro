@@ -20,6 +20,10 @@ import {
   fechaLarga,
   marcador,
   fechaHoraCorta,
+  horaDe,
+  lugarDe,
+  kickoffISO,
+  kickoffEndISO,
 } from "../../lib/match";
 import { slugify } from "../../lib/taxonomy";
 import data from "../../data/matches.json";
@@ -48,7 +52,7 @@ const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
 const shareTitle = finished ? marcador(match) : `Boca vs ${rival}`;
 const shareText = finished
   ? `Final: ${marcador(match)} · ${match.competition}`
-  : `Boca vs ${rival} · ${fechaLarga(match.date)}${match.time ? ` a las ${match.time}` : ""}${match.venue ? ` en ${match.venue}` : ""}`;
+  : `Boca vs ${rival} · ${fechaLarga(match.date)}${horaDe(match) ? ` a las ${horaDe(match)}` : ""}${lugarDe(match) ? ` en ${lugarDe(match)}` : ""}`;
 
 const faqs = faqFor(match);
 const faqLd = {
@@ -61,15 +65,14 @@ const faqLd = {
   })),
 };
 
-const eventStart = `${match.date}T${match.time ?? "00:00"}:00-03:00`;
-const eventEnd = new Date(new Date(eventStart).getTime() + 2 * 60 * 60 * 1000).toISOString();
+const eventStart = kickoffISO(match);
+const eventEnd = kickoffEndISO(match);
 
 const sportsEvent = {
   "@context": "https://schema.org",
   "@type": "SportsEvent",
   name: `Boca vs ${rival}`,
-  startDate: eventStart,
-  endDate: eventEnd,
+  ...(eventStart ? { startDate: eventStart, endDate: eventEnd } : {}),
   // En partidos finalizados no declaramos eventStatus: schema.org no tiene "finalizado"
   // y decir "EventScheduled" contradice el resultado visible.
   ...(finished ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
@@ -78,7 +81,7 @@ const sportsEvent = {
   url: new URL(Astro.url.pathname, Astro.site).href,
   image: new URL(`${base}og/${match.slug}.png`, Astro.site).href,
   description: descriptionFor(match),
-  ...(match.venue ? { location: { "@type": "Place", name: match.venue } } : {}),
+  ...(lugarDe(match) ? { location: { "@type": "Place", name: lugarDe(match) } } : {}),
   competitor: [
     { "@type": "SportsTeam", name: "Boca Juniors", sport: "Soccer" },
     { "@type": "SportsTeam", name: rival, sport: "Soccer" },

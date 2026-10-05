@@ -1,7 +1,7 @@
 import type { APIRoute } from "astro";
 import type { Match } from "../types/match";
 import data from "../data/matches.json";
-import { titleFor, descriptionFor } from "../lib/match";
+import { titleFor, descriptionFor, kickoffISO } from "../lib/match";
 
 function escapeXml(s: string): string {
   return s
@@ -21,7 +21,7 @@ export const GET: APIRoute = ({ site }) => {
       const url = `${base}/partidos/${m.slug}/`;
       const title = titleFor(m).replace(" | Cuando Juega el Xeneize", "");
       const desc = descriptionFor(m);
-      const dt = new Date(`${m.date}T${m.time ?? "00:00"}:00-03:00`);
+      const dt = new Date(kickoffISO(m) ?? `${m.date}T00:00:00-03:00`);
       const pubDate = Number.isNaN(dt.getTime()) ? new Date().toUTCString() : dt.toUTCString();
       return [
         "    <item>",

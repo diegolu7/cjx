@@ -1,7 +1,7 @@
 ---
 import type { Match, MatchStatus } from "../types/match";
 import Icon from "./match/Icon.astro";
-import { rivalOf, diaMes } from "../lib/match";
+import { rivalOf, diaMes, horaDe, canalDe } from "../lib/match";
 
 interface Props {
   matches: Match[];
@@ -171,9 +171,9 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                       <span class="mt-1 text-[16px] lg:text-[17px] leading-[1.35] font-semibold tracking-[0.02em] text-accent-strong">
                         {featuredDate(match).date}
                       </span>
-                      {match.time ? (
+                      {horaDe(match) ? (
                         <span class="mt-1 text-[16px] lg:text-[17px] leading-[1.35] font-semibold tracking-[0.02em] text-accent-strong">
-                          {match.time}
+                          {horaDe(match)}
                         </span>
                       ) : (
                         <span class="mt-1 text-[12px] leading-[1.35] text-text-secondary">
@@ -205,12 +205,12 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                         </div>
                       )}
                       <div class="mt-2.5 flex items-center gap-3">
-                        {match.channel && (
+                        {canalDe(match) && (
                           <p class="flex items-center gap-1.5 text-[12px] text-text-primary">
                             <span class="text-accent-secondary">
                               <Icon name="tv" size={16} />
                             </span>
-                            {match.channel}
+                            {canalDe(match)}
                           </p>
                         )}
                         <span class="ml-auto flex items-center gap-2 lg:hidden">

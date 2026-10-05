@@ -1,277 +1,8 @@
 {
-  "updatedAt": "2026-09-23T20:21:33.333Z",
+  "updatedAt": "2026-10-05T22:20:52.818Z",
   "matches": [
     {
       "id": "sheet-1",
-      "date": "2026-09-11",
-      "time": "21:30",
-      "homeTeam": "Boca",
-      "awayTeam": "Central Córdoba (SdE)",
-      "homeScore": 3,
-      "awayScore": 1,
-      "competition": "Liga Profesional",
-      "round": "Fecha 9",
-      "channel": "TNT Sports",
-      "venue": "La Bombonera",
-      "status": "finished",
-      "slug": "2026-09-11-central-cordoba-sde",
-      "details": {
-        "preview": "Boca Juniors venció 3-1 a Central Córdoba (SdE) en La Bombonera por la Fecha 9 de la Liga Profesional.",
-        "facts": [
-          "Boca mantiene una racha positiva en condición de local ante el conjunto santiagueño."
-        ],
-        "referee": "Yael Falcón Pérez",
-        "h2h": "Último: Boca 2-0 Central Córdoba",
-        "formationBoca": "4-3-1-2",
-        "formationRival": "4-4-2",
-        "startersBoca": [
-          "Montero",
-          "Lozano",
-          "Di Lollo",
-          "Herrera",
-          "Blanco",
-          "Ascacíbar",
-          "Paredes",
-          "Belmonte",
-          "Velasco",
-          "Merentiel",
-          "Flores"
-        ],
-        "subsBoca": [
-          "Brey",
-          "Figal",
-          "Gorosito",
-          "Pellegrino",
-          "Satas",
-          "Alarcón",
-          "Palacios",
-          "Rey Domenech",
-          "Zenón",
-          "Valencia",
-          "Villa",
-          "Romero"
-        ],
-        "startersRival": [
-          "Ingolotti",
-          "Torrent",
-          "Valdez",
-          "Goñi",
-          "Rivero",
-          "Soraire",
-          "Kalinski",
-          "Atencio",
-          "Montoya",
-          "Sanabria",
-          "Molina"
-        ],
-        "subsRival": [
-          "Mansilla",
-          "Pillud",
-          "Minissale",
-          "Marchi",
-          "Miloc",
-          "Vázquez",
-          "Barrios",
-          "Gamba"
-        ],
-        "events": [
-          {
-            "minute": "15'",
-            "type": "Gol",
-            "team": "Boca",
-            "player": "Merentiel"
-          },
-          {
-            "minute": "38'",
-            "type": "Gol",
-            "team": "Rival",
-            "player": "Sanabria"
-          },
-          {
-            "minute": "55'",
-            "type": "Gol",
-            "team": "Boca",
-            "player": "Flores"
-          },
-          {
-            "minute": "82'",
-            "type": "Gol",
-            "team": "Boca",
-            "player": "Velasco"
-          }
-        ],
-        "notes": "Triunfo importante de local para seguir firme en los puestos altos de la Liga Profesional.",
-        "score": 4
-      },
-      "bocaForm": [
-        "W",
-        "D",
-        "W"
-      ],
-      "indexable": true
-    },
-    {
-      "id": "sheet-2",
-      "date": "2026-09-15",
-      "time": "21:30",
-      "homeTeam": "São Paulo",
-      "awayTeam": "Boca",
-      "homeScore": 1,
-      "awayScore": 1,
-      "competition": "Copa Sudamericana",
-      "round": "Cuartos de Final - Vuelta",
-      "channel": "DSport",
-      "venue": "Estadio Morumbi",
-      "status": "finished",
-      "aggregate": {
-        "bocaScore": 2,
-        "rivalScore": 1
-      },
-      "slug": "2026-09-15-sao-paulo",
-      "details": {
-        "preview": "Boca empató 1-1 en Morumbí ante São Paulo y logró la clasificación a semifinales de la Copa Sudamericana tras ganar 2-1 en el global.",
-        "facts": [
-          "Boca avanzó de fase tras defender la ventaja obtenida en la ida."
-        ],
-        "referee": "Esteban Ostojich",
-        "h2h": "Ida: Boca 1-0 São Paulo",
-        "formationBoca": "4-3-1-2",
-        "formationRival": "3-4-2-1",
-        "startersBoca": [
-          "Montero",
-          "Lozano",
-          "Di Lollo",
-          "Herrera",
-          "Blanco",
-          "Ascacíbar",
-          "Paredes",
-          "Belmonte",
-          "Velasco",
-          "Merentiel",
-          "Flores"
-        ],
-        "subsBoca": [
-          "Brey",
-          "Figal",
-          "Gorosito",
-          "Pellegrino",
-          "Satas",
-          "Alarcón",
-          "Palacios",
-          "Rey Domenech",
-          "Zenón",
-          "Valencia",
-          "Villa",
-          "Romero"
-        ],
-        "startersRival": [
-          "Rafael",
-          "Sabino",
-          "Arboleda",
-          "Duarte",
-          "Lucas Ramon",
-          "Marcos Antonio",
-          "Pablo Maia",
-          "Iago",
-          "Luciano",
-          "Artur",
-          "Calleri"
-        ],
-        "subsRival": [
-          "Coronel",
-          "Toloi",
-          "Wendell",
-          "Newton",
-          "Santana",
-          "Silva",
-          "Danielzinho",
-          "Ferreira",
-          "Djhordney",
-          "Cauly",
-          "Victor Sá",
-          "Tetê"
-        ],
-        "events": [
-          {
-            "minute": "52'",
-            "type": "Amarilla",
-            "team": "Boca",
-            "player": "Merentiel"
-          },
-          {
-            "minute": "63'",
-            "type": "Cambio",
-            "team": "Rival",
-            "player": "Sale Luciano",
-            "detail": "Entra Santana"
-          },
-          {
-            "minute": "70'",
-            "type": "Amarilla",
-            "team": "Rival",
-            "player": "Dorival Júnior"
-          },
-          {
-            "minute": "75'",
-            "type": "Amarilla",
-            "team": "Boca",
-            "player": "Villa"
-          },
-          {
-            "minute": "79'",
-            "type": "Cambio",
-            "team": "Boca",
-            "player": "Sale Merentiel",
-            "detail": "Entra Villa"
-          },
-          {
-            "minute": "81'",
-            "type": "Cambio",
-            "team": "Rival",
-            "player": "Sale Marcos Antonio",
-            "detail": "Entra Danielzinho"
-          },
-          {
-            "minute": "82'",
-            "type": "Cambio",
-            "team": "Rival",
-            "player": "Sale Calleri",
-            "detail": "Entra Ferreira"
-          },
-          {
-            "minute": "85'",
-            "type": "Cambio",
-            "team": "Boca",
-            "player": "Sale Velasco",
-            "detail": "Entra Valencia"
-          },
-          {
-            "minute": "90'",
-            "type": "Cambio",
-            "team": "Rival",
-            "player": "Sale Artur",
-            "detail": "Entra Silva"
-          },
-          {
-            "minute": "90'",
-            "type": "Cambio",
-            "team": "Rival",
-            "player": "Sale Pablo Maia",
-            "detail": "Entra Newton"
-          }
-        ],
-        "notes": "Partido disputado en el Estadio Morumbí por los Cuartos de Final (Vuelta) de la Copa Sudamericana.",
-        "score": 4
-      },
-      "bocaForm": [
-        "W",
-        "D",
-        "W"
-      ],
-      "indexable": true
-    },
-    {
-      "id": "sheet-3",
       "date": "2026-09-20",
       "time": "14:45",
       "homeTeam": "Boca",
@@ -472,61 +203,432 @@
       },
       "bocaForm": [
         "W",
-        "D",
+        "L",
+        "W"
+      ],
+      "indexable": true
+    },
+    {
+      "id": "sheet-2",
+      "date": "2026-09-27",
+      "time": "17:00",
+      "homeTeam": "Racing Club",
+      "awayTeam": "Boca",
+      "homeScore": 3,
+      "awayScore": 2,
+      "competition": "Copa Argentina",
+      "round": "Octavos de Final",
+      "channel": "TyC Sports",
+      "venue": "Estadio Gigante de Arroyito",
+      "status": "finished",
+      "slug": "2026-09-27-racing-club",
+      "details": {
+        "preview": "Boca Juniors logró una heroica remontada 3-2 ante Racing Club por los Octavos de Final de la Copa Argentina tras ir perdiendo 2-0.",
+        "facts": [
+          "Enner Valencia convirtió un doblete decisivo (72' y 90'+5) para darle el triunfo agónico al Xeneize."
+        ],
+        "referee": "C. Gareano",
+        "h2h": "Último: Racing Club 2-3 Boca Juniors (Copa Argentina 2026)",
+        "formationBoca": "4-3-3",
+        "formationRival": "3-4-1-2",
+        "startersBoca": [
+          "Brey",
+          "Lozano",
+          "Di Lollo",
+          "Herrera",
+          "Blanco",
+          "Delgado",
+          "Paredes",
+          "Ascacíbar",
+          "Velasco",
+          "Merentiel",
+          "Flores"
+        ],
+        "subsBoca": [
+          "García",
+          "Figal",
+          "Gorosito",
+          "Pellegrino",
+          "Braida",
+          "Alarcón",
+          "Belmonte",
+          "Palacios",
+          "Romero",
+          "Villa",
+          "Giménez",
+          "Valencia"
+        ],
+        "startersRival": [
+          "Cambeses",
+          "Escudero",
+          "Rojo",
+          "M. Martínez",
+          "I. Rodríguez",
+          "Zaracho",
+          "Lodico",
+          "L. Pérez",
+          "Ortegoza",
+          "A. Martínez",
+          "Conechny"
+        ],
+        "subsRival": [
+          "Tagliamonte",
+          "Cannavo",
+          "Espino",
+          "Colombo",
+          "M. Pérez",
+          "A. Fernández",
+          "Kranevitter",
+          "Miljevic",
+          "Tello",
+          "Campo",
+          "Torres",
+          "Vergara"
+        ],
+        "events": [
+          {
+            "minute": "12'",
+            "type": "Gol",
+            "team": "Rival",
+            "player": "Conechny"
+          },
+          {
+            "minute": "19'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "Lodico"
+          },
+          {
+            "minute": "47'",
+            "type": "Gol",
+            "team": "Rival",
+            "player": "A. Martínez"
+          },
+          {
+            "minute": "56'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Velasco",
+            "detail": "Entra Villa"
+          },
+          {
+            "minute": "56'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Ascacíbar",
+            "detail": "Entra Valencia"
+          },
+          {
+            "minute": "67'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Lodico",
+            "detail": "Entra Fernández"
+          },
+          {
+            "minute": "67'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Zaracho",
+            "detail": "Entra Cannavo"
+          },
+          {
+            "minute": "68'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "Zaracho"
+          },
+          {
+            "minute": "70'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Flores",
+            "detail": "Entra Palacios"
+          },
+          {
+            "minute": "72'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Valencia"
+          },
+          {
+            "minute": "78'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Ortegoza",
+            "detail": "Entra Kranevitter"
+          },
+          {
+            "minute": "78'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Conechny",
+            "detail": "Entra Campo"
+          },
+          {
+            "minute": "80'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Villa"
+          },
+          {
+            "minute": "90'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Pérez",
+            "detail": "Entra Miljevic"
+          },
+          {
+            "minute": "90'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Herrera",
+            "detail": "Entra Pellegrino"
+          },
+          {
+            "minute": "90'+5",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Valencia"
+          },
+          {
+            "minute": "90'+7",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Valencia"
+          }
+        ],
+        "notes": "Disputado en el Estadio Gigante de Arroyito. Clasificación a Cuartos de Final de la Copa Argentina.",
+        "score": 4
+      },
+      "bocaForm": [
+        "W",
+        "L",
+        "W"
+      ],
+      "indexable": true
+    },
+    {
+      "id": "sheet-3",
+      "date": "2026-10-02",
+      "time": "19:00",
+      "homeTeam": "Boca",
+      "awayTeam": "Unión de Santa Fe",
+      "homeScore": 3,
+      "awayScore": 0,
+      "competition": "Liga Profesional",
+      "round": "Fecha 11",
+      "channel": "ESPN Premium",
+      "venue": "La Bombonera",
+      "status": "finished",
+      "slug": "2026-10-02-union-de-santa-fe",
+      "details": {
+        "preview": "Boca Juniors goleó 3-0 a Unión de Santa Fe en La Bombonera por la Fecha 11 de la Liga Profesional con una actuación contundente en la primera parte.",
+        "facts": [
+          "Boca dominó ampliamente la posesión (69%) y registró 25 remates totales frente a 4 del rival."
+        ],
+        "referee": "Sebastián Nicolás Martínez",
+        "h2h": "Último: Boca Juniors 3-0 Unión de Santa Fe (2026)",
+        "formationBoca": "4-3-1-2",
+        "formationRival": "4-4-2",
+        "startersBoca": [
+          "Brey",
+          "Lozano",
+          "Di Lollo",
+          "Herrera",
+          "Blanco",
+          "Delgado",
+          "Paredes",
+          "Ascacíbar",
+          "Velasco",
+          "Merentiel",
+          "Villa"
+        ],
+        "subsBoca": [
+          "García",
+          "Costa",
+          "Figal",
+          "Gorosito",
+          "Pellegrino",
+          "Braida",
+          "Alarcón",
+          "Palacios",
+          "Romero",
+          "Flores",
+          "Giménez",
+          "Valencia"
+        ],
+        "startersRival": [
+          "Mansilla",
+          "Pintado",
+          "Ludueña",
+          "Rocha",
+          "Ayala",
+          "Cuello",
+          "Mosqueira",
+          "Palacios",
+          "Malcorra",
+          "Luna Diale",
+          "Tarragona"
+        ],
+        "subsRival": [
+          "Meuli",
+          "Aimar",
+          "Isla",
+          "Pittón",
+          "Rubio",
+          "Giaccone",
+          "Menossi",
+          "Peresutti",
+          "Solari",
+          "Aguirre",
+          "Estigarribia",
+          "Ramírez"
+        ],
+        "events": [
+          {
+            "minute": "7'",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Herrera"
+          },
+          {
+            "minute": "17'",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Paredes"
+          },
+          {
+            "minute": "21'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "Mosqueira"
+          },
+          {
+            "minute": "22'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Paredes"
+          },
+          {
+            "minute": "39'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Merentiel"
+          },
+          {
+            "minute": "45'",
+            "type": "Gol",
+            "team": "Boca",
+            "player": "Velasco"
+          },
+          {
+            "minute": "46'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Mosqueira",
+            "detail": "Entra Menossi"
+          },
+          {
+            "minute": "60'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Merentiel",
+            "detail": "Entra Valencia"
+          },
+          {
+            "minute": "61'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Velasco",
+            "detail": "Entra Palacios"
+          },
+          {
+            "minute": "61'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Villa",
+            "detail": "Entra Flores"
+          },
+          {
+            "minute": "64'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Cuello",
+            "detail": "Entra Estigarribia"
+          },
+          {
+            "minute": "66'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "Ayala"
+          },
+          {
+            "minute": "72'",
+            "type": "Amarilla",
+            "team": "Rival",
+            "player": "Luna Diale"
+          },
+          {
+            "minute": "73'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Palacios",
+            "detail": "Entra Ramírez"
+          },
+          {
+            "minute": "73'",
+            "type": "Cambio",
+            "team": "Rival",
+            "player": "Sale Ayala",
+            "detail": "Entra Pittón"
+          },
+          {
+            "minute": "84'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Ascacíbar",
+            "detail": "Entra Romero"
+          },
+          {
+            "minute": "86'",
+            "type": "Cambio",
+            "team": "Boca",
+            "player": "Sale Paredes",
+            "detail": "Entra Alarcón"
+          },
+          {
+            "minute": "90'+2",
+            "type": "Amarilla",
+            "team": "Boca",
+            "player": "Valencia"
+          }
+        ],
+        "notes": "Transmisión a cargo de ESPN Premium. Árbitro: Sebastián Nicolás Martínez. Estadio La Bombonera.",
+        "score": 4
+      },
+      "bocaForm": [
+        "W",
+        "L",
         "W"
       ],
       "indexable": true
     },
     {
       "id": "sheet-4",
-      "date": "2026-09-27",
-      "time": "17:00",
-      "homeTeam": "Boca",
-      "awayTeam": "Racing",
-      "competition": "Copa Argentina",
-      "round": "Octavos de Final",
-      "channel": "TyC Sports",
-      "venue": "Gigante de Arroyito",
-      "status": "next",
-      "slug": "2026-09-27-racing",
-      "details": {
-        "preview": "Boca Juniors enfrentará a Racing Club por los Octavos de Final de la Copa Argentina en busca del pase a la siguiente fase.",
-        "facts": [
-          "Clásico decisivo a partido único por la Copa Argentina."
-        ],
-        "h2h": "Último: Boca Juniors vs Racing Club (Liga Profesional)",
-        "formationBoca": "4-3-1-2",
-        "formationRival": "4-3-3",
-        "startersBoca": [],
-        "subsBoca": [],
-        "startersRival": [],
-        "subsRival": [],
-        "events": [],
-        "notes": "Partido previsto por los Octavos de Final de la Copa Argentina.",
-        "score": 1
-      },
-      "bocaForm": [
-        "W",
-        "D",
-        "W"
-      ],
-      "indexable": true
-    },
-    {
-      "id": "sheet-6",
-      "date": "2026-10-04",
-      "time": "19:15",
-      "homeTeam": "Boca",
-      "awayTeam": "Unión (Sfe)",
+      "date": "2026-10-09",
+      "time": "19:30",
+      "homeTeam": "Instituto (Córdoba)",
+      "awayTeam": "Boca",
       "competition": "Liga Profesional",
-      "round": "Fecha 11",
-      "channel": "TNT Sports",
-      "venue": "La Bombonera",
-      "status": "scheduled",
-      "slug": "2026-10-04-union-sfe",
+      "round": "Fecha 12",
+      "channel": "Por definir",
+      "venue": "Estadio Monumental de Alta Córdoba",
+      "status": "next",
+      "slug": "2026-10-09-instituto-cordoba",
       "bocaForm": [
         "W",
-        "D",
+        "L",
         "W"
       ],
       "indexable": true
@@ -545,7 +647,25 @@
       "slug": "2026-10-13-vasco-da-gama",
       "bocaForm": [
         "W",
-        "D",
+        "L",
+        "W"
+      ],
+      "indexable": true
+    },
+    {
+      "id": "sheet-6",
+      "date": "2026-10-18",
+      "homeTeam": "Boca",
+      "awayTeam": "Talleres (Córdoba)",
+      "competition": "Liga Profesional",
+      "round": "Fecha 13",
+      "channel": "Por definir",
+      "venue": "La Bombonera",
+      "status": "scheduled",
+      "slug": "2026-10-18-talleres-cordoba",
+      "bocaForm": [
+        "W",
+        "L",
         "W"
       ],
       "indexable": false
@@ -559,12 +679,30 @@
       "competition": "Copa Sudamericana",
       "round": "Semifinal - Vuelta",
       "channel": "DGO",
-      "venue": "A confirmar",
+      "venue": "Estadio São Januário",
       "status": "scheduled",
       "slug": "2026-10-20-vasco-da-gama",
       "bocaForm": [
         "W",
-        "D",
+        "L",
+        "W"
+      ],
+      "indexable": false
+    },
+    {
+      "id": "sheet-8",
+      "date": "2026-10-25",
+      "homeTeam": "Independiente",
+      "awayTeam": "Boca",
+      "competition": "Liga Profesional",
+      "round": "Fecha 14",
+      "channel": "Por definir",
+      "venue": "Estadio Libertadores de América",
+      "status": "scheduled",
+      "slug": "2026-10-25-independiente",
+      "bocaForm": [
+        "W",
+        "L",
         "W"
       ],
       "indexable": false

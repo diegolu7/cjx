@@ -4,7 +4,7 @@ import MatchesTimeline from "../components/MatchesTimeline.astro";
 import Notifications from "../components/Notifications.astro";
 import ShareButton from "../components/ShareButton.astro";
 import type { Match } from "../types/match";
-import { fechaHoraCorta } from "../lib/match";
+import { fechaHoraCorta, horaDe, kickoffISO, kickoffEndISO } from "../lib/match";
 import data from "../data/matches.json";
 
 const base = import.meta.env.BASE_URL;
@@ -12,18 +12,15 @@ const matches = data.matches as Match[];
 const next = matches.find((m) => m.status === "next");
 
 const rival = next ? (next.homeTeam === "Boca" ? next.awayTeam : next.homeTeam) : "";
-const startDate = next ? `${next.date}T${next.time ?? "00:00"}:00-03:00` : null;
-const endDate = startDate
-  ? new Date(new Date(startDate).getTime() + 2 * 60 * 60 * 1000).toISOString()
-  : null;
+const startDate = next ? kickoffISO(next) : null;
+const endDate = next ? kickoffEndISO(next) : null;
 
 const sportsEvent = next
   ? {
       "@context": "https://schema.org",
       "@type": "SportsEvent",
       name: `${next.homeTeam} vs ${next.awayTeam}`,
-      startDate,
-      endDate,
+      ...(startDate ? { startDate, endDate } : {}),
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Soccer",
@@ -31,7 +28,7 @@ const sportsEvent = next
       image: new URL(`${base}og.png`, Astro.site).href,
       description: `${next.homeTeam} vs ${next.awayTeam} por ${next.competition}${
         next.round ? ` (${next.round})` : ""
-      } el ${next.date}${next.time ? ` a las ${next.time}` : ""} hs.`,
+      } el ${next.date}${horaDe(next) ? ` a las ${horaDe(next)}` : ""} hs.`,
       location: {
         "@type": "Place",
         name: next.venue ?? "Estadio a confirmar",

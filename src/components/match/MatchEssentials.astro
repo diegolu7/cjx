@@ -1,7 +1,7 @@
 ---
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
-import { fechaLarga } from "../../lib/match";
+import { fechaLarga, lugarDe, canalDe } from "../../lib/match";
 
 interface Props {
   match: Match;
@@ -13,9 +13,9 @@ const items = [
   ...(includeDate
     ? [{ icon: "calendar", label: "Fecha", value: fechaLarga(match.date), sub: undefined }]
     : []),
-  { icon: "mapPin", label: "Estadio", value: match.venue || "A confirmar", sub: undefined },
+  { icon: "mapPin", label: "Estadio", value: lugarDe(match) || "A confirmar", sub: undefined },
   { icon: "trophy", label: "Torneo", value: match.competition, sub: match.round },
-  { icon: "tv", label: "TV", value: match.channel || "A confirmar", sub: undefined },
+  { icon: "tv", label: "TV", value: canalDe(match) || "A confirmar", sub: undefined },
 ];
 ---
 

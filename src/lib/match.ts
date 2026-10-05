@@ -27,6 +27,49 @@ export function rivalGoles(m: Match): number | undefined {
   return m.homeTeam === "Boca" ? m.awayScore : m.homeScore;
 }
 
+const SIN_DATO = new Set(["", "-", "por definir", "a definir", "tbd", "tv"]);
+
+/** Valor real de un campo opcional del Sheet (Hora, Canal, Lugar…), o undefined. */
+function datoVacio(v: string | undefined): string | undefined {
+  const t = v?.trim();
+  return t && !SIN_DATO.has(t.toLowerCase()) ? t : undefined;
+}
+
+/** Hora "real" del partido, o undefined si el Sheet la dejó sin definir. */
+export function horaDe(m: Match): string | undefined {
+  return datoVacio(m.time);
+}
+
+/** Canal "real" del partido, o undefined si todavía no está definido. */
+export function canalDe(m: Match): string | undefined {
+  return datoVacio(m.channel);
+}
+
+/** Lugar "real" del partido, o undefined si todavía no está definido. */
+export function lugarDe(m: Match): string | undefined {
+  return datoVacio(m.venue);
+}
+
+/**
+ * ISO 8601 del kickoff en hora Argentina (-03:00), o null si no hay hora válida.
+ * La columna Hora del Sheet trae "Por definir" como texto, que rompe `new Date()`.
+ */
+export function kickoffISO(m: Match): string | null {
+  const hora = horaDe(m);
+  if (!/^\d{1,2}:\d{2}$/.test(hora ?? "")) return null;
+  const [h, min] = hora!.split(":").map(Number);
+  if (h > 23 || min > 59) return null;
+  return `${m.date}T${String(h).padStart(2, "0")}:${String(min).padStart(2, "0")}:00-03:00`;
+}
+
+/** Kickoff + 2h en UTC ISO, o null si no hay hora válida. */
+export function kickoffEndISO(m: Match): string | null {
+  const start = kickoffISO(m);
+  if (!start) return null;
+  const d = new Date(start);
+  return Number.isNaN(d.getTime()) ? null : new Date(d.getTime() + 2 * 60 * 60 * 1000).toISOString();
+}
+
 /** "20 de septiembre de 2026" a partir de "2026-09-20". */
 export function fechaLarga(iso: string): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
@@ -210,19 +253,19 @@ export function faqFor(m: Match): { q: string; a: string }[] {
     a: `El partido Boca vs ${rival} se juega el ${dia} ${fecha}${m.time ? ` a las ${m.time}` : ""}, por ${torneo}.`,
   });
 
-  if (m.time) {
+  if (horaDe(m)) {
     out.push({
       q: `¿A qué hora juega Boca vs ${rival}?`,
-      a: `A las ${m.time} (hora Argentina).`,
+      a: `A las ${horaDe(m)} (hora Argentina).`,
     });
   }
 
-  if (m.venue && m.venue !== "Por definir" && m.venue !== "-") {
-    out.push({ q: `¿Dónde juega Boca vs ${rival}?`, a: `En ${m.venue}.` });
+  if (lugarDe(m)) {
+    out.push({ q: `¿Dónde juega Boca vs ${rival}?`, a: `En ${lugarDe(m)}.` });
   }
 
-  if (m.channel && m.channel !== "-") {
-    out.push({ q: `¿Por qué canal pasan Boca vs ${rival}?`, a: `Por ${m.channel}.` });
+  if (canalDe(m)) {
+    out.push({ q: `¿Por qué canal pasan Boca vs ${rival}?`, a: `Por ${canalDe(m)}.` });
   }
 
   out.push({ q: `¿En qué torneo juega Boca vs ${rival}?`, a: `Por ${torneo}.` });
@@ -245,8 +288,8 @@ export function autoPrevia(m: Match): string {
   const rival = rivalOf(m);
   const verbo = m.homeTeam === "Boca" ? "recibe a" : "visita a";
   const fecha = fechaLarga(m.date);
-  const hora = m.time ? ` a las ${m.time}` : "";
-  const lugar = m.venue && m.venue !== "Por definir" ? ` en ${m.venue}` : "";
+  const hora = horaDe(m) ? ` a las ${horaDe(m)}` : "";
+  const lugar = lugarDe(m) ? ` en ${lugarDe(m)}` : "";
   const torneo = `${m.competition}${m.round ? ` (${m.round})` : ""}`;
   return `Boca ${verbo} ${rival} por ${torneo} el ${fecha}${hora}${lugar}. Las formaciones, los datos y el resultado se actualizan cerca del inicio del partido.`;
 }

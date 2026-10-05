@@ -76,6 +76,22 @@
 - [x] **HSTS** activo (`max-age=15552000; includeSubDomains`, preload off).
 - [x] `astro.config.mjs`, `public/CNAME`, `robots.txt`, `llms.txt` y `sitemap` con el dominio.
 - [x] Sitio verificado en vivo: todas las rutas 200, `canonical`/`og:url` correctos.
+- [x] **Headers de seguridad** (Transform Rule `http_response_headers_transform`,
+  ruleset `8e234f0304df4a048dd5a5dfaaf4a7a3`): `X-Frame-Options: DENY`,
+  `Referrer-Policy: strict-origin-when-cross-origin` y `Permissions-Policy`
+  (geo/micro/cámara/pago/usb). Verificado en vivo en todas las rutas.
+- [ ] **Manual:** revocar el API token de Cloudflare usado para crear la regla
+  (id `fbf1ab26c0b5391640fa17e78737242f`) en el dashboard. No se pudo borrar por
+  API: el token no tenía permiso *API Tokens → Edit*.
+- [ ] **Opcional:** agregar `Strict-Transport-Security` (preload) evaluando antes
+  el impacto en subdominios.
+
+### Notas de seguridad (decisiones)
+
+- **Sin CSP a propósito:** todo el JS del sitio es `<script type="module">` inline
+  (Astro lo inlinea) + GA4 + Clarity + Supabase. Una CSP estricta rompería el sitio.
+  Requiere primero externalizar los módulos o usar hashes/nonces.
+- **No restringir `notifications`** en `Permissions-Policy`: rompería Web Push.
 
 ---
 

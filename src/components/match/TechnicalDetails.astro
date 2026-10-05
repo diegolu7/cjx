@@ -1,6 +1,6 @@
 ---
 import type { Match, MatchDetails } from "../../types/match";
-import { fechaLarga } from "../../lib/match";
+import { fechaLarga, horaDe, lugarDe, canalDe } from "../../lib/match";
 
 interface Props {
   match: Match;
@@ -9,12 +9,12 @@ interface Props {
 const { match, details } = Astro.props;
 
 const rows: [string, string | undefined][] = [
-  ["Fecha", `${fechaLarga(match.date)}${match.time ? `, ${match.time} hs` : ""}`],
-  ["Estadio", match.venue || "A confirmar"],
+  ["Fecha", `${fechaLarga(match.date)}${horaDe(match) ? `, ${horaDe(match)} hs` : ""}`],
+  ["Estadio", lugarDe(match) || "A confirmar"],
   ["Torneo", match.competition],
   ["Fase", match.round],
   ["Árbitro", details?.referee || "A confirmar"],
-  ["TV", match.channel || "A confirmar"],
+  ["TV", canalDe(match) || "A confirmar"],
 ];
 const ficha = rows.filter(([, v]) => v);
 ---

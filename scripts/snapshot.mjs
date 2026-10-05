@@ -46,8 +46,10 @@ async function getCSV(urls) {
 }
 
 async function main() {
-  const csv = await getCSV([SHEET_CSV_URL_ALIAS, SHEET_CSV_URL]);
-  const detailsCsv = await getCSV([detailsCsvUrlAlias(), detailsCsvUrl()]);
+  // gviz primero: devuelve la hoja viva. El alias (?format=csv) sirve un
+  // re-publicado que puede atrasarse y trae "Por definir" en la columna Hora.
+  const csv = await getCSV([SHEET_CSV_URL, SHEET_CSV_URL_ALIAS]);
+  const detailsCsv = await getCSV([detailsCsvUrl(), detailsCsvUrlAlias()]);
 
   let matches = null;
   if (csv) {

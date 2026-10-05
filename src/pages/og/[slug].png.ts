@@ -5,7 +5,7 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import type { Match } from "../../types/match";
 import data from "../../data/matches.json";
-import { rivalOf, fechaLarga } from "../../lib/match";
+import { rivalOf, fechaLarga, horaDe, lugarDe } from "../../lib/match";
 
 export async function getStaticPaths() {
   return (data.matches as Match[]).map((m) => ({
@@ -31,8 +31,8 @@ export const GET: APIRoute = async ({ props }) => {
     : `BOCA VS ${rival.toUpperCase()}`;
 
   const meta1 = `${match.competition}${match.round ? ` · ${match.round}` : ""}`;
-  const meta2 = `${fechaLarga(match.date)}${match.time ? ` · ${match.time}` : ""}${
-    match.venue && match.venue !== "Por definir" ? ` · ${match.venue}` : ""
+  const meta2 = `${fechaLarga(match.date)}${horaDe(match) ? ` · ${horaDe(match)}` : ""}${
+    lugarDe(match) ? ` · ${lugarDe(match)}` : ""
   }`;
 
   const element = {
