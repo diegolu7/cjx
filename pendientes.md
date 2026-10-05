@@ -109,9 +109,9 @@
 - [x] **Fase 3 — cron de respaldo en el Worker.** `workers/cron-dispatcher` ahora tiene
   dos crons: `*/15` (despacha workflows, sin cambios) y `7 4 * * *` (ping diario a Supabase).
   Verificado con un harness: cada cron dispara solo lo que le corresponde.
-- [ ] **Manual:** `npx wrangler secret put PING_SECRET` + `npx wrangler deploy` en
-  `workers/cron-dispatcher`. Ver `docs/cron-cloudflare.md`.
-- [ ] Commit + push (activa `keepalive.yml`).
+- [x] **Manual:** `wrangler secret put PING_SECRET` + `wrangler deploy` (2026-10-05).
+  Worker `cjx-cron-dispatcher` v8ee5ed94 con los crons `*/15` y `7 4 * * *` registrados.
+  Trigger manual verificado: despacha los 2 workflows (204) y el ping (200).
 
 ## ✅ Nav
 
