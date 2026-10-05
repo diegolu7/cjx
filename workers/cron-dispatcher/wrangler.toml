@@ -2,12 +2,21 @@ name = "cjx-cron-dispatcher"
 main = "src/index.js"
 compatibility_date = "2026-09-15"
 
-# Cron confiable: cada 15 minutos (reemplaza al scheduler de GitHub Actions).
+# Dos crons en el mismo Worker; src/index.js decide según event.cron.
+#
+#   */15 * * * *  → despacha deploy.yml y notify.yml a GitHub (cron confiable,
+#                   reemplaza al scheduler de GitHub Actions)
+#   7 4 * * *     → ping diario a Supabase (keepalive; complementa a
+#                   keepalive.yml para que GitHub no sea el único disparador)
+#
+# ⚠️ NO agregar `keepalive.yml` a WORKFLOWS: ahí corre cada 15 min en vez de
+#    una vez por día, que es lo que vale la pena.
 [triggers]
-crons = ["*/15 * * * *"]
+crons = ["*/15 * * * *", "7 4 * * *"]
 
 [vars]
 GITHUB_OWNER = "diegolu7"
 GITHUB_REPO = "cjx"
 GITHUB_REF = "main"
 WORKFLOWS = "deploy.yml,notify.yml"
+SUPABASE_URL = "https://swlgceggatgghwtceflj.supabase.co"

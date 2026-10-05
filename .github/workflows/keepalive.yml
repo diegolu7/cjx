@@ -1,0 +1,25 @@
+name: Keepalive Supabase
+
+on:
+  schedule:
+    # Diario 08:23 ART, lejos de la ventana de avisos (19:15 / 21:30).
+    # Supabase pausa a los 7 días; con 1 ping diario sobra margen.
+    - cron: "23 11 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Ping a Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          PING_SECRET: ${{ secrets.PING_SECRET }}
+        run: node scripts/keepalive.mjs

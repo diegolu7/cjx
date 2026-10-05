@@ -87,6 +87,32 @@
 - [ ] **Manual:** crear el PAT de GitHub (Actions: read & write), `wrangler secret put
   GITHUB_TOKEN` y `wrangler deploy`. Ver `docs/cron-cloudflare.md`.
 
+## ✅ Keepalive de Supabase (proyecto pausado el 2026-10-05)
+
+- [x] **Causa raíz identificada:** `scripts/notify.mjs:105-108` hace early return cuando no hay
+  partido en la próxima hora, así que el cron `*/15` no generaba **ninguna** query a Postgres
+  (~4 de 96 corridas diarias sí la generaban). A los 7 días, Supabase pausó el proyecto `cjx`.
+- [x] Migración `0003_keepalive.sql` (tabla `keepalive` de una sola fila).
+- [x] Edge Function `ping` (`supabase/functions/ping/index.ts`): UPSERT real contra Postgres,
+  gateado con `PING_SECRET`. Hace falta una query de verdad: Supabase excluye los
+  health-checks del conteo de actividad.
+- [x] `scripts/keepalive.mjs` + `.github/workflows/keepalive.yml` (diario 08:23 ART).
+  Sale con código 1 ante cualquier fallo para que GitHub avise por email.
+- [x] **Manual:** corrida `0003_keepalive.sql` en el SQL Editor (2026-10-05).
+- [x] **Manual:** `supabase secrets set PING_SECRET=...` + `supabase functions deploy ping
+  --no-verify-jwt`. Verificado: ping → 200, sin secret → 401, secret malo → 401, GET → 405.
+- [x] **Manual:** creado el secret `PING_SECRET` en GitHub → Settings → Secrets (2026-10-05).
+- [x] **Fase 2 — docs corregidas.** `docs/webpush-doc.md`: se borró la afirmación de que
+  "el cron cada 15 min los mantiene activos" (era la premisa que causó la pausa) y la de
+  que "el cron lo reactiva" (falso: hay que ir al dashboard → Resume project). Se agregó
+  la sección "6 bis. Keepalive", el ping al diagrama y 4 filas al troubleshooting.
+- [x] **Fase 3 — cron de respaldo en el Worker.** `workers/cron-dispatcher` ahora tiene
+  dos crons: `*/15` (despacha workflows, sin cambios) y `7 4 * * *` (ping diario a Supabase).
+  Verificado con un harness: cada cron dispara solo lo que le corresponde.
+- [ ] **Manual:** `npx wrangler secret put PING_SECRET` + `npx wrangler deploy` en
+  `workers/cron-dispatcher`. Ver `docs/cron-cloudflare.md`.
+- [ ] Commit + push (activa `keepalive.yml`).
+
 ## ✅ Nav
 
 - [x] Se quitó "Partidos" del nav (desktop y mobile) y se agregó **"Instalar App 📥"**
@@ -216,7 +242,8 @@
 ## ⚠️ Acciones manuales pendientes (críticas)
 
 - [ ] **Pegar `docs/auto_actualizar.gs` en Apps Script** (Extensiones → Apps Script) y guardar.
-- [ ] **Correr la migración `0002` en Supabase** (SQL Editor o `supabase db push`).
+- [x] **Correr la migración `0002` en Supabase** (SQL Editor o `supabase db push`). Verificado 2026-10-05:
+  default de `prefs` = `{"h1": true}` y las 5 filas normalizadas.
 - [ ] **Google Search Console**: verificar propiedad por dominio (TXT en Cloudflare) y enviar sitemap.
 - [ ] **Bing Webmaster Tools**: verificar y enviar sitemap.
 - [ ] Revisar en Supabase `notification_sends`: posible **aviso h24** enviado el 2026-09-14 ~21:30 ART
