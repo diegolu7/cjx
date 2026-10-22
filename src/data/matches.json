@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-10-22T01:34:14.971Z",
+  "updatedAt": "2026-10-22T12:42:00.452Z",
   "source": "espn",
   "matches": [
     {
@@ -244,7 +244,7 @@
       "dayLabel": "VIE",
       "time": "21:30",
       "homeTeam": "Boca",
-      "awayTeam": "Talleres (Córdoba)",
+      "awayTeam": "Talleres",
       "homeScore": 2,
       "awayScore": 1,
       "homeLogo": "https://a.espncdn.com/i/teamlogos/soccer/500/5.png",
@@ -814,13 +814,13 @@
       "espnId": "401913961",
       "source": "espn",
       "sourceLeague": "conmebol.sudamericana",
-      "slug": "2026-11-21-por-definir",
+      "slug": "2026-11-21-atletico-mg",
       "date": "2026-11-21",
       "dayLabel": "SAB",
       "time": "17:00",
-      "homeTeam": "Por definir",
+      "homeTeam": "Atlético-MG",
       "awayTeam": "Boca",
-      "homeLogo": "https://a.espncdn.com/i/teamlogos/soccer/500/131556.png",
+      "homeLogo": "https://a.espncdn.com/i/teamlogos/soccer/500/7632.png",
       "awayLogo": "https://a.espncdn.com/i/teamlogos/soccer/500/5.png",
       "competition": "Copa Sudamericana",
       "round": "Final",

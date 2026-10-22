@@ -186,6 +186,17 @@ export function canonicalTeamName(name) {
   return TEAM_ALIASES[clean] ?? clean;
 }
 
+/**
+ * Quita el paréntesis desambiguador de ESPN: "Gimnasia y Esgrima (Jujuy)" →
+ * "Gimnasia y Esgrima". Solo se usa si el nombre corto no choca con otro club.
+ */
+export function shortCandidate(name) {
+  const m = /^(.+?)\s*\(([^)]+)\)$/.exec(String(name ?? "").trim());
+  if (!m) return String(name ?? "").trim();
+  const base = m[1].trim();
+  return base.length >= 4 ? base : String(name ?? "").trim();
+}
+
 /** Nombre de estadio usable (los de ESPN vienen con nombres largos o sin prefijo). */
 export function canonicalVenueName(fullName) {
   const clean = String(fullName ?? "").trim();
@@ -280,6 +291,7 @@ export function normalizeEvent(event, league) {
     homeLogo: teamLogo(home?.team?.id),
     awayLogo: teamLogo(away?.team?.id),
     rival,
+    rivalFull: bocaIsHome ? away?.team?.displayName : home?.team?.displayName,
     venue: canonicalVenueName(competition.venue?.fullName),
     venueCity: competition.venue?.address?.city ?? undefined,
     status,
@@ -297,6 +309,24 @@ export function buildMatches(rawEvents) {
     .filter(Boolean);
 
   normalized.sort((a, b) => a.kickoff - b.kickoff);
+
+  // Nombres cortos: se saca el paréntesis desambiguador de ESPN
+  // ("Gimnasia y Esgrima (Jujuy)" → "Gimnasia y Esgrima"), salvo que el nombre
+  // corto quede ambiguo con otro club del mismo snapshot (mismo nombre o uno
+  // contenido en el nombre del otro: "Gimnasia" vs "Gimnasia La Plata").
+  const rivals = [...new Set(normalized.map((m) => m.rival).filter(Boolean))];
+  for (const m of normalized) {
+    if (!m.rivalFull) continue;
+    const short = shortCandidate(m.rival);
+    const shortKey = short.toLowerCase();
+    const ambiguous = rivals.some((other) => {
+      if (other === m.rival) return false;
+      const otherKey = other.toLowerCase();
+      const otherShort = shortCandidate(other).toLowerCase();
+      return shortKey === otherKey || shortKey === otherShort || otherKey.includes(shortKey);
+    });
+    m.rivalShort = ambiguous ? m.rival : short;
+  }
 
   // "Fecha N" de la Liga: el índice del partido de Boca dentro de su torneo.
   // (Cada equipo juega una vez por fecha, así que el n-ésimo partido de Boca es la Fecha N.)
@@ -350,17 +380,23 @@ function toMatch(m) {
     ? `Fecha ${m.fecha ?? "?"}`
     : [phase, m.legLabel].filter(Boolean).join(" - ");
 
+  const rivalName = m.rivalShort ?? m.rival;
+  const homeTeam = m.homeTeam === "Boca" ? "Boca" : rivalName;
+  const awayTeam = m.awayTeam === "Boca" ? "Boca" : rivalName;
+
   const match = {
     id: m.id,
     espnId: m.espnId,
     source: m.source,
     sourceLeague: m.league,
+    // El slug usa el nombre canónico (no el corto) para que la URL no cambie
+    // si después se acorta el nombre del rival.
     slug: matchSlug(m.date, m.homeTeam, m.awayTeam),
     date: m.date,
     dayLabel: m.dayLabel,
     time: m.time,
-    homeTeam: m.homeTeam,
-    awayTeam: m.awayTeam,
+    homeTeam,
+    awayTeam,
     homeScore: m.homeScore,
     awayScore: m.awayScore,
     homeLogo: m.homeLogo,

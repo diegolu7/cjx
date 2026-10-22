@@ -53,18 +53,18 @@ const badgeClass = finished
     </div>
 
     <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-      <span class="flex items-center justify-end gap-2 text-right">
+      <span class="flex min-w-0 flex-col items-center justify-center gap-1.5 text-center lg:flex-row lg:items-center lg:gap-2 lg:text-right">
         <Crest src={match.homeLogo} name={match.homeTeam} size={34} />
-        <span class="text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
+        <span class="min-w-0 break-words text-[18px] lg:text-[22px] font-bold uppercase leading-[1.15] text-text-primary">
           {match.homeTeam}
         </span>
       </span>
-      <span class="text-[30px] lg:text-[36px] font-bold leading-none text-text-primary tabular-nums">
+      <span class="shrink-0 text-[30px] lg:text-[36px] font-bold leading-none text-text-primary tabular-nums">
         {match.homeScore} — {match.awayScore}
       </span>
-      <span class="flex items-center justify-start gap-2 text-left">
+      <span class="flex min-w-0 flex-col items-center justify-center gap-1.5 text-center lg:flex-row lg:items-center lg:gap-2 lg:text-left">
         <Crest src={match.awayLogo} name={match.awayTeam} size={34} />
-        <span class="text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
+        <span class="min-w-0 break-words text-[18px] lg:text-[22px] font-bold uppercase leading-[1.15] text-text-primary">
           {match.awayTeam}
         </span>
       </span>
@@ -105,16 +105,16 @@ const badgeClass = finished
     </div>
 
     <div class="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-      <span class="flex items-center justify-end gap-2 text-right">
+      <span class="flex min-w-0 flex-col items-center justify-center gap-1.5 text-center lg:flex-row lg:items-center lg:gap-2 lg:text-right">
         <Crest src={match.homeLogo} name={match.homeTeam} size={34} />
-        <span class="text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
+        <span class="min-w-0 break-words text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
           Boca
         </span>
       </span>
-      <span class="text-[13px] uppercase tracking-[0.06em] text-text-muted">vs</span>
-      <span class="flex items-center justify-start gap-2 text-left">
+      <span class="shrink-0 text-[13px] uppercase tracking-[0.06em] text-text-muted">vs</span>
+      <span class="flex min-w-0 flex-col items-center justify-center gap-1.5 text-center lg:flex-row lg:items-center lg:gap-2 lg:text-left">
         <Crest src={match.awayLogo} name={match.awayTeam} size={34} />
-        <span class="text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
+        <span class="min-w-0 break-words text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
           {rival}
         </span>
       </span>

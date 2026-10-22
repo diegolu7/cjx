@@ -1,8 +1,8 @@
 ---
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
-import Crest from "./Crest.astro";
-import { rivalOf, marcador, diaMes, statusLabel } from "../../lib/match";
+import FixtureLine from "./FixtureLine.astro";
+import { diaMes, statusLabel } from "../../lib/match";
 
 interface Props {
   match: Match;
@@ -11,7 +11,6 @@ const { match } = Astro.props;
 const base = import.meta.env.BASE_URL;
 
 const finished = match.status === "finished";
-const rival = rivalOf(match);
 const { day, month } = diaMes(match.date);
 
 const badge = statusLabel(match.status);
@@ -35,18 +34,12 @@ const badgeClass = finished
     </div>
 
     <div class="min-w-0">
-      <div class="flex items-center gap-2">
-        <Crest src={match.homeLogo} name={match.homeTeam} size={22} />
-        <p class="text-[15px] leading-[1.25] font-semibold text-text-primary truncate">
-          {finished || match.status === "live" ? marcador(match) : `Boca vs ${rival}`}
-        </p>
-        <Crest src={match.awayLogo} name={match.awayTeam} size={22} />
-      </div>
-      <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">
+      <FixtureLine match={match} size="compact" />
+      <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary break-words">
         {match.competition}
       </p>
       {match.round && (
-        <p class="text-[12px] leading-[1.45] text-text-muted truncate">{match.round}</p>
+        <p class="text-[12px] leading-[1.45] text-text-muted break-words">{match.round}</p>
       )}
     </div>
 
@@ -59,7 +52,7 @@ const badgeClass = finished
       >
         {badge}
       </span>
-      <span class="text-text-muted transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px] group-hover:text-accent-secondary">
+      <span class="hidden lg:inline-flex text-text-muted transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px] group-hover:text-accent-secondary">
         <Icon name="chevronRight" size={16} />
       </span>
     </div>

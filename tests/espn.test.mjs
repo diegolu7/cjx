@@ -12,6 +12,7 @@ import {
   isBocaEvent,
   matchSlug,
   normalizeEvent,
+  shortCandidate,
   teamLogo,
 } from "../scripts/lib/espn.mjs";
 
@@ -208,4 +209,54 @@ test("buildMatches ignora las etapas de playoff al numerar las fechas", () => {
     conFecha.map((m) => m.round),
     ["Fecha 1", "Fecha 2"],
   );
+});
+
+test("shortCandidate saca el paréntesis desambiguador de ESPN", () => {
+  assert.equal(shortCandidate("Talleres (Córdoba)"), "Talleres");
+  assert.equal(shortCandidate("Instituto (Córdoba)"), "Instituto");
+  assert.equal(shortCandidate("Defensa y Justicia"), "Defensa y Justicia");
+  assert.equal(shortCandidate(""), "");
+});
+
+test("buildMatches muestra el nombre corto del rival pero conserva el slug canónico", () => {
+  const raw = [
+    {
+      raw: espnEvent({
+        id: "20",
+        date: "2026-10-16T00:30Z",
+        awayName: "Talleres (Córdoba)",
+      }),
+      leagueDef: LIGA,
+    },
+  ];
+  const [match] = buildMatches(raw);
+  assert.equal(match.awayTeam, "Talleres");
+  assert.equal(match.slug, "2026-10-15-talleres-cordoba");
+});
+
+test("buildMatches no acorta el nombre si queda ambiguo con otro club", () => {
+  const raw = [
+    {
+      raw: espnEvent({
+        id: "30",
+        date: "2026-10-17T00:30Z",
+        awayName: "Gimnasia (Mendoza)",
+        awayId: "11972",
+      }),
+      leagueDef: LIGA,
+    },
+    {
+      raw: espnEvent({
+        id: "31",
+        date: "2026-10-24T00:30Z",
+        awayName: "Gimnasia La Plata",
+        awayId: "9",
+      }),
+      leagueDef: LIGA,
+    },
+  ];
+  const matches = buildMatches(raw);
+  const nombres = matches.map((m) => m.awayTeam);
+  assert.deepEqual(nombres, ["Gimnasia (Mendoza)", "Gimnasia La Plata"]);
+  assert.equal(new Set(nombres).size, 2);
 });
