@@ -1,9 +1,15 @@
 # PLAN: Cuando Juega el Xeneize
 
+> ⚠️ **Documento histórico (2026-09).** El backend ya **no** es el Google Sheet:
+> la agenda sale de la **API de ESPN** (`npm run snapshot` → `src/data/matches.json`).
+> Para el flujo vigente ver [`docs/datos-espn.md`](./docs/datos-espn.md).
+> Las §3 y §4 (Sheet y TheSportsDB) quedan como registro del diseño original;
+> las §5 a §12 (legal, SEO, diseño, fases) siguen siendo la referencia vigente.
+
 > **Dominio:** `cuandojuegaelxeneize.com.ar`
 > **Repo:** `git@github.com:diegolu7/cjx.git`
-> **Estado:** En desarrollo
-> **Última actualización:** 2026-09-09
+> **Estado:** En producción (deploy automático cada 15 min)
+> **Última actualización:** 2026-10-22
 
 ---
 
@@ -20,12 +26,11 @@ Sitio web informativo que muestra **próximos partidos, rivales, fechas y result
 | Componente         | Tecnología                           | Costo                 |
 | ------------------ | ------------------------------------ | --------------------- |
 | Framework          | Astro + TypeScript                   | $0                    |
-| Interactividad     | React (islands)                      | $0                    |
+| Interactividad     | JS vanilla (tabs, switch de idioma)   | $0                    |
 | Estilos            | Tailwind CSS                         | $0                    |
-| Animaciones        | Framer Motion + Aceternity UI        | $0                    |
-| Backend datos      | Google Sheets (leído como JSON)      | $0                    |
-| Auto-actualización | Google Apps Script + TheSportsDB API | $0                    |
-| Hosting            | GitHub Pages → Cloudflare Pages      | $0                    |
+| Backend datos      | API de ESPN (snapshot a JSON)        | $0                    |
+| Auto-actualización | GitHub Actions cada 15 min           | $0                    |
+| Hosting            | GitHub Pages (+ CDN/DNS Cloudflare)  | $0                    |
 | DNS                | Cloudflare                           | $0                    |
 | Dominio            | `.com.ar` (NIC Argentina)            | ~$3.000-5.000 ARS/año |
 | **Total anual**    |                                      | **~$3.000-5.000 ARS** |
@@ -96,7 +101,8 @@ Build:       astro build → estático en /dist
 
 **Google Sheet:** https://docs.google.com/spreadsheets/d/1kqtU0JAyqtQ9NY2Jm-94eXxHQCNMLnc2C9Sd_hM69Xw/edit
 
-> 📘 **Cómo cargar cada columna (formato, valores y reglas): ver [`docs/formato.md`](./docs/formato.md)**.
+> 📘 **Obsoleto:** la columna ya no se carga a mano. Hoy la agenda se arma sola
+> desde ESPN (ver [`docs/datos-espn.md`](./docs/datos-espn.md)).
 
 ### Pestaña única "Partidos" (carga manual + auto-actualización)
 
@@ -155,7 +161,9 @@ Costo: GRATIS (sin API key para uso básico)
 
 ### Script de Google Apps Script
 
-> ✅ **v2 actual** (2026-09): script completo en [`docs/auto_actualizar.gs`](./docs/auto_actualizar.gs) con:
+> ⚠️ **Obsoleto:** el script de Google Apps Script se eliminó con el backend de
+> Sheets. Lo que hace hoy es `scripts/snapshot.mjs` contra ESPN. Para el detalle:
+> 
 > - `actualizarResultadosBoca()` — completa goles/Estado de filas existentes e inserta resultados recientes faltantes.
 > - `insertarProximoSiFalta()` — inserta el próximo partido solo si no hay ningún futuro cargado.
 > - Lectura de columnas por nombre (no depende del orden), normalización de rival/fechas y dedupe.
@@ -493,7 +501,8 @@ El archivo `design.md` es la **fuente de verdad del diseño UI/UX** del sitio. C
 - [ ] Definir frecuencia de carga del fixture (semanal?)
 - [x] Definir columnas exactas del Google Sheet (ver §3 — falta cargar los headers en el sheet)
 - [x] Badges de estado cortos: `FINAL` / `PRÓXIMO` / `PREVISTO` (override sobre design.md §22)
-- [x] **Decisión 2026-09:** fixture (copas/amistosos/internacionales) se carga **a mano** (plantilla en `docs/prompt_gemini.md`); el script auto-actualiza **solo resultados** + limpieza, con auto-próximo como red de seguridad. Full-auto real de fixture → evolutivo con API-Football si algún día se requiere.
+- [x] **Decisión 2026-09:** fixture (copas/amistosos/internacionales) se carga **a mano**; el script auto-actualiza **solo resultados** + limpieza, con auto-próximo como red de seguridad.
+- [x] **2026-10:** el backend de Sheets se reemplaza por **ESPN** (`scripts/snapshot.mjs`). La carga manual y el script de Apps Script quedan sin uso.
 
 ---
 

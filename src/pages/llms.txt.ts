@@ -14,7 +14,7 @@ export const GET: APIRoute = ({ site }) => {
     "Hechos clave:",
     '- Propósito: responder rápido "¿cuándo juega Boca?" con la agenda y los resultados.',
     "- Sitio no oficial: no afiliado a Boca Juniors, AFA ni CONMEBOL. Canal oficial: https://www.bocajuniors.com.ar",
-    "- Fuente de datos: Google Sheets propio + servicios de datos deportivos.",
+    "- Fuente de datos: API publica de ESPN (site.api.espn.com).",
     "- Los datos pueden contener errores o estar desactualizados; verificar en canales oficiales.",
     "- Contacto: delnorte.destinos@gmail.com",
     "",

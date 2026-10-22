@@ -1,6 +1,9 @@
 # Plan — Indicador "EN VIVO" (punto verde + contador de minutos)
 
-> Estado: **propuesta, no implementado**. Cada fase es un commit revertible.
+> Estado: **implementado** (2026-10) con la API de ESPN como fuente: `MatchStatus`
+> ya incluye `"live"` y el badge se painta en build. Este documento queda como
+> registro del diseño original (la parte de "cálculo en el navegador" ya no aplica:
+> el estado llega desde ESPN).
 > Objetivo: cuando Boca juega, el partido se reconozca al instante, sin esperar
 > un deploy, y sin tocar nada que hoy funcione.
 
@@ -14,7 +17,7 @@
 
 - `getStaticPaths` de `/partidos/[slug]` (genera las páginas)
 - el filtrado de pestañas vía `data-status` (`MatchesTimeline.astro:292`)
-- la indexabilidad SEO (`indexable` en `scripts/lib/parse.mjs:530`)
+- la indexabilidad SEO (`indexable` en `scripts/lib/agenda.mjs`)
 - el snapshot que corre **antes** de cada build
 
 Si "en vivo" pasara a ser un status, un partido en vivo quedaría fuera del build
@@ -46,14 +49,11 @@ Verificado en esta sesión:
 ## Flujo
 
 ```
-Sheet (Hora ART) → parse.mjs → matches.json → build SSG
+ESPN (scoreboard + /summary) → snapshot.mjs → matches.json → build SSG
                                           │
-                    HTML con data-kickoff="2026-10-09T19:30:00-03:00"
+                    status: "live" (ESPN status.type.state === "in")
                                           │
-                    JS: Date.now() vs kickoff  → EN VIVO (sin API)
-                                          │
-                    solo si la ventana dice "puede estar en vivo":
-                    fetch livescore.php?league=4406 → minuto y marcador reales
+                    HTML con el badge EN VIVO y el marcador real
 ```
 
 ### Trampa de zona horaria (el riesgo #1)
@@ -240,8 +240,9 @@ badge roto visible: lo peor que puede pasar es que no aparezca.
 
 1. **Fase 3 (la API) sí o no.** `pendientes.md:310` fija **"sin API deportiva"**
    como decisión tomada en la Etapa 3 de automatización. La Fase 3 la contradice.
-   A favor: TheSportsDB free ya se usa para resultados en `docs/auto_actualizar.gs`,
-   tiene CORS abierto y cubre la Liga Profesional. En contra: contradice esa
+   A favor: TheSportsDB free tiene CORS abierto y cubre la Liga Profesional.
+   En contra: hoy la agenda sale de ESPN (ver `docs/datos-espn.md`), que ya trae
+   el estado `live`; contradice esa
    decisión y suma una dependencia externa en caliente. **Si preferís no tocar
    esa decisión, las Fases 0-2 quedan completas y útiles solas** (el punto verde
    y el contador estimado funcionan sin ninguna API).

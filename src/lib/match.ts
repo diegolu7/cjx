@@ -53,13 +53,13 @@ export function rivalGoles(m: Match): number | undefined {
 
 const SIN_DATO = new Set(["", "-", "por definir", "a definir", "tbd", "tv"]);
 
-/** Valor real de un campo opcional del Sheet (Hora, Canal, Lugar…), o undefined. */
+/** Valor real de un campo opcional (hora, canal, lugar…), o undefined. */
 function datoVacio(v: string | undefined): string | undefined {
   const t = v?.trim();
   return t && !SIN_DATO.has(t.toLowerCase()) ? t : undefined;
 }
 
-/** Hora "real" del partido, o undefined si el Sheet la dejó sin definir. */
+/** Hora "real" del partido, o undefined si no está definida. */
 export function horaDe(m: Match): string | undefined {
   return datoVacio(m.time);
 }
@@ -76,7 +76,7 @@ export function lugarDe(m: Match): string | undefined {
 
 /**
  * ISO 8601 del kickoff en hora Argentina (-03:00), o null si no hay hora válida.
- * La columna Hora del Sheet trae "Por definir" como texto, que rompe `new Date()`.
+ * ESPN no siempre manda la hora: si no viene, se devuelve null.
  */
 export function kickoffISO(m: Match): string | null {
   const hora = horaDe(m);

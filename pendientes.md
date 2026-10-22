@@ -24,11 +24,9 @@
 - [x] **"A confirmar"** en Formaciones/Eventos de partidos próximos.
 - [x] **CTA de notificaciones** (compacto, suscripción global h1) en partidos próximos.
 - [x] **Indexación**: finalizados con score ≥ 3; **hasta 2 próximos** con ficha válida.
-- [ ] **Manual:** crear la pestaña **`Detalles`** en el Sheet y pegar su **gid** en
-  `SHEET_DETAILS_GID` (`scripts/lib/parse.mjs`). Ver `docs/cargar-detalle-partido.md`.
-- [ ] **Manual:** cargar el contenido rico (previa, formaciones, eventos, etc.) usando el
-  prompt de `docs/prompt-ia-partido.md`.
-- [ ] **Manual:** re-pegar `docs/auto_actualizar.gs` (ahora retiene **3** finalizados).
+- [x] **2026-10:** el backend de Sheets se eliminó. Las formaciones, los eventos y las
+  estadísticas llegan solos desde `/summary` de ESPN, y la previa + los datos curiosos
+  se generan en el sitio (`autoPrevia` / `factsFor`). Ya no hay nada que cargar a mano.
 
 ### B) Autoridad / off-page ⭐ (factor #1 para el head term)
 - [ ] **Backlinks**: difundir en X, grupos de WhatsApp/Telegram de Boca, foros, Reddit,
@@ -227,9 +225,8 @@
 - [x] **UI**: muestra "Global: Boca X - Y Rival" en la Vuelta (FeaturedCard + card normal),
   con penales si existen.
 - [x] **Push**: el aviso de 1 h incluye rival + global + torneo.
-- [x] `docs/formato.md` documenta las 4 columnas nuevas.
-- [ ] **Manual:** agregar las columnas `Global Boca`, `Global Rival`, `Penales Boca`,
-  `Penales Rival` al Sheet y re-pegar `docs/auto_actualizar.gs` en Apps Script.
+- [x] **2026-10:** el global y los penales se calculan desde los resultados de ESPN
+  (`buildMatches` arma el `aggregate` de la pata de vuelta).
 
 ---
 
@@ -290,10 +287,9 @@
 
 ## 🔜 Etapa 2 — Campanita "Avisame una hora antes" por partido
 
-- [ ] **ID estable de partido.** Hoy el parser usa `id: sheet-{índice}`
-  (`scripts/lib/parse.mjs`) y `notify.mjs` usa `{fecha}-{slug(rival)}`.
-  Unificar a `boca-{slug(rival)}-{fecha}` para que la suscripción por partido no se rompa
-  cuando cambia el orden/altura de las filas.
+- [x] **ID estable de partido (2026-10):** ahora el id es el de ESPN (`espn-{espnId}`)
+  y el slug es `{fecha}-{rival}`; la suscripción por partido no se rompe aunque cambie
+  el orden de los partidos.
 - [ ] **Módulo cliente compartido** (`src/lib/push.ts`): `getState / enable / disable / updatePrefs`.
   Reusar en `Notifications.astro` y en React.
 - [ ] **Botón campana** en `FeaturedCard` (`src/components/MatchesTimeline.tsx`) y,
@@ -305,41 +301,43 @@
 
 ---
 
-## 🔜 Indicador "EN VIVO" (punto verde + contador) — ver `docs/plan-en-vivo.md`
+## ✅ Indicador "EN VIVO" — implementado (2026-10)
 
-El partido en vivo se reconoce **al instante**, sin esperar un deploy: el sitio es
-SSG y se redespliega cada 15 min, así que el cálculo va en el navegador.
-
-- [x] **Investigación hecha** (2026-10-05). Datos que lo habilitan:
-  TheSportsDB `livescore.php` funciona en el plan **gratis**, tiene CORS abierto
-  (`*`), trae `strStatus` real (`1H`/`HT`/`2H`) y **cubre la Liga Profesional
-  Argentina** (id 4406). `eventslast`/`eventsnext` solo traen `FT`/`NS` y no
-  sirven para vivo. Argentina es **UTC-3 fijo** todo el año → sin DST que rompa
-  el cálculo.
-- [x] **Plan escrito** en `docs/plan-en-vivo.md`, en 5 fases revertibles.
-  Principio: "en vivo" es **capa de presentación**, nunca un `MatchStatus`
-  (ese campo alimenta `getStaticPaths`, las pestañas y el SEO).
-- [ ] **Fase 0** — token `--color-live` + funciones puras (`liveWindow`,
-  `liveState`, `minutoAprox`) + script de verificación. *Sin cambio visual.*
-- [ ] **Fase 1** — badge "EN VIVO" (texto + punto verde) derivado del reloj.
-  Renderizado oculto en el server y revelado por JS → sin JS se ve como hoy.
-- [ ] **Fase 2** — contador de minutos (estimado, con ajuste de entretiempo).
-- [ ] **Fase 3** — override con `livescore.php` para el minuto real. **Requiere
-  decisión:** contradice el "sin API deportiva" de la Etapa 3 de más abajo.
-- [ ] **Fase 4** — replicar en la ficha del partido y la card de la home.
-- [ ] **Manual:** definir si se muestra el marcador en vivo (solo Fase 3).
+- [x] **Investigación hecha** (2026-10-05). TheSportsDB `livescore.php` funciona en
+  el plan **gratis**, tiene CORS abierto (`*`) y cubre la Liga Profesional Argentina
+  (id 4406). Argentina es **UTC-3 fijo** todo el año → sin DST que rompa el cálculo.
+- [x] **Plan escrito** en `docs/plan-en-vivo.md`.
+- [x] **Implementado con ESPN** (no con TheSportsDB): ESPN ya trae el estado real
+  (`status.type.state === "in"`), así que `MatchStatus` incluye `"live"` y el badge
+  "EN VIVO" se pinta en el build. Se descartó el cálculo en el navegador.
+- [x] Marcador en vivo en la home, en las cards y en la ficha; JSON-LD
+  `EventInProgress`; badge en la imagen OG.
+- [ ] **Evolutivo:** contador de minutos (ESPN no lo da: se puede estimar con la hora
+  de kickoff + `data-kickoff`).
 
 ---
 
+## 🔜 Sitio bilingüe ES/EN (idioma del navegador) — ver `docs/plan-i18n.md`
+
+- [x] **Plan escrito** (2026-10-22): `docs/plan-i18n.md` con 8 fases, 3 decisiones
+  abiertas y glosario ES/EN.
+- [ ] **Decidir:** (a) URLs `/en/...` con los mismos paths; (b) auto-redirect por JS
+  vs banner vs Worker de Cloudflare; (c) nombres de copas traducidos o no.
+- [ ] **Fase 0** — inventario de strings + glosario firmado.
+- [ ] **Fase 1** — `i18n` en `astro.config.mjs` + `src/i18n/{es,en}.ts` + `t()`.
+- [ ] **Fase 2** — el snapshot guarda **códigos** (`competitionCode`, `roundType`…)
+  y no textos (bloqueante para todo lo demás).
+- [ ] **Fases 3-6** — componentes, SEO (`hreflang`/`canonical`), detección del
+  navegador, push.
+
 ## 🔜 Etapa 3 — Automatización autónoma (ver `automatizar.md`)
 
-Decisiones ya tomadas: **sin API deportiva**, **seguir con Google Sheets**,
-corridas **09:00 / 12:00 / 17:00 ARG** + previa al partido (~90 min) y posterior
-(~150 min, con reintento +60 min).
+Decisiones ya tomadas: **con API deportiva** (ESPN, desde 2026-10), **persistencia en
+JSON en Git** (`src/data/matches.json`), corridas cada **15 minutos** vía GitHub Actions.
 
-- [ ] **Decisión abierta:** `automatizar.md` propone persistencia en **JSON en Git**;
-  hoy la fuente es **Google Sheets**. Definir si la automatización reemplaza la Sheet
-  o si la Sheet queda como fuente manual de respaldo.
+- [x] **Resuelto (2026-10):** la automatización ya no depende de Google Sheets ni de un
+  modelo de IA. `scripts/snapshot.mjs` baja ESPN, normaliza y escribe el JSON; el
+  deploy corre cada 15 min. La Etapa 3 que queda abajo está en gran parte obsoleta.
 - [ ] Fase A: JSON `public/data/agenda-boca.json` + frontend desacoplado.
 - [ ] Fase B: `normalize.js` / `validate.js` / `merge.js` (upsert, conflictos, snapshot seguro).
 - [ ] Fase C: IA **GPT-5 nano** (structured output) con fallback **GPT-5 mini**.
@@ -356,10 +354,10 @@ corridas **09:00 / 12:00 / 17:00 ARG** + previa al partido (~90 min) y posterior
 Ver la sección **"🚨 URGENTE → A) Contenido"** arriba. Resumen:
 - Páginas `/partidos/{slug}` con ficha, resultado/global, previa, datos curiosos,
   formaciones, eventos, antecedentes, notas y forma reciente.
-- Contenido rico **manual** vía pestaña `Detalles` del Sheet (`docs/cargar-detalle-partido.md`)
-  y prompt de IA (`docs/prompt-ia-partido.md`).
+- Contenido rico **automático** desde `/summary` de ESPN (formaciones, eventos,
+  estadísticas) + previa y datos curiosos generados en el sitio.
 - SEO: `SportsEvent` por página, title/description long-tail, `noindex` por score.
-- Pendiente manual: crear la pestaña `Detalles` + pegar su `gid`.
+- Sin pasos manuales: la agenda se arma sola desde ESPN.
 
 ---
 
@@ -378,8 +376,7 @@ Ver la sección **"🚨 URGENTE → A) Contenido"** arriba. Resumen:
 
 ## ❓ Decisiones abiertas
 
-1. **Sheets vs JSON en Git:** ¿la automatización de `automatizar.md` reemplaza la Sheet
-   o la Sheet queda como fuente manual?
+1. ~~Sheets vs JSON en Git~~ → **resuelto**: JSON en Git, alimentado por ESPN.
 2. **OpenAI:** ¿se usará `OPENAI_API_KEY` para GPT-5 nano (Etapa 3)?
 3. **Campanita:** modelo *sección = todos los partidos* / *campanita = solo ese partido*,
    con `h1` global en `false` por defecto para quienes solo tocan campanita.
@@ -390,8 +387,8 @@ Ver la sección **"🚨 URGENTE → A) Contenido"** arriba. Resumen:
 
 ## 🧹 Deuda técnica / notas
 
-- `scripts/notify.mjs` y `scripts/lib/parse.mjs` calculan el `matchId` con lógicas
-  distintas (ver Etapa 2).
+- `scripts/notify.mjs` y `scripts/lib/agenda.mjs` calculan el `matchId` con lógicas
+  distintas (ver Etapa 2). `scripts/lib/parse.mjs` ya no existe (se fue con el Sheet).
 - `web-push-notifications-spec.md` es una spec de referencia de otro proyecto
   (Laravel); no aplica directamente acá.
 - `notas-sin-conexion.txt` contiene las notas originales de estos pendientes.
@@ -405,5 +402,7 @@ Ver la sección **"🚨 URGENTE → A) Contenido"** arriba. Resumen:
 - **Nombres largos en mobile:** el fixture vive en `src/components/match/FixtureLine.astro`
   (un solo DOM, dos filas en mobile y una línea en desktop). Las cards de lista
   ocultan el chevron en mobile para dejarle ancho al nombre.
-- Este archivo sigue teniendo referencias al Google Sheet (sección A): la fuente
-  de datos ya es ESPN. Pendiente de limpiar.
+- La sección A y la Etapa 3 de este archivo son **históricas** (hablaban del Google
+  Sheet y de correr a las 09:00/12:00/17:00). Hoy: ESPN + deploy cada 15 min.
+- `PLAN.md` es el plan maestro original: la §3 (Sheet) y la §4 (TheSportsDB) quedaron
+  obsoletas; el flujo vigente está en `docs/datos-espn.md`.
