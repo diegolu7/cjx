@@ -395,3 +395,15 @@ Ver la sección **"🚨 URGENTE → A) Contenido"** arriba. Resumen:
 - `web-push-notifications-spec.md` es una spec de referencia de otro proyecto
   (Laravel); no aplica directamente acá.
 - `notas-sin-conexion.txt` contiene las notas originales de estos pendientes.
+- **Nombres cortos de rivales:** ESPN desambigua con paréntesis
+  ("Talleres (Córdoba)") y `scripts/lib/espn.mjs` los saca para mostrar
+  "Talleres" (salvo colisión con otro club del mismo snapshot). Ver
+  `docs/datos-espn.md` §3.1. El `slug` sigue usando el nombre canónico.
+- **URL que cambió:** la final de Copa Sudamericana pasó de
+  `/partidos/2026-11-21-por-definir` a `/partidos/2026-11-21-atletico-mg`
+  cuando ESPN confirmó el rival; la anterior da 404.
+- **Nombres largos en mobile:** el fixture vive en `src/components/match/FixtureLine.astro`
+  (un solo DOM, dos filas en mobile y una línea en desktop). Las cards de lista
+  ocultan el chevron en mobile para dejarle ancho al nombre.
+- Este archivo sigue teniendo referencias al Google Sheet (sección A): la fuente
+  de datos ya es ESPN. Pendiente de limpiar.

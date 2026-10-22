@@ -74,6 +74,16 @@ Reglas negocio (`scripts/lib/agenda.mjs`):
 - Se conservan los **3 últimos finalizados**; el resto de la agenda futura se publica igual.
 - Un único partido con `status: "next"` (el más cercano); el resto, `"scheduled"`.
 
+### 3.1. Nombre corto del rival
+
+ESPN desambigua con paréntesis: `"Talleres (Córdoba)"`, `"Instituto (Córdoba)"`.
+`shortCandidate()` saca ese paréntesis para mostrar `"Talleres"`, pero **solo si no
+queda ambiguo** con otro club del mismo snapshot (mismo nombre, o uno contenido en
+el otro: `"Gimnasia"` vs `"Gimnasia La Plata"` → se conserva el nombre completo).
+
+El `slug` de la URL se arma **siempre con el nombre canónico**, así que acortar el
+nombre visible no cambia las URLs ya publicadas.
+
 ---
 
 ## 4. Lo que ESPN **no** da (y qué se hace)
