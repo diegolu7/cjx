@@ -24,9 +24,10 @@ const fontRegular = readFileSync(resolve(FONT_DIR, "ibm-plex-mono-latin-400-norm
 export const GET: APIRoute = async ({ props }) => {
   const { match } = props as { match: Match };
   const finished = match.status === "finished";
+  const live = match.status === "live";
   const rival = rivalOf(match);
 
-  const title = finished
+  const title = finished || live
     ? `${match.homeTeam.toUpperCase()} ${match.homeScore} — ${match.awayScore} ${match.awayTeam.toUpperCase()}`
     : `BOCA VS ${rival.toUpperCase()}`;
 
@@ -74,11 +75,15 @@ export const GET: APIRoute = async ({ props }) => {
                     fontWeight: 700,
                     padding: "8px 18px",
                     borderRadius: "6px",
-                    color: finished ? "#A7B6C8" : "#07111F",
-                    background: finished ? "transparent" : "#D9A441",
-                    border: finished ? "2px solid #274866" : "2px solid #D9A441",
+                    color: live ? "#FFFFFF" : finished ? "#A7B6C8" : "#07111F",
+                    background: live ? "#D9534F" : finished ? "transparent" : "#D9A441",
+                    border: live
+                      ? "2px solid #D9534F"
+                      : finished
+                        ? "2px solid #274866"
+                        : "2px solid #D9A441",
                   },
-                  children: finished ? "FINAL" : "PRÓXIMO",
+                  children: live ? "EN VIVO" : finished ? "FINAL" : "PRÓXIMO",
                 },
               },
             ],

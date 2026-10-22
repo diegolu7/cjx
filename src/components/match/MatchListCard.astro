@@ -1,7 +1,8 @@
 ---
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
-import { rivalOf, marcador, diaMes } from "../../lib/match";
+import Crest from "./Crest.astro";
+import { rivalOf, marcador, diaMes, statusLabel } from "../../lib/match";
 
 interface Props {
   match: Match;
@@ -13,12 +14,14 @@ const finished = match.status === "finished";
 const rival = rivalOf(match);
 const { day, month } = diaMes(match.date);
 
-const badge = finished ? "Final" : match.status === "next" ? "Próximo" : "Previsto";
+const badge = statusLabel(match.status);
 const badgeClass = finished
   ? "border-border text-text-secondary bg-[rgba(167,182,200,0.03)]"
-  : match.status === "next"
-    ? "border-accent bg-accent text-bg"
-    : "border-[rgba(95,168,211,0.72)] text-accent-secondary bg-[rgba(95,168,211,0.05)]";
+  : match.status === "live"
+    ? "border-[#d9534f] bg-[#d9534f] text-white"
+    : match.status === "next"
+      ? "border-accent bg-accent text-bg"
+      : "border-[rgba(95,168,211,0.72)] text-accent-secondary bg-[rgba(95,168,211,0.05)]";
 ---
 
 <a
@@ -32,9 +35,13 @@ const badgeClass = finished
     </div>
 
     <div class="min-w-0">
-      <p class="text-[15px] leading-[1.25] font-semibold text-text-primary truncate">
-        {finished ? marcador(match) : `Boca vs ${rival}`}
-      </p>
+      <div class="flex items-center gap-2">
+        <Crest src={match.homeLogo} name={match.homeTeam} size={22} />
+        <p class="text-[15px] leading-[1.25] font-semibold text-text-primary truncate">
+          {finished || match.status === "live" ? marcador(match) : `Boca vs ${rival}`}
+        </p>
+        <Crest src={match.awayLogo} name={match.awayTeam} size={22} />
+      </div>
       <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">
         {match.competition}
       </p>

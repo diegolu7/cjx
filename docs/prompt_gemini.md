@@ -1,5 +1,9 @@
 # prompt_gemini.md — Plantilla para generar filas de fixture con IA
 
+> ⚠️ **Obsoleto (2026-10):** el sitio ya **no** lee el Google Sheet.
+> La agenda se arma sola con la API de ESPN — ver [`docs/datos-espn.md`](./datos-espn.md).
+> Este documento se conserva como referencia histórica del flujo anterior.
+
 > Objetivo: que Gemini te arme las filas **listas para pegar** en la hoja, en el
 > formato exacto de [`docs/formato.md`](./formato.md). La IA ayuda, pero **siempre
 > verificás** los datos antes de pegarlos (fechas, rivales, canales).

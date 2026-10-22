@@ -19,7 +19,7 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      - name: Snapshot del Google Sheet
+      - name: Snapshot de ESPN
         run: npm run snapshot
       - name: Enviar avisos debidos
         env:

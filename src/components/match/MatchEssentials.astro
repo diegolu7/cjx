@@ -13,9 +13,16 @@ const items = [
   ...(includeDate
     ? [{ icon: "calendar", label: "Fecha", value: fechaLarga(match.date), sub: undefined }]
     : []),
-  { icon: "mapPin", label: "Estadio", value: lugarDe(match) || "A confirmar", sub: undefined },
+  {
+    icon: "mapPin",
+    label: "Estadio",
+    value: lugarDe(match) || "A confirmar",
+    sub: match.venueCity,
+  },
   { icon: "trophy", label: "Torneo", value: match.competition, sub: match.round },
-  { icon: "tv", label: "TV", value: canalDe(match) || "A confirmar", sub: undefined },
+  ...(canalDe(match)
+    ? [{ icon: "tv", label: "TV", value: canalDe(match) as string, sub: undefined }]
+    : []),
 ];
 ---
 

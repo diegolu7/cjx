@@ -1,3 +1,7 @@
+// OBSOLETO (2026-10): el sitio ya no lee el Google Sheet.
+// La agenda se arma sola con la API de ESPN - ver docs/datos-espn.md.
+// Se conserva como referencia histórica del flujo anterior.
+//
 /**
  * Auto-actualización del Google Sheet (backend del sitio "Cuando Juega el Xeneize").
  *

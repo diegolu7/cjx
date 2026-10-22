@@ -1,4 +1,4 @@
-import type { Match } from "../types/match";
+import type { Match, MatchStatus } from "../types/match";
 
 const MESES = [
   "enero",
@@ -17,6 +17,30 @@ const MESES = [
 
 export function rivalOf(m: Match): string {
   return m.homeTeam === "Boca" ? m.awayTeam : m.homeTeam;
+}
+
+/** ¿El partido está en juego? */
+export function isLive(m: Match): boolean {
+  return m.status === "live";
+}
+
+/** Partido destacado: el que está en juego o, si no, el próximo. */
+export function featuredMatch(matches: Match[]): Match | undefined {
+  return matches.find((m) => m.status === "live") ?? matches.find((m) => m.status === "next");
+}
+
+/** Etiqueta en español del estado del partido. */
+export function statusLabel(s: MatchStatus): string {
+  switch (s) {
+    case "finished":
+      return "Final";
+    case "live":
+      return "En vivo";
+    case "next":
+      return "Próximo";
+    default:
+      return "Previsto";
+  }
 }
 
 export function bocaGoles(m: Match): number | undefined {
@@ -128,6 +152,9 @@ export function titleFor(m: Match): string {
   if (m.status === "finished" && bocaGoles(m) !== undefined) {
     return `Boca ${bocaGoles(m)} - ${rivalGoles(m)} ${rival}: resultado final (${m.competition}) | Cuando Juega el Xeneize`;
   }
+  if (m.status === "live") {
+    return `Boca vs ${rival} en vivo: marcador y datos (${m.competition}) | Cuando Juega el Xeneize`;
+  }
   return `Boca vs ${rival}: fecha, hora y cómo ver (${m.competition}) | Cuando Juega el Xeneize`;
 }
 
@@ -138,6 +165,9 @@ export function descriptionFor(m: Match): string {
   const lugar = m.venue ? ` en ${m.venue}` : "";
   if (m.status === "finished") {
     return `Resultado de ${marcador(m)}: cómo salió Boca por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}. Global, formaciones y datos. Sitio no oficial.`;
+  }
+  if (m.status === "live") {
+    return `Boca vs ${rival} en vivo por ${m.competition}: marcador actual, eventos y estadísticas del partido. Sitio no oficial.`;
   }
   return `Boca vs ${rival} por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}${hora}${lugar}. Formaciones, historial y cómo ver. Sitio no oficial.`;
 }
@@ -163,6 +193,7 @@ export function diaSemana(iso: string): string {
 /** "Faltan X días" / "Falta 1 día" / "Faltan X h" (build-time, hora Argentina). */
 export function countdownText(m: Match): string | undefined {
   if (m.status === "finished") return undefined;
+  if (m.status === "live") return "En vivo";
   const md = /^(\d{4})-(\d{2})-(\d{2})/.exec(m.date);
   if (!md) return undefined;
 
@@ -292,4 +323,43 @@ export function autoPrevia(m: Match): string {
   const lugar = lugarDe(m) ? ` en ${lugarDe(m)}` : "";
   const torneo = `${m.competition}${m.round ? ` (${m.round})` : ""}`;
   return `Boca ${verbo} ${rival} por ${torneo} el ${fecha}${hora}${lugar}. Las formaciones, los datos y el resultado se actualizan cerca del inicio del partido.`;
+}
+
+/** Claves automáticas del partido (la fuente ya no trae texto manual). */
+export function factsFor(m: Match, all: Match[] = []): string[] {
+  const facts: string[] = [];
+  const local = m.homeTeam === "Boca";
+
+  const a = m.aggregate;
+  if (a) {
+    if (a.bocaScore > a.rivalScore) {
+      facts.push(`Boca lidera el cruce por ${a.bocaScore} a ${a.rivalScore}.`);
+    } else if (a.bocaScore < a.rivalScore) {
+      facts.push(`Boca va abajo en el global: ${a.bocaScore} a ${a.rivalScore}.`);
+    } else {
+      facts.push(`El cruce está igualado ${a.bocaScore} a ${a.rivalScore}.`);
+    }
+    if (a.penaltyBoca !== undefined && a.penaltyRival !== undefined) {
+      facts.push(`Penales de la ida: Boca ${a.penaltyBoca} - ${a.penaltyRival}.`);
+    }
+  }
+
+  if (lugarDe(m)) {
+    facts.push(
+      local
+        ? `Boca juega de local en ${lugarDe(m)}${m.venueCity ? ` (${m.venueCity})` : ""}.`
+        : `Boca juega de visitante en ${lugarDe(m)}${m.venueCity ? ` (${m.venueCity})` : ""}.`,
+    );
+  }
+
+  const form = recentResults(all, 3);
+  if (form.length >= 2) {
+    const g = form.filter((f) => f.result === "G").length;
+    const e = form.filter((f) => f.result === "E").length;
+    const p = form.filter((f) => f.result === "P").length;
+    facts.push(`En los últimos ${form.length} partidos: ${g} victoria${g === 1 ? "" : "s"}, ${e} empate${e === 1 ? "" : "s"} y ${p} derrota${p === 1 ? "" : "s"}.`);
+    facts.push(`Último partido: ${form[0].text}.`);
+  }
+
+  return facts;
 }

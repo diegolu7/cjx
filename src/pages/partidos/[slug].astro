@@ -7,6 +7,7 @@ import MatchKeyFacts from "../../components/match/MatchKeyFacts.astro";
 import RecentForm from "../../components/match/RecentForm.astro";
 import Lineups from "../../components/match/Lineups.astro";
 import MatchEvents from "../../components/match/MatchEvents.astro";
+import MatchStats from "../../components/match/MatchStats.astro";
 import MatchFaq from "../../components/match/MatchFaq.astro";
 import TechnicalDetails from "../../components/match/TechnicalDetails.astro";
 import type { Match } from "../../types/match";
@@ -17,6 +18,7 @@ import {
   autoPrevia,
   recentResults,
   faqFor,
+  factsFor,
   fechaLarga,
   marcador,
   fechaHoraCorta,
@@ -40,19 +42,23 @@ const allMatches = data.matches as Match[];
 const rival = rivalOf(match);
 const d = match.details;
 const finished = match.status === "finished";
-const upcoming = !finished;
+const live = match.status === "live";
+const upcoming = !finished && !live;
+const played = finished || live;
 const noindex = !match.indexable;
 
 const previa = d?.preview ?? (upcoming ? autoPrevia(match) : undefined);
-const previewTitle = finished ? "Resumen del partido" : "Previa del partido";
+const previewTitle = finished ? "Resumen del partido" : live ? "En vivo" : "Previa del partido";
 const form = recentResults(allMatches, 3);
 const eventos = d?.events ?? [];
 
 const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
-const shareTitle = finished ? marcador(match) : `Boca vs ${rival}`;
+const shareTitle = played ? marcador(match) : `Boca vs ${rival}`;
 const shareText = finished
   ? `Final: ${marcador(match)} · ${match.competition}`
-  : `Boca vs ${rival} · ${fechaLarga(match.date)}${horaDe(match) ? ` a las ${horaDe(match)}` : ""}${lugarDe(match) ? ` en ${lugarDe(match)}` : ""}`;
+  : live
+    ? `En vivo: ${marcador(match)} · ${match.competition}`
+    : `Boca vs ${rival} · ${fechaLarga(match.date)}${horaDe(match) ? ` a las ${horaDe(match)}` : ""}${lugarDe(match) ? ` en ${lugarDe(match)}` : ""}`;
 
 const faqs = faqFor(match);
 const faqLd = {
@@ -75,7 +81,9 @@ const sportsEvent = {
   ...(eventStart ? { startDate: eventStart, endDate: eventEnd } : {}),
   // En partidos finalizados no declaramos eventStatus: schema.org no tiene "finalizado"
   // y decir "EventScheduled" contradice el resultado visible.
-  ...(finished ? {} : { eventStatus: "https://schema.org/EventScheduled" }),
+  ...(finished
+    ? {}
+    : { eventStatus: live ? "https://schema.org/EventInProgress" : "https://schema.org/EventScheduled" }),
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   sport: "Soccer",
   url: new URL(Astro.url.pathname, Astro.site).href,
@@ -104,7 +112,7 @@ const sportsEvent = {
 
   <article>
     <h1 class="sr-only">
-      {finished ? `${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}` : `Boca vs ${rival}`}
+      {played ? `${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}` : `Boca vs ${rival}`}
     </h1>
 
     <MatchHero match={match} />
@@ -114,7 +122,7 @@ const sportsEvent = {
         url={shareUrl}
         title={shareTitle}
         text={shareText}
-        label={finished ? "Compartir resultado" : "Compartir partido"}
+        label={finished ? "Compartir resultado" : live ? "Compartir en vivo" : "Compartir partido"}
         image={new URL(`${base}og/${match.slug}.png`, Astro.site).href}
       />
     </div>
@@ -123,21 +131,23 @@ const sportsEvent = {
       <MatchPreview
         title={previewTitle}
         text={previa}
-        referee={finished ? d?.referee : undefined}
+        referee={played ? d?.referee : undefined}
       />
     )}
 
-    <MatchKeyFacts facts={d?.facts} h2h={d?.h2h} notes={d?.notes} />
+    <MatchKeyFacts facts={d?.facts ?? factsFor(match, allMatches)} h2h={d?.h2h} notes={d?.notes} />
 
     <RecentForm results={form} />
 
     <Lineups match={match} details={d} upcoming={upcoming} />
 
-    {finished && eventos.length > 0 && <MatchEvents events={eventos} rival={rival} />}
+    {played && eventos.length > 0 && <MatchEvents events={eventos} rival={rival} />}
 
-    {finished && <TechnicalDetails match={match} details={d} />}
+    {played && d?.stats && d.stats.length > 0 && <MatchStats stats={d.stats} />}
 
-    {!d && finished && (
+    {played && <TechnicalDetails match={match} details={d} />}
+
+    {!d && played && (
       <p class="text-[13px] leading-[1.6] text-text-muted border border-border bg-surface rounded-md px-4 py-3">
         Todavía no hay contenido ampliado de este partido. La ficha y el resultado se actualizan
         automáticamente.

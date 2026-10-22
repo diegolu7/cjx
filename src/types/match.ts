@@ -1,4 +1,4 @@
-export type MatchStatus = "finished" | "next" | "scheduled";
+export type MatchStatus = "finished" | "live" | "next" | "scheduled";
 
 /** Resultado global de un cruce de ida y vuelta (se muestra en la Vuelta). */
 export interface MatchAggregate {
@@ -17,7 +17,14 @@ export interface MatchEvent {
   detail?: string;
 }
 
-/** Contenido rico cargado a mano en la pestaña "Detalles" del Sheet. */
+/** Statísticas del partido (valor de Boca y del rival). */
+export interface MatchStat {
+  label: string;
+  boca?: string;
+  rival?: string;
+}
+
+/** Contenido rico del partido (lineups, eventos y stats desde ESPN). */
 export interface MatchDetails {
   preview?: string;
   facts?: string[];
@@ -30,6 +37,7 @@ export interface MatchDetails {
   startersRival?: string[];
   subsRival?: string[];
   events?: MatchEvent[];
+  stats?: MatchStat[];
   notes?: string;
   /** Puntaje de contenido (define index/noindex). */
   score: number;
@@ -37,6 +45,10 @@ export interface MatchDetails {
 
 export interface Match {
   id: string;
+  /** ID del partido en el proveedor (ESPN). */
+  espnId?: string;
+  /** Origen del dato ("espn"). */
+  source?: string;
   /** Slug estable para la URL: `{fecha}-{rival}`. */
   slug: string;
   date: string;
@@ -49,11 +61,16 @@ export interface Match {
   homeScore?: number;
   awayScore?: number;
 
+  /** Escudo (URL del CDN del proveedor). */
+  homeLogo?: string;
+  awayLogo?: string;
+
   competition: string;
   round?: string;
 
   channel?: string;
   venue?: string;
+  venueCity?: string;
 
   status: MatchStatus;
 
@@ -63,7 +80,7 @@ export interface Match {
   /** Forma reciente de Boca (últimos resultados: W/D/L). */
   bocaForm?: string[];
 
-  /** Contenido rico (solo si hay fila en la pestaña "Detalles"). */
+  /** Contenido rico (lineups, eventos, stats). */
   details?: MatchDetails;
 
   /** ¿La página debe indexarse? (define index/noindex). */

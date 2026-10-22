@@ -1,5 +1,9 @@
 # cargar-detalle-partido.md — Contenido rico por partido
 
+> ⚠️ **Obsoleto (2026-10):** el sitio ya **no** lee el Google Sheet.
+> La agenda se arma sola con la API de ESPN — ver [`docs/datos-espn.md`](./datos-espn.md).
+> Este documento se conserva como referencia histórica del flujo anterior.
+
 > Cómo cargar a mano el contenido de cada partido para las **páginas por partido**
 > (`/partidos/{slug}`). Es una **pestaña nueva** del mismo Google Sheet, publicada como CSV.
 

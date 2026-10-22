@@ -1,7 +1,8 @@
 ---
 import type { Match, MatchStatus } from "../types/match";
 import Icon from "./match/Icon.astro";
-import { rivalOf, diaMes, horaDe, canalDe } from "../lib/match";
+import Crest from "./match/Crest.astro";
+import { rivalOf, diaMes, horaDe, canalDe, featuredMatch } from "../lib/match";
 
 interface Props {
   matches: Match[];
@@ -31,14 +32,22 @@ function badgeClass(s: MatchStatus): string {
   const styles =
     s === "finished"
       ? "text-text-secondary border border-border bg-[rgba(167,182,200,0.03)]"
-      : s === "next"
-        ? "text-bg border border-accent bg-accent"
-        : "text-accent-secondary border border-[rgba(95,168,211,0.72)] bg-[rgba(95,168,211,0.05)]";
+      : s === "live"
+        ? "text-white border border-[#d9534f] bg-[#d9534f]"
+        : s === "next"
+          ? "text-bg border border-accent bg-accent"
+          : "text-accent-secondary border border-[rgba(95,168,211,0.72)] bg-[rgba(95,168,211,0.05)]";
   return `${base} ${styles}`;
 }
 
 function badgeLabel(s: MatchStatus): string {
-  return s === "finished" ? "FINAL" : s === "next" ? "PRÓXIMO" : "PREVISTO";
+  return s === "finished"
+    ? "FINAL"
+    : s === "live"
+      ? "EN VIVO"
+      : s === "next"
+        ? "PRÓXIMO"
+        : "PREVISTO";
 }
 
 function leaderOf(m: Match): string {
@@ -51,7 +60,11 @@ function leaderOf(m: Match): string {
   return "Serie igualada";
 }
 
+// El destacado es el partido en juego; si no hay ninguno, el próximo.
+const featuredId = featuredMatch(matches)?.id;
+
 let seenAnteriores = false;
+let seenLive = false;
 let seenProximo = false;
 let seenProximos = false;
 const rows = matches.map((m) => {
@@ -59,6 +72,9 @@ const rows = matches.map((m) => {
   if (m.status === "finished" && !seenAnteriores) {
     label = "ANTERIORES";
     seenAnteriores = true;
+  } else if (m.status === "live" && !seenLive) {
+    label = "EN VIVO";
+    seenLive = true;
   } else if (m.status === "next" && !seenProximo) {
     label = "PRÓXIMO";
     seenProximo = true;
@@ -66,10 +82,12 @@ const rows = matches.map((m) => {
     label = "PRÓXIMOS";
     seenProximos = true;
   }
-  return { match: m, label, active: m.status === "next" };
+  return { match: m, label, active: m.id === featuredId };
 });
 
-const hasUpcoming = matches.some((m) => m.status === "next" || m.status === "scheduled");
+const hasUpcoming = matches.some(
+  (m) => m.status === "live" || m.status === "next" || m.status === "scheduled",
+);
 const showNoUpcoming = matches.length > 0 && !hasUpcoming;
 ---
 
@@ -183,9 +201,19 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                     </div>
 
                     <div class="min-w-0">
-                      <p class="text-[18px] lg:text-[20px] font-bold leading-[1.2] text-text-primary uppercase whitespace-nowrap overflow-hidden text-ellipsis">
-                        {teamsLine(match, true)}
-                      </p>
+                      {match.status === "live" && match.homeScore !== undefined ? (
+                        <div class="flex items-center gap-3">
+                          <Crest src={match.homeLogo} name={match.homeTeam} size={30} />
+                          <span class="text-[24px] font-bold leading-none text-text-primary tabular-nums">
+                            {match.homeScore} - {match.awayScore}
+                          </span>
+                          <Crest src={match.awayLogo} name={match.awayTeam} size={30} />
+                        </div>
+                      ) : (
+                        <p class="text-[18px] lg:text-[20px] font-bold leading-[1.2] text-text-primary uppercase whitespace-nowrap overflow-hidden text-ellipsis">
+                          {teamsLine(match, true)}
+                        </p>
+                      )}
                       <p class="mt-1.5 text-[12px] leading-[1.45] text-text-secondary">
                         {match.competition}
                       </p>
@@ -214,7 +242,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                           </p>
                         )}
                         <span class="ml-auto flex items-center gap-2 lg:hidden">
-                          <span class={badgeClass("next")}>{badgeLabel("next")}</span>
+                          <span class={badgeClass(match.status)}>{badgeLabel(match.status)}</span>
                           <span class="text-accent-strong transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px]">
                             <Icon name="chevronRight" size={16} />
                           </span>
@@ -223,7 +251,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                     </div>
 
                     <div class="hidden lg:flex items-center justify-end gap-2">
-                      <span class={badgeClass("next")}>{badgeLabel("next")}</span>
+                      <span class={badgeClass(match.status)}>{badgeLabel(match.status)}</span>
                       <span class="text-accent-strong transition-transform duration-[160ms] ease-linear group-hover:translate-x-[2px]">
                         <Icon name="chevronRight" size={16} />
                       </span>
@@ -242,9 +270,13 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                       </span>
                     </div>
                     <div class="min-w-0">
-                      <p class="text-[15px] leading-[1.25] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis">
-                        {teamsLine(match, false)}
-                      </p>
+                      <div class="flex items-center gap-2">
+                        <Crest src={match.homeLogo} name={match.homeTeam} size={20} />
+                        <p class="text-[15px] leading-[1.25] font-semibold text-text-primary whitespace-nowrap overflow-hidden text-ellipsis">
+                          {teamsLine(match, false)}
+                        </p>
+                        <Crest src={match.awayLogo} name={match.awayTeam} size={20} />
+                      </div>
                       <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary truncate">
                         {match.competition}
                       </p>
@@ -290,7 +322,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
     function matchTab(status: string, tab: string): boolean {
       if (tab === "TODOS") return true;
       if (tab === "ANTERIORES") return status === "finished";
-      return status === "next" || status === "scheduled";
+      return status === "live" || status === "next" || status === "scheduled";
     }
 
     function setTab(tab: string, focus = false) {

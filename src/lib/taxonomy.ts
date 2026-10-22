@@ -31,8 +31,14 @@ function groupBy(
   return [...map.values()].sort((a, b) => a.name.localeCompare(b.name, "es"));
 }
 
+/** Rival "por definir" (rival sin confirmar en ESPN) no genera página propia. */
+const RIVAL_PLACEHOLDER = "Por definir";
+
 export function groupByRival(matches: Match[]): Group[] {
-  return groupBy(matches, (m) => rivalOf(m));
+  return groupBy(
+    matches.filter((m) => rivalOf(m) !== RIVAL_PLACEHOLDER),
+    (m) => rivalOf(m),
+  );
 }
 
 export function groupByTorneo(matches: Match[]): Group[] {

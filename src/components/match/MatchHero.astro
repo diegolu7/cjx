@@ -1,8 +1,17 @@
 ---
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
+import Crest from "./Crest.astro";
 import MatchEssentials from "./MatchEssentials.astro";
-import { rivalOf, diaSemana, fechaLarga, countdownText, bocaAdvances, horaDe } from "../../lib/match";
+import {
+  rivalOf,
+  diaSemana,
+  fechaLarga,
+  countdownText,
+  bocaAdvances,
+  horaDe,
+  statusLabel,
+} from "../../lib/match";
 
 interface Props {
   match: Match;
@@ -11,38 +20,53 @@ const { match } = Astro.props;
 
 const rival = rivalOf(match);
 const finished = match.status === "finished";
+const live = match.status === "live";
 const countdown = countdownText(match);
 const advances = bocaAdvances(match);
 const agg = match.aggregate;
 
-const badge = finished ? "Final" : match.status === "next" ? "Próximo" : "Previsto";
+const badge = statusLabel(match.status);
 const badgeClass = finished
   ? "border-border text-text-secondary"
-  : match.status === "next"
-    ? "border-accent bg-accent text-bg"
-    : "border-accent-secondary text-accent-secondary";
+  : live
+    ? "border-[#d9534f] bg-[#d9534f] text-white"
+    : match.status === "next"
+      ? "border-accent bg-accent text-bg"
+      : "border-accent-secondary text-accent-secondary";
 ---
 
-{finished ? (
+{finished || live ? (
   <article class="rounded-lg border border-border bg-surface shadow-card px-4 py-5">
-    <span
-      class:list={[
-        "inline-flex h-7 items-center rounded-[4px] border px-2 text-[10px] font-semibold uppercase tracking-[0.03em]",
-        badgeClass,
-      ]}
-    >
-      {badge}
-    </span>
+    <div class="flex items-center justify-between gap-3">
+      <span
+        class:list={[
+          "inline-flex h-7 items-center rounded-[4px] border px-2 text-[10px] font-semibold uppercase tracking-[0.03em]",
+          badgeClass,
+        ]}
+      >
+        {badge}
+      </span>
+      {live && <span class="text-[12px] font-semibold text-[#d9534f]">Partido en curso</span>}
+      {!live && countdown && (
+        <span class="text-[12px] font-semibold text-accent-secondary">{countdown}</span>
+      )}
+    </div>
 
     <div class="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-      <span class="text-right text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
-        {match.homeTeam}
+      <span class="flex items-center justify-end gap-2 text-right">
+        <Crest src={match.homeLogo} name={match.homeTeam} size={34} />
+        <span class="text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
+          {match.homeTeam}
+        </span>
       </span>
-      <span class="text-[30px] lg:text-[36px] font-bold leading-none text-text-primary">
+      <span class="text-[30px] lg:text-[36px] font-bold leading-none text-text-primary tabular-nums">
         {match.homeScore} — {match.awayScore}
       </span>
-      <span class="text-left text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
-        {match.awayTeam}
+      <span class="flex items-center justify-start gap-2 text-left">
+        <Crest src={match.awayLogo} name={match.awayTeam} size={34} />
+        <span class="text-[18px] lg:text-[22px] font-bold uppercase text-text-primary">
+          {match.awayTeam}
+        </span>
       </span>
     </div>
 
@@ -81,12 +105,18 @@ const badgeClass = finished
     </div>
 
     <div class="mt-5 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
-      <span class="text-right text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
-        Boca
+      <span class="flex items-center justify-end gap-2 text-right">
+        <Crest src={match.homeLogo} name={match.homeTeam} size={34} />
+        <span class="text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
+          Boca
+        </span>
       </span>
       <span class="text-[13px] uppercase tracking-[0.06em] text-text-muted">vs</span>
-      <span class="text-left text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
-        {rival}
+      <span class="flex items-center justify-start gap-2 text-left">
+        <Crest src={match.awayLogo} name={match.awayTeam} size={34} />
+        <span class="text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
+          {rival}
+        </span>
       </span>
     </div>
 

@@ -1,0 +1,40 @@
+---
+// Escudo de un club. Si el CDN no tiene la imagen, queda visible el monograma.
+interface Props {
+  src?: string;
+  name: string;
+  size?: number;
+  class?: string;
+}
+const { src, name, size = 28, class: className } = Astro.props;
+
+const initials = String(name || "?")
+  .replace(/\(.*?\)/g, "")
+  .split(/\s+/)
+  .filter(Boolean)
+  .slice(0, 2)
+  .map((w) => w[0]?.toUpperCase() ?? "")
+  .join("");
+---
+
+<span
+  class:list={[
+    "relative inline-flex shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-elevated",
+    className,
+  ]}
+  style={`width:${size}px;height:${size}px`}
+>
+  <span class="text-[10px] font-bold leading-none text-text-secondary">{initials || "?"}</span>
+  {src && (
+    <img
+      src={src}
+      alt=""
+      width={size}
+      height={size}
+      loading="lazy"
+      decoding="async"
+      class="absolute inset-0 h-full w-full object-contain"
+      onerror="this.remove()"
+    />
+  )}
+</span>
