@@ -238,52 +238,52 @@ Cada fase es un commit revertible.
 
 ### Fase 0 — Inventario y glosario (0,5 día)
 
-- [ ] Script `scripts/i18n-inventory.mjs` que liste literales traducibles por archivo.
-- [ ] `docs/glosario.md` con la tabla anterior ampliada y firmada.
-- [ ] Lista de los textos que **no** se traducen (nombres propios, "Boca", siglas).
+- [x] Script `scripts/i18n-inventory.mjs` que liste literales traducibles por archivo.
+- [x] `docs/glosario.md` con la tabla anterior ampliada y firmada.
+- [x] Lista de los textos que **no** se traducen (nombres propios, "Boca", siglas) → §6 de `docs/glosario.md`.
 
 ### Fase 1 — Infraestructura i18n (1 día)
 
-- [ ] `astro.config.mjs`: bloque `i18n` (§2.1).
-- [ ] `src/i18n/es.ts` (se mueve lo que ya está hardcodeado), `en.ts`, `index.ts`.
-- [ ] `getDictionary(Astro.currentLocale)` y helper `t()`.
-- [ ] `<html lang>` dinámico en `Layout.astro` + `LegalLayout.astro`.
-- [ ] `SeoHead.astro`: `og:locale`, `hreflang`, `canonical` por locale.
-- [ ] Test de contrato: `es` y `en` tienen las mismas claves (`tests/i18n.test.mjs`).
+- [x] `astro.config.mjs`: bloque `i18n` (§2.1).
+- [x] `src/i18n/es.ts` (se mueve lo que ya está hardcodeado), `en.ts`, `index.ts`.
+- [x] `getDictionary(Astro.currentLocale)` y helper `t()` → `getDict()` + `t()`/`tx()`.
+- [x] `<html lang>` dinámico en `Layout.astro` + `LegalLayout.astro`.
+- [x] `SeoHead.astro`: `og:locale`, `hreflang`, `canonical` por locale.
+- [x] Test de contrato: `es` y `en` tienen las mismas claves (`tests/i18n.test.mjs`).
 
 ### Fase 2 — Snapshot con códigos (1,5 días) ⚠️ la fase crítica
 
-- [ ] `src/types/match.ts`: `competitionCode`, `roundType`, `roundNumber`, `roundPhase`, `leg`.
-- [ ] `scripts/lib/espn.mjs`: guardar los códigos en vez de los textos.
-- [ ] `scripts/lib/agenda.mjs`: los filtros que comparan `round` pasan a comparar códigos.
-- [ ] `src/lib/match.ts`: `competitionLabel(m, dict)` / `roundLabel(m, dict)`.
-- [ ] Tests existentes actualizados + test nuevo de round/idempotencia del snapshot.
+- [x] `src/types/match.ts`: `competitionCode`, `roundType`, `roundNumber`, `roundPhase`, `leg`.
+- [x] `scripts/lib/espn.mjs`: guardar los códigos en vez de los textos.
+- [x] `scripts/lib/agenda.mjs`: los filtros que comparan `round` pasan a comparar códigos.
+- [x] `src/lib/match.ts`: `competitionLabel(m, dict)` / `roundLabel(m, dict)`.
+- [x] Tests existentes actualizados + test nuevo de round/idempotencia del snapshot.
 
 ### Fase 3 — Componentes y páginas (3–4 días)
 
-- [ ] `src/lib/match.ts` completo (los ~25 helpers reciben el diccionario).
-- [ ] Cards, timeline, fixture, hero.
-- [ ] Ficha de partido: formaciones, eventos, stats, previa, FAQ, datos curiosos.
-- [ ] Header/footer/banners/share.
-- [ ] Páginas: home, listado, rivales, torneos, info, 404, legales.
+- [x] `src/lib/match.ts` completo (los ~25 helpers reciben el diccionario).
+- [x] Cards, timeline, fixture, hero.
+- [x] Ficha de partido: formaciones, eventos, stats, previa, FAQ, datos curiosos.
+- [x] Header/footer/banners/share.
+- [x] Páginas: home, listado, rivales, torneos, info, 404, legales.
 
 ### Fase 4 — SEO (1 día)
 
-- [ ] `hreflang` recíproco: `es` ↔ `en` + `x-default`.
-- [ ] `canonical` por idioma (self-canonical).
-- [ ] `og:locale` (`es_AR` / `en_US`) + `og:locale:alternate`.
-- [ ] JSON-LD `inLanguage` por locale.
-- [ ] Sitemap con las dos versiones (`@astrojs/sitemap` ya soporta i18n: `i18n: { defaultLocale, locales }`).
-- [ ] `feed.xml` y `llms.txt` en ambos idiomas.
-- [ ] OG images: una por idioma (`/og/{slug}.png` y `/en/og/{slug}.png`).
-- [ ] `robots.txt` sin cambios.
+- [x] `hreflang` recíproco: `es` ↔ `en` + `x-default`.
+- [x] `canonical` por idioma (self-canonical).
+- [x] `og:locale` (`es_AR` / `en_US`) + `og:locale:alternate`.
+- [x] JSON-LD `inLanguage` por locale.
+- [x] Sitemap con las dos versiones (`@astrojs/sitemap` ya soporta i18n: `i18n: { defaultLocale, locales }`).
+- [x] `feed.xml` y `llms.txt` en ambos idiomas.
+- [x] OG images: una por idioma (`/og/{slug}.png` y `/en/og/{slug}.png`).
+- [x] `robots.txt` sin cambios.
 
 ### Fase 5 — Detección del navegador (1 día)
 
-- [ ] Script inline de §2.4 + `localStorage`/`cookie`.
-- [ ] Switcher ES/EN en header y footer.
-- [ ] Banner "disponible en inglés" (si se elige la opción C).
-- [ ] `AUTO_REDIRECT` como flag en `astro.config.mjs`.
+- [x] Script inline de §2.4 + `localStorage` (la cookie quedó como `localStorage` + `cjx:lang`).
+- [x] Switcher ES/EN en header y footer.
+- [ ] Banner "disponible en inglés" (opción A elegida: no hace falta banner).
+- [ ] `AUTO_REDIRECT` como flag en `astro.config.mjs` (queda pendiente; hoy el redirect es siempre activo).
 - [ ] Test manual: navegar con `navigator.language = "en-US"` → `/en/`.
 
 ### Fase 6 — Notificaciones push (0,5 día)
@@ -295,8 +295,8 @@ Cada fase es un commit revertible.
 ### Fase 7 — QA y cierre (1 día)
 
 - [ ] Recorrido manual de las 2 versiones en 320 / 375 / 900 / 1280 px.
-- [ ] `npm test` + `npm run check` + `npm run build` (el build pasa de 28 a ~56 páginas).
-- [ ] Checklist de paridad: ninguna cadena en español literal fuera de `src/i18n/es.ts`.
+- [x] `npm test` + `npm run check` + `npm run build` (el build pasa de 28 a 55 páginas).
+- [x] Checklist de paridad: ninguna cadena en español literal fuera de `src/i18n/es.ts` (lo controla `scripts/i18n-inventory.mjs --check`, dentro de `npm test`).
 - [ ] Verificar en Search Console el Alternate y el canonical.
 
 **Total estimado: 9–11 días de trabajo.**

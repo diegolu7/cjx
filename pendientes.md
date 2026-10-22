@@ -317,18 +317,31 @@
 
 ---
 
-## 🔜 Sitio bilingüe ES/EN (idioma del navegador) — ver `docs/plan-i18n.md`
+## ✅ Sitio bilingüe ES/EN (idioma del navegador) — ver `docs/plan-i18n.md`
 
 - [x] **Plan escrito** (2026-10-22): `docs/plan-i18n.md` con 8 fases, 3 decisiones
   abiertas y glosario ES/EN.
-- [ ] **Decidir:** (a) URLs `/en/...` con los mismos paths; (b) auto-redirect por JS
-  vs banner vs Worker de Cloudflare; (c) nombres de copas traducidos o no.
-- [ ] **Fase 0** — inventario de strings + glosario firmado.
-- [ ] **Fase 1** — `i18n` en `astro.config.mjs` + `src/i18n/{es,en}.ts` + `t()`.
-- [ ] **Fase 2** — el snapshot guarda **códigos** (`competitionCode`, `roundType`…)
-  y no textos (bloqueante para todo lo demás).
-- [ ] **Fases 3-6** — componentes, SEO (`hreflang`/`canonical`), detección del
-  navegador, push.
+- [x] **Decisiones tomadas**: (a) URLs `/en/...` con los mismos paths; (b) auto-redirect por
+  JS (`localStorage "cjx:lang"`, nunca rebota `/en` → `/`); (c) `arg.1` → "Argentine
+  Primera División" en inglés, las copas conservan el nombre oficial.
+- [x] **Fase 0** — inventario de strings (`scripts/i18n-inventory.mjs`) + glosario firmado
+  (`docs/glosario.md`).
+- [x] **Fase 1** — `i18n` en `astro.config.mjs` + `src/i18n/{es,en,index,routes}.ts` + `t()`,
+  `<html lang>` dinámico, `hreflang`/`canonical`/`og:locale` por locale.
+- [x] **Fase 2** — el snapshot guarda **códigos** (`competitionCode`, `roundType`,
+  `roundNumber`, `roundPhase`, `leg`) y no textos.
+- [x] **Fase 3** — todos los componentes y las 12 páginas migrados al diccionario
+  (`src/components/pages/**` compartidos + 25 wrappers en `src/pages/en/**`).
+- [x] **Fase 4** — SEO: `hreflang` recíproco + `x-default`, canonical self, sitemap con las
+  dos versiones, `feed.xml` y `llms.txt` por idioma, OG por idioma (`/og/{slug}.png` y
+  `/en/og/{slug}.png`).
+- [x] **Fase 5** — detección por `navigator.languages` + switcher ES/EN en header y footer.
+- [x] **Fase 6 (parcial)** — el push sigue en español: falta la columna `lang` en las
+  preferencias de Supabase y el mensaje por idioma en `scripts/notify.mjs`.
+- [x] **Fase 7 (QA)** — `npm test` (42 tests: paridad de claves, placeholders, rutas,
+  inventario sin español suelto), `npm run check` (0 errores) y `npm run build` (55 páginas).
+- [ ] **Manual:** revisar el sitio en `/en/` con `navigator.language = "en-US"`.
+- [ ] **Manual:** validar en Search Console los alternates y el canonical.
 
 ## 🔜 Etapa 3 — Automatización autónoma (ver `automatizar.md`)
 
