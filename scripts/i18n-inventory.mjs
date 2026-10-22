@@ -76,15 +76,54 @@ function extractLiterals(source) {
   return literals;
 }
 
+/** Frases que son nombres propios y no se traducen. */
+const ALLOWED_PHRASES = [
+  "Cuando Juega",
+  "el Xeneize",
+  "Xeneize",
+  "Boca Juniors",
+  "Club Atlético Boca Juniors",
+];
+
+/**
+ * Texto visible written directly en el template de un `.astro`
+ * (fuera de `{expresiones}` y de las etiquetas HTML).
+ */
+function extractTemplateText(source) {
+  // Sacar el frontmatter.
+  const body = source.replace(/^---[\s\S]*?\n---\n/, "");
+  // Sacar scripts y estilos inline.
+  const clean = body
+    .replace(/<script[\s\S]*?<\/script>/gi, " ")
+    .replace(/<style[\s\S]*?<\/style>/gi, " ")
+    // Sacar las expresiones `{...}` (con un nivel de anidamiento).
+    .replace(/\{(?:[^{}]|\{[^{}]*\})*\}/g, " ")
+    // Sacar las etiquetas y sus atributos.
+    .replace(/<[^>]*>/g, " ");
+
+  const out = [];
+  for (const chunk of clean.split(/\n/)) {
+    const text = chunk.replace(/\s+/g, " ").trim();
+    if (!text || !/[A-Za-záéíóúñÁÉÍÓÚÑ]/.test(text)) continue;
+    out.push(text);
+  }
+  return out;
+}
+
 /** ¿El literal parece estar en español? */
-function looksSpanish(value) {
+export function looksSpanish(value) {
   if (!/[A-Za-z]/.test(value)) return false;
   if (/^(https?:|mailto:|tel:|data:)/.test(value)) return false;
   if (value.startsWith("/")) return false;
   if (/^[a-z0-9_\-./]+$/i.test(value)) return false; // slugs y rutas (p.ej. "partidos/")
   if (value.includes("<") || value.includes("{") || value.includes("class=")) return false;
 
-  const words = value
+  let clean = value;
+  for (const phrase of ALLOWED_PHRASES) {
+    clean = clean.split(phrase).join(" ");
+  }
+
+  const words = clean
     .toLowerCase()
     .replace(/[^a-záéíóúñü\s]/g, " ")
     .split(/\s+/)
@@ -117,6 +156,16 @@ export function scanInventory() {
     const translatable = literals.filter((l) => isTranslatable(l.value));
     const spanish = translatable.filter((l) => looksSpanish(l.value));
     spanishHits += spanish.length;
+
+    // Texto escrito directo en el template (no pasa por el diccionario).
+    if (file.endsWith(".astro")) {
+      for (const text of extractTemplateText(source)) {
+        if (looksSpanish(text)) {
+          spanish.push({ value: text, line: 0 });
+          spanishHits++;
+        }
+      }
+    }
     report.push({
       file: relative(ROOT, file),
       total: literals.length,

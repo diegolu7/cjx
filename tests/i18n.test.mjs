@@ -9,7 +9,7 @@ import { es } from "../src/i18n/es.ts";
 import { en } from "../src/i18n/en.ts";
 import { t, tx, getDict, HTML_LANG, OG_LOCALE } from "../src/i18n/index.ts";
 import { esPath, enPath, withSlash, localeBase } from "../src/i18n/routes.ts";
-import { scanInventory } from "../scripts/i18n-inventory.mjs";
+import { scanInventory, looksSpanish } from "../scripts/i18n-inventory.mjs";
 
 /**
  * Aplana el diccionario a entradas `ruta → valor`.
@@ -160,4 +160,47 @@ test("no queda ninguna cadena en español literal fuera del diccionario", () => 
     .flatMap((r) => r.spanish.map((s) => `${r.file}:${s.line} ${JSON.stringify(s.value)}`))
     .join("\n  ");
   assert.equal(spanishHits, 0, `textos sin traducir:\n  ${detalle}`);
+});
+
+test("el detector de español marca texto real y no falsos positivos", () => {
+  assert.equal(looksSpanish("En iPhone/iPad primero instalá la app"), true);
+  assert.equal(looksSpanish("Boca vs River: fecha y hora"), true);
+  assert.equal(looksSpanish("Faltan 3 días para el partido"), true);
+  assert.equal(looksSpanish("When does Boca play?"), false);
+  assert.equal(looksSpanish("Boca vs River: date and kickoff time"), false);
+  assert.equal(looksSpanish("partidos/"), false);
+  assert.equal(looksSpanish("Cuando Juega el Xeneize"), false);
+});
+
+test("el aviso push se arma en español y en inglés", async () => {
+  const { buildNotification } = await import("../scripts/notify.mjs");
+  const m = {
+    date: "2026-10-25",
+    time: "17:00",
+    homeTeam: "Boca",
+    awayTeam: "Independiente",
+    competition: "Liga Profesional",
+    competitionCode: "arg.1",
+    roundType: "matchday",
+    roundNumber: 14,
+    status: "next",
+  };
+
+  const es = buildNotification(m, "es");
+  assert.equal(es.lang, "es");
+  assert.equal(es.title, "Boca juega en 1 hora");
+  assert.equal(es.body, "Boca vs Independiente · 17:00 · Liga Profesional");
+  assert.equal(es.url, "./#partidos");
+
+  const en = buildNotification(m, "en");
+  assert.equal(en.lang, "en");
+  assert.equal(en.title, "Boca plays in 1 hour");
+  assert.equal(en.body, "Boca vs Independiente · 17:00 · Argentine Primera División");
+  assert.equal(en.url, "./en/#partidos");
+
+  const agg = buildNotification(
+    { ...m, aggregate: { bocaScore: 2, rivalScore: 1, penaltyBoca: 4, penaltyRival: 3 } },
+    "en",
+  );
+  assert.match(agg.body, /Aggregate 2-1 \(pen\. 4-3\)/);
 });

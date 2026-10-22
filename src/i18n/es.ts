@@ -78,6 +78,15 @@ export const es = {
     error: "No se pudo activar: {message}",
   },
 
+  push: {
+    title: "Boca juega en 1 hora",
+    body: "Boca vs {rival}{aggregate}{time}{competition}",
+    aggregate: " · Global {boca}-{rival}",
+    aggregatePenalties: " · Global {boca}-{rival} (pen. {penBoca}-{penRival})",
+    time: " · {time}",
+    competition: " · {competition}",
+  },
+
   share: {
     label: "Compartir",
     close: "Cerrar",

@@ -1,7 +1,8 @@
 // Supabase Edge Function: send
 // Envía una notificación push a las suscripciones activas (fan-out) con dedupe.
 // Requiere header Authorization: Bearer <SEND_SECRET>.
-// POST { matchId, type, title, body, url? }  ·  type: h24 | h1 | result
+// POST { matchId, type, title, body, url?, lang? }  ·  type: h24 | h1 | result
+// Si viene `lang` ("es" | "en") solo se envía a los suscriptos de ese idioma.
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 import webpush from "npm:web-push@3.6.7";
@@ -29,7 +30,14 @@ Deno.serve(async (req) => {
     return json({ error: "unauthorized" }, 401);
   }
 
-  let body: { matchId?: string; type?: string; title?: string; body?: string; url?: string };
+  let body: {
+    matchId?: string;
+    type?: string;
+    title?: string;
+    body?: string;
+    url?: string;
+    lang?: string;
+  };
   try {
     body = await req.json();
   } catch {
@@ -37,6 +45,7 @@ Deno.serve(async (req) => {
   }
 
   const { matchId, type, title } = body;
+  const lang = body.lang === "en" ? "en" : body.lang === "es" ? "es" : undefined;
   if (!matchId || !type || !title) return json({ error: "missing_fields" }, 400);
 
   const supabase = createClient(
@@ -47,7 +56,7 @@ Deno.serve(async (req) => {
   // Dedupe: si ya se envió (matchId, type), no repetir.
   const { error: dedupeError } = await supabase
     .from("notification_sends")
-    .insert({ match_id: matchId, type });
+    .insert({ match_id: matchId, type, lang: lang ?? "es" });
   if (dedupeError) {
     if (dedupeError.code === "23505") return json({ skipped: true, reason: "already_sent" });
     return json({ error: dedupeError.message }, 500);
@@ -60,11 +69,14 @@ Deno.serve(async (req) => {
   );
 
   // Suscripciones activas con la preferencia del tipo encendida.
-  const { data: subs, error } = await supabase
+  let query = supabase
     .from("push_subscriptions")
     .select("id, endpoint, p256dh, auth")
     .eq("enabled", true)
     .filter(`prefs->>${type}`, "eq", "true");
+  if (lang) query = query.eq("lang", lang);
+
+  const { data: subs, error } = await query;
 
   if (error) return json({ error: error.message }, 500);
 

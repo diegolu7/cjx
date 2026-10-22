@@ -76,6 +76,15 @@ export const en: DictShape<typeof es> = {
     error: "Could not enable: {message}",
   },
 
+  push: {
+    title: "Boca plays in 1 hour",
+    body: "Boca vs {rival}{aggregate}{time}{competition}",
+    aggregate: " · Aggregate {boca}-{rival}",
+    aggregatePenalties: " · Aggregate {boca}-{rival} (pen. {penBoca}-{penRival})",
+    time: " · {time}",
+    competition: " · {competition}",
+  },
+
   share: {
     label: "Share",
     close: "Close",

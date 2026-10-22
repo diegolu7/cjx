@@ -336,8 +336,10 @@
   dos versiones, `feed.xml` y `llms.txt` por idioma, OG por idioma (`/og/{slug}.png` y
   `/en/og/{slug}.png`).
 - [x] **Fase 5** — detección por `navigator.languages` + switcher ES/EN en header y footer.
-- [x] **Fase 6 (parcial)** — el push sigue en español: falta la columna `lang` en las
-  preferencias de Supabase y el mensaje por idioma en `scripts/notify.mjs`.
+- [x] **Fase 6** — push por idioma: `notify.mjs` arma el aviso en ES/EN, `subscribe`
+  guarda `lang` y `send` filtra por idioma (dedupe por `match_id + type + lang`).
+- [ ] **Manual (push):** correr `supabase/migrations/0004_prefs_lang.sql` y re-deployar
+  `subscribe` y `send` (`supabase functions deploy subscribe send`).
 - [x] **Fase 7 (QA)** — `npm test` (42 tests: paridad de claves, placeholders, rutas,
   inventario sin español suelto), `npm run check` (0 errores) y `npm run build` (55 páginas).
 - [ ] **Manual:** revisar el sitio en `/en/` con `navigator.language = "en-US"`.

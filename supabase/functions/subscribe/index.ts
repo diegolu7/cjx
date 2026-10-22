@@ -1,6 +1,6 @@
 // Supabase Edge Function: subscribe
 // Registra/actualiza una suscripción push (pública). Usa service role.
-// POST { endpoint, keys: { p256dh, auth }, prefs?, enabled? }
+// POST { endpoint, keys: { p256dh, auth }, prefs?, enabled?, lang? }
 
 import { createClient } from "npm:@supabase/supabase-js@2";
 
@@ -26,6 +26,7 @@ Deno.serve(async (req) => {
     keys?: { p256dh?: string; auth?: string };
     prefs?: Record<string, boolean>;
     enabled?: boolean;
+    lang?: string;
   };
   try {
     body = await req.json();
@@ -51,6 +52,7 @@ Deno.serve(async (req) => {
     p256dh,
     auth,
     enabled: body.enabled ?? true,
+    lang: body.lang === "en" ? "en" : "es",
   };
   if (body.prefs && typeof body.prefs === "object") row.prefs = body.prefs;
 

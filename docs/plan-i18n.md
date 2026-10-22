@@ -288,9 +288,9 @@ Cada fase es un commit revertible.
 
 ### Fase 6 — Notificaciones push (0,5 día)
 
-- [ ] `scripts/notify.mjs`: mensajes por idioma según la preferencia del suscriptor.
-- [ ] `supabase/migrations/0004_prefs_lang.sql`: columna `lang` en las preferencias.
-- [ ] El alta de suscripción guarda el idioma del navegador.
+- [x] `scripts/notify.mjs`: mensajes por idioma según la preferencia del suscriptor.
+- [x] `supabase/migrations/0004_prefs_lang.sql`: columna `lang` en las preferencias.
+- [x] El alta de suscripción guarda el idioma del navegador.
 
 ### Fase 7 — QA y cierre (1 día)
 

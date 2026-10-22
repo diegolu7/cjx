@@ -1,6 +1,7 @@
 // Emisor de Web Push (build/cron).
 // Lee src/data/matches.json y avisa ÚNICAMENTE 1 hora antes del inicio del partido.
 // No se envían recordatorios de 24 h ni de resultado final (evolutivo futuro).
+// El aviso se manda en español y en inglés: la Edge Function filtra por `lang`.
 //
 // Variables de entorno:
 //   SUPABASE_URL   (ej. https://xxxx.supabase.co)
@@ -10,7 +11,9 @@
 
 import { readFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { getDict, t } from "../src/i18n/index.ts";
+import { competitionLabel } from "../src/lib/match.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const DATA_FILE = resolve(__dirname, "../src/data/matches.json");
@@ -52,27 +55,43 @@ async function send(payload) {
   return { status: res.status, body: text };
 }
 
-function buildNotification(m) {
+export function buildNotification(m, lang) {
+  const dict = getDict(lang);
   const rival = rivalOf(m);
   const matchId = `${m.date}-${slug(rival)}`;
 
-  const parts = [`Boca vs ${rival}`];
+  let aggregate = "";
   if (m.aggregate) {
-    const pen =
-      m.aggregate.penaltyBoca !== undefined && m.aggregate.penaltyRival !== undefined
-        ? ` (pen. ${m.aggregate.penaltyBoca}-${m.aggregate.penaltyRival})`
-        : "";
-    parts.push(`Global ${m.aggregate.bocaScore}-${m.aggregate.rivalScore}${pen}`);
+    const hasPen =
+      m.aggregate.penaltyBoca !== undefined && m.aggregate.penaltyRival !== undefined;
+    aggregate = t(
+      dict,
+      hasPen ? "push.aggregatePenalties" : "push.aggregate",
+      {
+        boca: m.aggregate.bocaScore,
+        rival: m.aggregate.rivalScore,
+        penBoca: m.aggregate.penaltyBoca,
+        penRival: m.aggregate.penaltyRival,
+      },
+    );
   }
-  if (m.time) parts.push(m.time);
-  if (m.competition) parts.push(m.competition);
+
+  const body = t(dict, "push.body", {
+    rival,
+    aggregate,
+    time: m.time ? t(dict, "push.time", { time: m.time }) : "",
+    competition: m.competition
+      ? t(dict, "push.competition", { competition: competitionLabel(m, dict) })
+      : "",
+  });
 
   return {
     matchId,
     type: "h1",
-    title: "Boca juega en 1 hora",
-    body: parts.join(" · "),
-    url: "./#partidos",
+    lang,
+    title: t(dict, "push.title"),
+    body,
+    url: lang === "en" ? "./en/#partidos" : "./#partidos",
   };
 }
 
@@ -96,9 +115,9 @@ async function main() {
     if (!start) continue;
     const diff = start.getTime() - now.getTime();
 
-    // Único aviso: 1 hora antes del inicio.
+    // Único aviso: 1 hora antes del inicio (ES y EN).
     if (diff > 0 && diff <= HOUR) {
-      due.push(buildNotification(m));
+      due.push(buildNotification(m, "es"), buildNotification(m, "en"));
     }
   }
 
@@ -117,7 +136,9 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error("[notify] error:", err);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((err) => {
+    console.error("[notify] error:", err);
+    process.exit(1);
+  });
+}

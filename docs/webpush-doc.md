@@ -55,6 +55,8 @@ Opción B (CLI): `supabase db push`.
 ```bash
 npx web-push generate-vapid-keys
 ```
+> Si ya tenías el proyecto andando, corré también `migrations/0004_prefs_lang.sql`
+> (columna `lang` + dedupe por idioma).
 Guardar `Public Key` y `Private Key`.
 
 ### 3.4 Configurar secrets de las Edge Functions
@@ -117,7 +119,8 @@ Copiar `.env.example` a `.env` y completar. (`.env` está gitignoreado.)
 - `src/components/Notifications.astro`: botón **Activar/Desactivar** (un solo aviso, 1 h antes).
 - Se muestra en la **home** (debajo de la agenda) y en **`/info`** (`#notificaciones`).
 - En la home, si faltan `PUBLIC_SUPABASE_URL`/`PUBLIC_VAPID_PUBLIC_KEY`, no se renderiza. En `/info` muestra "Próximamente" (el sitio no se rompe).
-- Flujo: pide permiso → `subscribe()` → guarda la suscripción en Supabase.
+- Flujo: pide permiso → `subscribe()` → guarda la suscripción en Supabase con el
+  **idioma de la página** (`document.documentElement.lang` → `es` | `en`).
 - **iOS**: requiere la PWA **instalada** (iOS 16.4+); si no, muestra las instrucciones.
 
 ---
@@ -126,9 +129,13 @@ Copiar `.env.example` a `.env` y completar. (`.env` está gitignoreado.)
 
 - `scripts/notify.mjs`: lee `src/data/matches.json` y, según la hora actual (Argentina, UTC-3):
   - **h1**: faltan ≤ 60 min para el inicio (único aviso que se envía).
-  - Llama a `POST /functions/v1/send` con `{ matchId, type, title, body, url }`.
+  - Llama **dos veces** a `POST /functions/v1/send` (una por idioma) con
+    `{ matchId, type, title, body, url, lang }`. La Edge Function filtra por
+    `lang` y usa los textos de `push.*` de `src/i18n/{es,en}.ts`.
 - `.github/workflows/notify.yml`: corre **cada 15 min** (snapshot + envío).
-- **Dedupe**: la Edge Function `send` registra `(match_id, type)` en `notification_sends`; si ya existe, **no repite**.
+- **Dedupe**: la Edge Function `send` registra `(match_id, type, lang)` en
+  `notification_sends`; si ya existe, **no repite**. Así el mismo aviso sale una vez
+  en español y otra en inglés.
 - **Limpieza**: ante `404/410` (suscripción vencida), borra la fila.
 
 > ⚠️ **El cron de avisos NO mantiene vivo el proyecto.** `notify.mjs` sale con
@@ -236,6 +243,7 @@ supabase/
 ├─ migrations/0001_webpush.sql      # tablas + RLS + trigger
 ├─ migrations/0002_webpush_prefs.sql# solo aviso h1
 ├─ migrations/0003_keepalive.sql    # tabla keepalive (1 fila)
+├─ migrations/0004_prefs_lang.sql   # idioma de la suscripción + dedupe por lang
 └─ functions/
    ├─ subscribe/index.ts            # registra/actualiza suscripción (pública)
    ├─ send/index.ts                 # fan-out + dedupe + cleanup (SEND_SECRET)
@@ -244,7 +252,7 @@ src/
 ├─ components/Notifications.astro   # UI + suscripción (aviso 1 h antes)
 └─ pages/privacidad.astro           # mención de datos de push
 scripts/
-├─ notify.mjs                       # emisor de avisos (cron */15)
+├─ notify.mjs                       # emisor de avisos ES/EN (cron */15)
 └─ keepalive.mjs                    # ping diario (evita la pausa)
 .github/workflows/
 ├─ notify.yml                       # cron cada 15 min
