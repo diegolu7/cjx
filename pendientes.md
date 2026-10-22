@@ -305,6 +305,32 @@
 
 ---
 
+## 🔜 Indicador "EN VIVO" (punto verde + contador) — ver `docs/plan-en-vivo.md`
+
+El partido en vivo se reconoce **al instante**, sin esperar un deploy: el sitio es
+SSG y se redespliega cada 15 min, así que el cálculo va en el navegador.
+
+- [x] **Investigación hecha** (2026-10-05). Datos que lo habilitan:
+  TheSportsDB `livescore.php` funciona en el plan **gratis**, tiene CORS abierto
+  (`*`), trae `strStatus` real (`1H`/`HT`/`2H`) y **cubre la Liga Profesional
+  Argentina** (id 4406). `eventslast`/`eventsnext` solo traen `FT`/`NS` y no
+  sirven para vivo. Argentina es **UTC-3 fijo** todo el año → sin DST que rompa
+  el cálculo.
+- [x] **Plan escrito** en `docs/plan-en-vivo.md`, en 5 fases revertibles.
+  Principio: "en vivo" es **capa de presentación**, nunca un `MatchStatus`
+  (ese campo alimenta `getStaticPaths`, las pestañas y el SEO).
+- [ ] **Fase 0** — token `--color-live` + funciones puras (`liveWindow`,
+  `liveState`, `minutoAprox`) + script de verificación. *Sin cambio visual.*
+- [ ] **Fase 1** — badge "EN VIVO" (texto + punto verde) derivado del reloj.
+  Renderizado oculto en el server y revelado por JS → sin JS se ve como hoy.
+- [ ] **Fase 2** — contador de minutos (estimado, con ajuste de entretiempo).
+- [ ] **Fase 3** — override con `livescore.php` para el minuto real. **Requiere
+  decisión:** contradice el "sin API deportiva" de la Etapa 3 de más abajo.
+- [ ] **Fase 4** — replicar en la ficha del partido y la card de la home.
+- [ ] **Manual:** definir si se muestra el marcador en vivo (solo Fase 3).
+
+---
+
 ## 🔜 Etapa 3 — Automatización autónoma (ver `automatizar.md`)
 
 Decisiones ya tomadas: **sin API deportiva**, **seguir con Google Sheets**,
