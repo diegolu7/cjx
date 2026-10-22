@@ -5,6 +5,8 @@ import Analytics from "../components/Analytics.astro";
 import CookieBanner from "../components/CookieBanner.astro";
 import InstallPrompt from "../components/InstallPrompt.astro";
 import SeoHead from "../components/SeoHead.astro";
+import { getDict, HTML_LANG, type Locale } from "../i18n/index.ts";
+import { esPathWithSlash, enPathWithSlash, localeBase } from "../i18n/routes";
 import "../styles/global.css";
 
 interface Props {
@@ -16,25 +18,35 @@ interface Props {
 
 const base = import.meta.env.BASE_URL;
 const { title, description, image, noindex } = Astro.props;
-const pageTitle = title ?? "Cuándo Juega Boca Juniors — Próximos Partidos";
-const pageDescription =
-  description ??
-  "Cuándo juega Boca Juniors: próximos partidos, rivales, horarios y resultados del Xeneize. Sitio no oficial. Canal oficial: bocajuniors.com.ar";
-const pageImage = image ?? `${base}og.png`;
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const htmlLang = HTML_LANG[locale];
+const lbase = localeBase(locale);
+
+const pageTitle = title ?? dict.meta.defaultTitle;
+const pageDescription = description ?? dict.meta.defaultDescription;
+const pageImage = image ?? (locale === "en" ? `${base}en/og.png` : `${base}og.png`);
 
 const siteUrl = new URL(base, Astro.site).href;
+const pathname = Astro.url.pathname;
+
+// Versiones alternativas de esta misma página (mismo path, distinto locale).
+const esHref = new URL(esPathWithSlash(pathname), Astro.site).href;
+const enHref = new URL(enPathWithSlash(pathname), Astro.site).href;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@graph": [
     {
       "@type": "WebSite",
-      name: "Cuando Juega el Xeneize",
+      name: dict.meta.siteName,
       url: siteUrl,
-      inLanguage: "es-AR",
+      inLanguage: HTML_LANG[locale],
     },
     {
       "@type": "Organization",
-      name: "Cuando Juega el Xeneize",
+      name: dict.meta.siteName,
       url: siteUrl,
       logo: new URL(`${base}logo.png`, Astro.site).href,
     },
@@ -43,7 +55,7 @@ const structuredData = {
 ---
 
 <!doctype html>
-<html lang="es-AR">
+<html lang={htmlLang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,17 +66,52 @@ const structuredData = {
     <link
       rel="alternate"
       type="application/rss+xml"
-      title="Cuando Juega el Xeneize"
-      href={`${base}feed.xml`}
+      title={dict.meta.siteName}
+      href={`${lbase}${base}feed.xml`}
     />
     <link rel="apple-touch-icon" href={`${base}icons/apple-touch-icon.png?v=3`} />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Cuando Juega!" />
+    <meta name="apple-mobile-web-app-title" content={dict.meta.appName} />
     <meta name="theme-color" content="#07111F" />
     <meta name="google-adsense-account" content="ca-pub-7674492293428072" />
-    <SeoHead title={pageTitle} description={pageDescription} image={pageImage} noindex={noindex} />
+    <SeoHead
+      title={pageTitle}
+      description={pageDescription}
+      image={pageImage}
+      noindex={noindex}
+      locale={locale}
+      esHref={esHref}
+      enHref={enHref}
+    />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+    <!-- Idioma del navegador: si el visitante llega con el navegador en inglés y
+         nunca eligió idioma, lo mandamos a /en/ (una sola vez, con cookie/localStorage). -->
+    <script is:inline>
+      (function () {
+        try {
+          var KEY = "cjx:lang";
+          var pref = localStorage.getItem(KEY);
+          if (!pref) {
+            var langs = navigator.languages || [navigator.language || ""];
+            for (var i = 0; i < langs.length; i++) {
+              var l = (langs[i] || "").split("-")[0].toLowerCase();
+              if (l === "en" || l === "es") {
+                pref = l;
+                break;
+              }
+            }
+            if (pref) localStorage.setItem(KEY, pref);
+          }
+          if (pref !== "en") return;
+          var p = location.pathname;
+          if (p === "/en" || p.indexOf("/en/") === 0) return;
+          location.replace("/en" + p + location.search + location.hash);
+        } catch (e) {
+          /* sin localStorage o sin permisos: seguimos en español */
+        }
+      })();
+    </script>
   </head>
   <body class="min-h-screen bg-bg text-text-primary flex flex-col">
     <div class="site">

@@ -1,56 +1,75 @@
 ---
 import type { MatchEvent } from "../../types/match";
 import Icon from "./Icon.astro";
+import { getDict, t, type Locale } from "../../i18n/index.ts";
 
 interface Props {
   events: MatchEvent[];
   rival: string;
 }
 const { events, rival } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
 
-function isGoal(type: string): boolean {
-  const t = type.toLowerCase();
-  return t.includes("gol") || t.includes("penal");
+const GOALS = new Set(["goal", "penalty-goal", "own-goal"]);
+const CARDS = new Set(["yellow-card", "yellow-redcard", "red-card"]);
+
+/** Código del evento (el snapshot manda `typeCode`; si no, se deduce del texto). */
+function codeOf(e: MatchEvent): string {
+  if (e.typeCode) return e.typeCode;
+  const t = e.type.toLowerCase();
+  if (t.includes("gol") || t.includes("penal")) return "goal";
+  if (t.includes("cambio")) return "substitution";
+  if (t.includes("amarilla")) return "yellow-card";
+  if (t.includes("roja")) return "red-card";
+  return "event";
 }
-function isSub(type: string): boolean {
-  return type.toLowerCase().includes("cambio");
+
+/** Etiqueta del evento en el idioma del visitante. */
+function labelOf(e: MatchEvent): string {
+  const code = codeOf(e);
+  return dict.eventTypes[code as keyof typeof dict.eventTypes] ?? e.type;
 }
-function isYellow(type: string): boolean {
-  return type.toLowerCase().includes("amarilla");
-}
-function isCard(type: string): boolean {
-  const t = type.toLowerCase();
-  return t.includes("amarilla") || t.includes("roja");
+
+/** Detalle de los cambios: "Sale X, entra Y" / "X off, Y on". */
+function detailOf(e: MatchEvent): string | undefined {
+  if (e.playerOut && e.playerIn) {
+    return t(dict, "sections.subDetail", { out: e.playerOut, in: e.playerIn });
+  }
+  return e.detail;
 }
 ---
 
 {events.length > 0 && (
   <section class="mb-6">
-    <h2 class="text-[15px] font-bold text-text-primary mb-2">Eventos del partido</h2>
+    <h2 class="text-[15px] font-bold text-text-primary mb-2">{dict.sections.events}</h2>
     <ol class="list-none p-0 m-0 rounded-lg border border-border bg-surface shadow-card divide-y divide-border">
       {events.map((e) => (
         <li class="flex items-center gap-3 px-4 py-2.5">
           <span class="w-12 shrink-0 text-[12px] font-semibold text-accent-secondary">{e.minute}</span>
           <span class="shrink-0">
-            {isCard(e.type) ? (
+            {CARDS.has(codeOf(e)) ? (
               <span
                 class:list={[
                   "inline-block h-3.5 w-2.5 rounded-[2px]",
-                  isYellow(e.type) ? "bg-[#e0c341]" : "bg-[#d9534f]",
+                  codeOf(e) === "yellow-card" ? "bg-[#e0c341]" : "bg-[#d9534f]",
                 ]}
               />
             ) : (
               <span class="text-accent-strong">
-                <Icon name={isGoal(e.type) ? "ball" : isSub(e.type) ? "arrowLeftRight" : "ball"} size={16} />
+                <Icon
+                  name={GOALS.has(codeOf(e)) ? "ball" : codeOf(e) === "substitution" ? "arrowLeftRight" : "ball"}
+                  size={16}
+                />
               </span>
             )}
           </span>
           <span class="min-w-0 flex-1">
             <span class="block text-[11px] uppercase tracking-[0.03em] text-text-muted">
-              {e.type}
+              {labelOf(e)}
             </span>
             <span class="text-[13px] text-text-primary">
-              {e.player}{e.detail ? ` (${e.detail})` : ""}
+              {e.player}{detailOf(e) ? ` (${detailOf(e)})` : ""}
             </span>
           </span>
           <span class="shrink-0 text-[11px] uppercase tracking-[0.04em] text-text-muted">

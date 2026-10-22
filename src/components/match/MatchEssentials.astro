@@ -1,25 +1,33 @@
 ---
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
-import { fechaLarga, lugarDe, canalDe } from "../../lib/match";
+import { fechaLarga, lugarDe, canalDe, competitionLabel, roundLabel } from "../../lib/match";
+import { getDict, type Locale } from "../../i18n/index.ts";
 
 interface Props {
   match: Match;
   includeDate?: boolean;
 }
 const { match, includeDate = false } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
 
 const items = [
   ...(includeDate
-    ? [{ icon: "calendar", label: "Fecha", value: fechaLarga(match.date), sub: undefined }]
+    ? [{ icon: "calendar", label: dict.match.labelDate, value: fechaLarga(match.date, dict), sub: undefined }]
     : []),
   {
     icon: "mapPin",
-    label: "Estadio",
-    value: lugarDe(match) || "A confirmar",
+    label: dict.match.labelVenue,
+    value: lugarDe(match) || dict.match.venueTbd,
     sub: match.venueCity,
   },
-  { icon: "trophy", label: "Torneo", value: match.competition, sub: match.round },
+  {
+    icon: "trophy",
+    label: dict.match.labelTournament,
+    value: competitionLabel(match, dict),
+    sub: roundLabel(match, dict),
+  },
   ...(canalDe(match)
     ? [{ icon: "tv", label: "TV", value: canalDe(match) as string, sub: undefined }]
     : []),

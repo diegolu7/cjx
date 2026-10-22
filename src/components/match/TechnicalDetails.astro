@@ -1,20 +1,28 @@
 ---
 import type { Match, MatchDetails } from "../../types/match";
-import { fechaLarga, horaDe, lugarDe, canalDe } from "../../lib/match";
+import { fechaLarga, horaDe, lugarDe, canalDe, competitionLabel, roundLabel } from "../../lib/match";
+import { getDict, t, type Locale } from "../../i18n/index.ts";
 
 interface Props {
   match: Match;
   details?: MatchDetails;
 }
 const { match, details } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
 
 const rows: [string, string | undefined][] = [
-  ["Fecha", `${fechaLarga(match.date)}${horaDe(match) ? `, ${horaDe(match)} hs` : ""}`],
-  ["Estadio", lugarDe(match) || "A confirmar"],
-  ["Torneo", match.competition],
-  ["Fase", match.round],
-  ["Árbitro", details?.referee || "A confirmar"],
-  ["TV", canalDe(match) || "A confirmar"],
+  [
+    dict.sections.techDate,
+    `${fechaLarga(match.date, dict)}${
+      horaDe(match) ? `, ${t(dict, "dates.hour", { time: horaDe(match) })}` : ""
+    }`,
+  ],
+  [dict.sections.techVenue, lugarDe(match) || dict.sections.tbd],
+  [dict.sections.techTournament, competitionLabel(match, dict)],
+  [dict.sections.techPhase, roundLabel(match, dict)],
+  [dict.sections.techReferee, details?.referee || dict.sections.tbd],
+  [dict.sections.techTv, canalDe(match) || dict.sections.tbd],
 ];
 const ficha = rows.filter(([, v]) => v);
 ---
@@ -22,7 +30,7 @@ const ficha = rows.filter(([, v]) => v);
 <section class="mb-6">
   <details class="rounded-lg border border-border bg-surface shadow-card">
     <summary class="cursor-pointer px-4 py-3 text-[13px] font-semibold text-text-primary">
-      Ver ficha técnica
+      {dict.sections.techTitle}
     </summary>
     <dl class="px-4 pb-4 grid grid-cols-2 gap-x-4 gap-y-2">
       {ficha.map(([k, v]) => (

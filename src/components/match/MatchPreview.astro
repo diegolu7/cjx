@@ -1,10 +1,14 @@
 ---
+import { getDict, t, type Locale } from "../../i18n/index.ts";
+
 interface Props {
   title: string;
   text: string;
   referee?: string;
 }
 const { title, text, referee } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
 ---
 
 <section class="mb-6">
@@ -14,7 +18,7 @@ const { title, text, referee } = Astro.props;
   ))}
   {referee && (
     <p class="text-[14px] leading-[1.7] text-text-secondary mt-2">
-      Dirigido por el árbitro {referee}.
+      {t(dict, "sections.referee", { referee })}
     </p>
   )}
 </section>

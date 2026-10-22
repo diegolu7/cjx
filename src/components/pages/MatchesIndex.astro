@@ -1,0 +1,70 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MatchListCard from "../match/MatchListCard.astro";
+import type { Match } from "../../types/match";
+import { fechaHoraCorta } from "../../lib/match";
+import { getDict, type Locale } from "../../i18n/index.ts";
+import data from "../../data/matches.json";
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const matches = data.matches as Match[];
+const proximos = matches.filter((m) => m.status !== "finished");
+const anteriores = matches
+  .filter((m) => m.status === "finished")
+  .slice()
+  .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+---
+
+<Layout title={dict.pages.matches.title} description={dict.pages.matches.description}>
+  <section class="mb-6">
+    <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
+      {dict.pages.matches.h1}
+    </h1>
+    <p class="mt-2 text-[13px] leading-[1.6] text-text-secondary">
+      {dict.pages.matches.intro}
+    </p>
+  </section>
+
+  {proximos.length > 0 && (
+    <section class="mb-8">
+      <h2
+        class="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-text-secondary"
+      >
+        {dict.pages.matches.upcoming}
+      </h2>
+      <ol class="list-none p-0 m-0 flex flex-col gap-3">
+        {proximos.map((m) => (
+          <li>
+            <MatchListCard match={m} />
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  {anteriores.length > 0 && (
+    <section>
+      <h2
+        class="mb-3 text-[13px] font-semibold uppercase tracking-[0.06em] text-text-secondary"
+      >
+        {dict.pages.matches.results}
+      </h2>
+      <ol class="list-none p-0 m-0 flex flex-col gap-3">
+        {anteriores.map((m) => (
+          <li>
+            <MatchListCard match={m} />
+          </li>
+        ))}
+      </ol>
+    </section>
+  )}
+
+  {matches.length === 0 && (
+    <p class="text-text-secondary text-sm">{dict.pages.matches.empty}</p>
+  )}
+
+  <p class="mt-8 text-[11px] text-text-muted">
+    {dict.match.updatedAt.replace("{date}", fechaHoraCorta(data.updatedAt))}
+  </p>
+</Layout>

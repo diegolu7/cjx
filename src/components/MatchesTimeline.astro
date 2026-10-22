@@ -3,14 +3,24 @@ import type { Match, MatchStatus } from "../types/match";
 import Icon from "./match/Icon.astro";
 import FixtureLine from "./match/FixtureLine.astro";
 import { rivalOf, diaMes, horaDe, canalDe, featuredMatch } from "../lib/match";
+import { getDict, t, type Locale } from "../i18n/index.ts";
+import { localeBase } from "../i18n/routes";
 
 interface Props {
   matches: Match[];
 }
 const { matches } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const lbase = localeBase(locale);
 
-const TABS = ["ANTERIORES", "TODOS", "PRÓXIMOS"];
+// id estable (para el script) + etiqueta traducida.
+const TABS = [
+  { id: "previous", label: dict.timeline.tabs.previous },
+  { id: "all", label: dict.timeline.tabs.all },
+  { id: "upcoming", label: dict.timeline.tabs.upcoming },
+];
 
 function teamsLine(m: Match, featured: boolean): string {
   if (featured) return `${m.homeTeam.toUpperCase()} vs ${m.awayTeam.toUpperCase()}`;
@@ -46,22 +56,25 @@ function badgeClass(s: MatchStatus): string {
 
 function badgeLabel(s: MatchStatus): string {
   return s === "finished"
-    ? "FINAL"
+    ? dict.timeline.badges.finished
     : s === "live"
-      ? "EN VIVO"
+      ? dict.timeline.badges.live
       : s === "next"
-        ? "PRÓXIMO"
-        : "PREVISTO";
+        ? dict.timeline.badges.next
+        : dict.timeline.badges.scheduled;
 }
 
 function leaderOf(m: Match): string {
   const a = m.aggregate;
   if (!a) return "";
   const hasPens = a.penaltyBoca !== undefined && a.penaltyRival !== undefined;
-  if (a.bocaScore > a.rivalScore) return "Boca lidera";
-  if (a.bocaScore < a.rivalScore) return "Boca abajo";
-  if (hasPens) return (a.penaltyBoca as number) > (a.penaltyRival as number) ? "Boca lidera" : "Boca abajo";
-  return "Serie igualada";
+  if (a.bocaScore > a.rivalScore) return dict.timeline.leaders.leading;
+  if (a.bocaScore < a.rivalScore) return dict.timeline.leaders.behind;
+  if (hasPens)
+    return (a.penaltyBoca as number) > (a.penaltyRival as number)
+      ? dict.timeline.leaders.leading
+      : dict.timeline.leaders.behind;
+  return dict.timeline.leaders.tied;
 }
 
 // El destacado es el partido en juego; si no hay ninguno, el próximo.
@@ -74,16 +87,16 @@ let seenProximos = false;
 const rows = matches.map((m) => {
   let label = "";
   if (m.status === "finished" && !seenAnteriores) {
-    label = "ANTERIORES";
+    label = dict.timeline.groups.previous;
     seenAnteriores = true;
   } else if (m.status === "live" && !seenLive) {
-    label = "EN VIVO";
+    label = dict.timeline.groups.live;
     seenLive = true;
   } else if (m.status === "next" && !seenProximo) {
-    label = "PRÓXIMO";
+    label = dict.timeline.groups.next;
     seenProximo = true;
   } else if (m.status === "scheduled" && !seenProximos) {
-    label = "PRÓXIMOS";
+    label = dict.timeline.groups.upcoming;
     seenProximos = true;
   }
   return { match: m, label, active: m.id === featuredId };
@@ -96,40 +109,39 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
 ---
 
 <section aria-labelledby="matches-heading" class="w-full">
-  <h2 id="matches-heading" class="sr-only">Próximos partidos de Boca Juniors</h2>
+  <h2 id="matches-heading" class="sr-only">{dict.timeline.heading}</h2>
 
   <!-- Tabs mobile -->
   <div
     role="tablist"
-    aria-label="Filtrar partidos"
+    aria-label={dict.timeline.filterLabel}
     class="lg:hidden grid grid-cols-3 h-11 border border-border rounded-[6px] overflow-hidden mb-5"
     data-cjx-tabs
   >
-    {TABS.map((t, i) => (
+    {TABS.map((tab, i) => (
       <button
         type="button"
         role="tab"
         id={`tab-${i}`}
-        data-tab={t}
-        aria-selected={t === "TODOS" ? "true" : "false"}
+        data-tab={tab.id}
+        aria-selected={tab.id === "all" ? "true" : "false"}
         aria-controls="matches-panel"
-        tabindex={t === "TODOS" ? 0 : -1}
+        tabindex={tab.id === "all" ? 0 : -1}
         class:list={[
           "flex items-center justify-center text-[12px] font-semibold tracking-[0.04em] transition-colors duration-[160ms] ease-linear cursor-pointer",
-          t === "TODOS"
+          tab.id === "all"
             ? "text-text-primary bg-[rgba(95,168,211,0.07)] shadow-[inset_0_-2px_0_var(--color-accent-secondary)]"
             : "text-text-muted",
         ]}
       >
-        {t}
+        {tab.label}
       </button>
     ))}
   </div>
 
   {showNoUpcoming && (
     <p class="mb-5 text-[13px] leading-relaxed text-text-muted border border-border bg-surface rounded-md px-4 py-3">
-      No hay próximos partidos por el momento. La agenda se actualiza automáticamente cuando se
-      confirme una nueva fecha.
+      {dict.timeline.noUpcoming}
     </p>
   )}
 
@@ -140,7 +152,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
     class="outline-none h-[64vh] overflow-y-auto lg:h-auto lg:overflow-visible"
   >
     {matches.length === 0 && (
-      <p class="text-text-secondary text-sm">No hay partidos disponibles por el momento.</p>
+      <p class="text-text-secondary text-sm">{dict.timeline.noMatches}</p>
     )}
 
     {rows.length > 0 && (
@@ -179,9 +191,9 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
 
             <!-- Card -->
             <a
-              href={`${base}partidos/${match.slug}`}
+              href={`${lbase}${base}partidos/${match.slug}`}
               class="group block rounded-lg"
-              aria-label={`Ver detalle: ${teamsLine(match, active)}`}
+              aria-label={t(dict, "timeline.viewDetail", { teams: teamsLine(match, active) })}
             >
               {active ? (
                 <article class="featured-match rounded-lg border-2 border-accent bg-gradient-to-br from-surface to-surface-elevated shadow-featured px-3 py-4 lg:px-[18px] lg:py-4 min-h-[132px] lg:min-h-[126px] transition-[border-color] duration-[160ms] ease-linear hover:border-accent-strong">
@@ -199,7 +211,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                         </span>
                       ) : (
                         <span class="mt-1 text-[12px] leading-[1.35] text-text-secondary">
-                          Horario a confirmar
+                          {dict.timeline.timeTbd}
                         </span>
                       )}
                     </div>
@@ -215,11 +227,17 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                       {match.aggregate && (
                         <div class="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
                           <p>
-                            Global: Boca {match.aggregate.bocaScore} - {match.aggregate.rivalScore}{" "}
-                            {rivalOf(match)}
+                            {t(dict, "timeline.aggregate", {
+                              boca: match.aggregate.bocaScore,
+                              rival: match.aggregate.rivalScore,
+                              rivalName: rivalOf(match),
+                            })}
                             {match.aggregate.penaltyBoca !== undefined &&
                               match.aggregate.penaltyRival !== undefined &&
-                              ` (pen. ${match.aggregate.penaltyBoca}-${match.aggregate.penaltyRival})`}
+                              ` ${t(dict, "timeline.penalties", {
+                                boca: match.aggregate.penaltyBoca,
+                                rival: match.aggregate.penaltyRival,
+                              })}`}
                           </p>
                           <p class="text-text-muted">{leaderOf(match)}</p>
                         </div>
@@ -255,10 +273,10 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                   <div class="grid grid-cols-[64px_minmax(0,1fr)_auto] gap-3 items-center">
                     <div class="flex flex-col justify-center self-stretch border-r border-border pr-3 pl-1 min-w-0">
                       <span class="text-[18px] leading-[1.05] font-semibold text-text-primary">
-                        {diaMes(match.date).day}
+                        {diaMes(match.date, dict).day}
                       </span>
                       <span class="mt-[2px] text-[12px] leading-[1.45] text-text-secondary">
-                        {diaMes(match.date).month}
+                        {diaMes(match.date, dict).month}
                       </span>
                     </div>
                     <div class="min-w-0">
@@ -273,10 +291,16 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
                       )}
                       {match.aggregate && (
                         <p class="mt-1 text-[12px] leading-[1.45] text-accent-secondary">
-                          Global {match.aggregate.bocaScore}-{match.aggregate.rivalScore}
+                          {t(dict, "timeline.aggregateShort", {
+                            boca: match.aggregate.bocaScore,
+                            rival: match.aggregate.rivalScore,
+                          })}
                           {match.aggregate.penaltyBoca !== undefined &&
                             match.aggregate.penaltyRival !== undefined &&
-                            ` (pen. ${match.aggregate.penaltyBoca}-${match.aggregate.penaltyRival})`}
+                            ` ${t(dict, "timeline.penalties", {
+                              boca: match.aggregate.penaltyBoca,
+                              rival: match.aggregate.penaltyRival,
+                            })}`}
                         </p>
                       )}
                     </div>
@@ -307,8 +331,8 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
     const panel = root.querySelector<HTMLElement>("#matches-panel");
 
     function matchTab(status: string, tab: string): boolean {
-      if (tab === "TODOS") return true;
-      if (tab === "ANTERIORES") return status === "finished";
+      if (tab === "all") return true;
+      if (tab === "previous") return status === "finished";
       return status === "live" || status === "next" || status === "scheduled";
     }
 
@@ -336,7 +360,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
     }
 
     tabs.forEach((b, i) => {
-      b.addEventListener("click", () => setTab(b.dataset.tab ?? "TODOS"));
+      b.addEventListener("click", () => setTab(b.dataset.tab ?? "all"));
       b.addEventListener("keydown", (e) => {
         let next: number | null = null;
         if (e.key === "ArrowRight") next = (i + 1) % tabs.length;
@@ -345,7 +369,7 @@ const showNoUpcoming = matches.length > 0 && !hasUpcoming;
         else if (e.key === "End") next = tabs.length - 1;
         if (next === null) return;
         e.preventDefault();
-        setTab(tabs[next].dataset.tab ?? "TODOS", true);
+        setTab(tabs[next].dataset.tab ?? "all", true);
       });
     });
   })();

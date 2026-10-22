@@ -1,5 +1,7 @@
 ---
 import Layout from "./Layout.astro";
+import { getDict, type Locale } from "../i18n/index.ts";
+import { localeBase } from "../i18n/routes";
 
 interface Props {
   title: string;
@@ -7,7 +9,10 @@ interface Props {
   updated?: string;
 }
 
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
 const base = import.meta.env.BASE_URL;
+const lbase = localeBase(locale);
 const { title, description, updated = "Septiembre 2026" } = Astro.props;
 
 const breadcrumb = {
@@ -17,8 +22,8 @@ const breadcrumb = {
     {
       "@type": "ListItem",
       position: 1,
-      name: "Inicio",
-      item: new URL(base, Astro.site).href,
+      name: dict.match.breadcrumbHome,
+      item: new URL(`${lbase}${base}`, Astro.site).href,
     },
     {
       "@type": "ListItem",
@@ -30,10 +35,10 @@ const breadcrumb = {
 };
 ---
 
-<Layout title={`${title} — Cuando Juega el Xeneize`} description={description}>
+<Layout title={`${title} — ${dict.meta.siteName}`} description={description}>
   <article class="legal">
     <h1>{title}</h1>
-    <p class="legal__updated">Última actualización: {updated}</p>
+    <p class="legal__updated">{dict.pages.legal.updated.replace("{date}", updated)}</p>
     <slot />
   </article>
   <script is:inline type="application/ld+json" set:html={JSON.stringify(breadcrumb)} />

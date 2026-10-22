@@ -1,20 +1,33 @@
 ---
+import { HTML_LANG, OG_LOCALE, getDict, type Locale } from "../i18n/index.ts";
+
 interface Props {
   title: string;
   description: string;
   image?: string;
   noindex?: boolean;
+  locale?: Locale;
+  esHref?: string;
+  enHref?: string;
 }
 
-const { title, description, image, noindex = false } = Astro.props;
+const { title, description, image, noindex = false, locale = "es", esHref, enHref } =
+  Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const ogImage = image ? new URL(image, Astro.site).href : undefined;
-const siteName = "Cuando Juega el Xeneize";
+const siteName = getDict(locale).meta.siteName;
+
+// Alternates hreflang: la misma página en los dos idiomas.
+const esLang = HTML_LANG.es;
+const enLang = HTML_LANG.en;
 ---
 
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{esHref && <link rel="alternate" hreflang={esLang} href={esHref} />}
+{enHref && <link rel="alternate" hreflang={enLang} href={enHref} />}
+{esHref && <link rel="alternate" hreflang="x-default" href={esHref} />}
 {noindex ? (
   <meta name="robots" content="noindex, nofollow" />
 ) : (
@@ -23,7 +36,8 @@ const siteName = "Cuando Juega el Xeneize";
 
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={siteName} />
-<meta property="og:locale" content="es_AR" />
+<meta property="og:locale" content={OG_LOCALE[locale]} />
+<meta property="og:locale:alternate" content={OG_LOCALE[locale === "es" ? "en" : "es"]} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />
 <meta property="og:url" content={canonical} />

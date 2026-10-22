@@ -1,0 +1,48 @@
+---
+import { parseInline } from "../../lib/text";
+import type { LegalBlock } from "../../i18n/types";
+
+interface Props {
+  blocks: LegalBlock[];
+}
+const { blocks } = Astro.props;
+---
+
+{
+  blocks.map((b) => {
+    if (b.type === "h2") return <h2>{b.text}</h2>;
+    if (b.type === "ul" || b.type === "ol") {
+      const Tag = b.type;
+      return (
+        <Tag>
+          {(b.items ?? []).map((item) => (
+            <li>
+              {parseInline(item).map((p) =>
+                p.type === "strong" ? (
+                  <strong>{p.text}</strong>
+                ) : p.type === "link" ? (
+                  <a href={p.href}>{p.text}</a>
+                ) : (
+                  p.text
+                ),
+              )}
+            </li>
+          ))}
+        </Tag>
+      );
+    }
+    return (
+      <p>
+        {parseInline(b.text ?? "").map((p) =>
+          p.type === "strong" ? (
+            <strong>{p.text}</strong>
+          ) : p.type === "link" ? (
+            <a href={p.href}>{p.text}</a>
+          ) : (
+            p.text
+          ),
+        )}
+      </p>
+    );
+  })
+}

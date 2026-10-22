@@ -1,0 +1,61 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MatchListCard from "../match/MatchListCard.astro";
+import type { Match } from "../../types/match";
+import { getDict, t, type Locale } from "../../i18n/index.ts";
+import { tournamentLabel } from "../../lib/match";
+import { localeBase } from "../../i18n/routes";
+
+interface Props {
+  name: string;
+  matches: Match[];
+}
+const { name: rawName, matches } = Astro.props;
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const base = import.meta.env.BASE_URL;
+const lbase = localeBase(locale);
+const list = matches.slice().sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+// El nombre visible se traduce, pero la URL conserva el slug del nombre en español.
+const name = tournamentLabel(matches, rawName, dict);
+---
+
+<Layout
+  title={t(dict, "pages.tournaments.detailTitle", { tournament: name })}
+  description={t(dict, "pages.tournaments.detailDescription", { tournament: name })}
+>
+  <nav class="mb-4 text-[12px] text-text-muted" aria-label={dict.match.breadcrumb}>
+    <a href={`${lbase}${base}`} class="hover:text-accent underline underline-offset-2">
+      {dict.match.breadcrumbHome}
+    </a>
+    <span> / </span>
+    <a href={`${lbase}${base}torneos`} class="hover:text-accent underline underline-offset-2">
+      {dict.pages.tournaments.breadcrumb}
+    </a>
+  </nav>
+
+  <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
+    {t(dict, "pages.tournaments.detailH1", { tournament: name })}
+  </h1>
+  <p class="mt-2 text-[13px] leading-[1.6] text-text-secondary">
+    {t(dict, "pages.tournaments.detailIntro", { tournament: name })}
+  </p>
+
+  <ol class="mt-5 list-none p-0 m-0 flex flex-col gap-3">
+    {list.map((m) => (
+      <li>
+        <MatchListCard match={m} />
+      </li>
+    ))}
+  </ol>
+
+  <p class="mt-8">
+    <a
+      href={`${lbase}${base}torneos`}
+      class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+    >
+      {dict.pages.tournaments.back}
+    </a>
+  </p>
+</Layout>

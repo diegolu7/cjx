@@ -1,0 +1,60 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getDict, type Locale } from "../../i18n/index.ts";
+import { localeBase } from "../../i18n/routes";
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const en = getDict("en");
+const base = import.meta.env.BASE_URL;
+const lbase = localeBase(locale);
+---
+
+<Layout
+  title={dict.pages.notFound.title}
+  description={dict.pages.notFound.description}
+  noindex={true}
+>
+  <section class="max-w-[60ch]">
+    <p class="text-[12px] font-semibold tracking-[0.04em] uppercase text-accent">
+      {dict.pages.notFound.code}
+    </p>
+    <h1
+      class="mt-2 text-[26px] lg:text-[30px] font-bold leading-[1.15] text-text-primary"
+      data-i18n-en={en.pages.notFound.h1}
+    >
+      {dict.pages.notFound.h1}
+    </h1>
+    <p
+      class="mt-3 text-[14px] leading-relaxed text-text-secondary"
+      data-i18n-en={en.pages.notFound.text}
+    >
+      {dict.pages.notFound.text}
+    </p>
+    <p class="mt-6">
+      <a
+        href={`${lbase}${base}`}
+        class="inline-flex items-center h-10 px-4 rounded-[6px] text-[12px] font-semibold tracking-[0.04em] uppercase text-bg bg-accent hover:bg-accent-strong transition-colors"
+        data-i18n-en={en.pages.notFound.back}
+      >
+        {dict.pages.notFound.back}
+      </a>
+    </p>
+  </section>
+</Layout>
+
+<script is:inline>
+  // GitHub Pages sirve un único 404.html: si la URL caía bajo /en/ mostramos
+  // el mensaje en inglés.
+  (function () {
+    try {
+      var p = location.pathname;
+      if (p !== "/en" && p.indexOf("/en/") !== 0) return;
+      document.querySelectorAll("[data-i18n-en]").forEach(function (el) {
+        el.textContent = el.getAttribute("data-i18n-en") || el.textContent;
+      });
+    } catch (e) {
+      /* sin JS queda el mensaje en español */
+    }
+  })();
+</script>

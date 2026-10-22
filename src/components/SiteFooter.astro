@@ -1,7 +1,14 @@
 ---
 // Footer según design.md §45/§46: disclaimer, links legales, contacto y logo.
+import LangSwitcher from "./LangSwitcher.astro";
+import { getDict, t, type Locale } from "../i18n/index.ts";
+import { localeBase } from "../i18n/routes";
+
 const base = import.meta.env.BASE_URL;
 const anio = new Date().getFullYear();
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const lbase = localeBase(locale);
 ---
 
 <footer class="site-footer">
@@ -9,42 +16,47 @@ const anio = new Date().getFullYear();
     <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
       <div class="flex flex-col gap-2">
         <p class="text-[11px] leading-[1.5] text-text-secondary">
-          Sitio no oficial. No afiliado a AFA ni al Club Atlético Boca Juniors.
+          {dict.footer.disclaimer}
         </p>
 
         <p class="text-[11px] leading-[1.5] text-text-muted">
-          Datos de agenda, resultados y estadísticas provistos por
+          {dict.footer.data}{" "}
           <a href="https://www.espn.com/soccer/" rel="noopener noreferrer nofollow" target="_blank" class="text-text-secondary underline underline-offset-2 hover:text-accent">ESPN</a>.
         </p>
 
-        <nav aria-label="Legal" class="flex flex-wrap gap-x-4 gap-y-1">
-          <a href={`${base}info`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">Info</a>
-          <a href={`${base}terminos`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">Términos</a>
-          <a href={`${base}privacidad`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">Privacidad</a>
-          <a href={`${base}cookies`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">Cookies</a>
-          <a href={`${base}contacto`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">Contacto</a>
+        <nav aria-label={dict.nav.legal} class="flex flex-wrap gap-x-4 gap-y-1">
+          <a href={`${lbase}${base}info`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.nav.info}</a>
+          <a href={`${lbase}${base}terminos`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.terms}</a>
+          <a href={`${lbase}${base}privacidad`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.privacy}</a>
+          <a href={`${lbase}${base}cookies`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.cookiesLink}</a>
+          <a href={`${lbase}${base}contacto`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.contact}</a>
         </nav>
 
         <p class="text-[11px] leading-[1.5] text-text-muted">
-          Al continuar navegando aceptás el uso de cookies de estadísticas. Podés rechazarlas o ver
-          más en la <a href={`${base}cookies`} class="underline underline-offset-2 hover:text-accent">Política de Cookies</a>.
+          {dict.footer.cookiesText}{" "}
+          <a href={`${lbase}${base}cookies`} class="underline underline-offset-2 hover:text-accent">{dict.footer.cookiesPolicy}</a>.
         </p>
 
         <p class="text-[11px] leading-[1.5] text-text-secondary">
           <a href="mailto:delnorte.destinos@gmail.com" class="underline underline-offset-2 hover:text-accent">delnorte.destinos@gmail.com</a>
         </p>
-        <p class="text-[11px] leading-[1.5] text-text-secondary">© {anio} Cuando Juega el Xeneize</p>
+        <p class="text-[11px] leading-[1.5] text-text-secondary">
+          {t(dict, "footer.copyright", { year: anio })}
+        </p>
 
+        <p class="text-[11px]">
+          <LangSwitcher />
+        </p>
         <p class="text-[11px]">
           <button
             type="button"
             data-install-app
             class="text-text-secondary underline underline-offset-2 hover:text-accent"
-          >Instalar app</button>
+          >{dict.nav.installShort}</button>
         </p>
       </div>
 
-      <a href={`${base}`} aria-label="Cuando Juega el Xeneize — Inicio" class="self-start lg:self-center shrink-0">
+      <a href={`${lbase}${base}`} aria-label={dict.nav.brandHome} class="self-start lg:self-center shrink-0">
         <img
           src={`${base}logo.png`}
           alt=""

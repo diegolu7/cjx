@@ -1,19 +1,6 @@
 import type { Match, MatchStatus } from "../types/match";
-
-const MESES = [
-  "enero",
-  "febrero",
-  "marzo",
-  "abril",
-  "mayo",
-  "junio",
-  "julio",
-  "agosto",
-  "septiembre",
-  "octubre",
-  "noviembre",
-  "diciembre",
-];
+import type { Dict } from "../i18n/index.ts";
+import { t } from "../i18n/index.ts";
 
 export function rivalOf(m: Match): string {
   return m.homeTeam === "Boca" ? m.awayTeam : m.homeTeam;
@@ -29,18 +16,55 @@ export function featuredMatch(matches: Match[]): Match | undefined {
   return matches.find((m) => m.status === "live") ?? matches.find((m) => m.status === "next");
 }
 
-/** Etiqueta en español del estado del partido. */
-export function statusLabel(s: MatchStatus): string {
+/** Etiqueta del estado del partido, en el idioma del diccionario. */
+export function statusLabel(s: MatchStatus, dict: Dict): string {
   switch (s) {
     case "finished":
-      return "Final";
+      return dict.status.finished;
     case "live":
-      return "En vivo";
+      return dict.status.live;
     case "next":
-      return "Próximo";
+      return dict.status.next;
     default:
-      return "Previsto";
+      return dict.status.scheduled;
   }
+}
+
+/** Nombre de la competition en el idioma del diccionario (usa el código del snapshot). */
+export function competitionLabel(m: Match, dict: Dict): string {
+  const code = m.competitionCode;
+  if (code) {
+    const label = dict.competitions[code as keyof typeof dict.competitions];
+    if (label) return label;
+  }
+  return m.competition;
+}
+
+/** Ronda en el idioma del diccionario ("Fecha 13" / "Matchday 13", "Semifinales - Ida"). */
+export function roundLabel(m: Match, dict: Dict): string | undefined {
+  if (m.roundType === "matchday" && m.roundNumber) {
+    return t(dict, "rounds.matchday", { n: m.roundNumber });
+  }
+  if (m.roundType === "phase" && m.roundPhase) {
+    const phase = dict.phases[m.roundPhase as keyof typeof dict.phases];
+    if (!phase) return m.round;
+    if (m.leg) {
+      const leg = dict.rounds.legs[m.leg as keyof typeof dict.rounds.legs];
+      return leg ? `${phase} - ${leg}` : phase;
+    }
+    return phase;
+  }
+  return m.round;
+}
+
+/** Nombre del torneo en el idioma del diccionario (según el código del snapshot). */
+export function tournamentLabel(matches: Match[], fallback: string, dict: Dict): string {
+  const code = matches.find((m) => m.competitionCode)?.competitionCode;
+  if (code) {
+    const label = dict.competitions[code as keyof typeof dict.competitions];
+    if (label) return label;
+  }
+  return fallback;
 }
 
 export function bocaGoles(m: Match): number | undefined {
@@ -94,31 +118,21 @@ export function kickoffEndISO(m: Match): string | null {
   return Number.isNaN(d.getTime()) ? null : new Date(d.getTime() + 2 * 60 * 60 * 1000).toISOString();
 }
 
-/** "20 de septiembre de 2026" a partir de "2026-09-20". */
-export function fechaLarga(iso: string): string {
+/** "20 de septiembre de 2026" / "September 20, 2026" a partir de "2026-09-20". */
+export function fechaLarga(iso: string, dict: Dict): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
   if (!m) return iso;
-  return `${Number(m[3])} de ${MESES[Number(m[2]) - 1]} de ${m[1]}`;
+  return t(dict, "dates.long", {
+    day: Number(m[3]),
+    month: dict.months[Number(m[2]) - 1],
+    year: m[1],
+  });
 }
 
-export function condicion(m: Match): string {
-  return m.homeTeam === "Boca" ? "Local" : "Visitante";
+/** "Local" / "Visitante" → "Home" / "Away". */
+export function condicion(m: Match, dict: Dict): string {
+  return m.homeTeam === "Boca" ? dict.condition.home : dict.condition.away;
 }
-
-const MESES_CORTOS = [
-  "ENE",
-  "FEB",
-  "MAR",
-  "ABR",
-  "MAY",
-  "JUN",
-  "JUL",
-  "AGO",
-  "SEP",
-  "OCT",
-  "NOV",
-  "DIC",
-];
 
 /** "20/09/2026 21:30" (hora Argentina) a partir de un ISO. */
 export function fechaHoraCorta(iso: string): string {
@@ -133,10 +147,10 @@ export function fechaHoraCorta(iso: string): string {
 }
 
 /** "20" / "SEP" a partir de "2026-09-20". */
-export function diaMes(iso: string): { day: string; month: string } {
+export function diaMes(iso: string, dict: Dict): { day: string; month: string } {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
   if (!m) return { day: iso, month: "" };
-  return { day: m[3], month: MESES_CORTOS[Number(m[2]) - 1] ?? "" };
+  return { day: m[3], month: dict.monthsShort[Number(m[2]) - 1] ?? "" };
 }
 
 /** Marcador desde la perspectiva de Boca: "Boca 2 - 1 Rival". */
@@ -147,53 +161,64 @@ export function marcador(m: Match): string {
   return `Boca ${b} - ${r} ${rivalOf(m)}`;
 }
 
-export function titleFor(m: Match): string {
+export function titleFor(m: Match, dict: Dict): string {
   const rival = rivalOf(m);
+  const competition = competitionLabel(m, dict);
   if (m.status === "finished" && bocaGoles(m) !== undefined) {
-    return `Boca ${bocaGoles(m)} - ${rivalGoles(m)} ${rival}: resultado final (${m.competition}) | Cuando Juega el Xeneize`;
+    return t(dict, "seo.titleFinished", {
+      boca: bocaGoles(m),
+      rivalScore: rivalGoles(m),
+      rival,
+      competition,
+    });
   }
   if (m.status === "live") {
-    return `Boca vs ${rival} en vivo: marcador y datos (${m.competition}) | Cuando Juega el Xeneize`;
+    return t(dict, "seo.titleLive", { rival, competition });
   }
-  return `Boca vs ${rival}: fecha, hora y cómo ver (${m.competition}) | Cuando Juega el Xeneize`;
+  return t(dict, "seo.titleUpcoming", { rival, competition });
 }
 
-export function descriptionFor(m: Match): string {
+export function descriptionFor(m: Match, dict: Dict): string {
   const rival = rivalOf(m);
-  const fecha = fechaLarga(m.date);
-  const hora = m.time ? ` a las ${m.time}` : "";
-  const lugar = m.venue ? ` en ${m.venue}` : "";
+  const competition = competitionLabel(m, dict);
+  const round = roundLabel(m, dict);
+  const date = fechaLarga(m.date, dict);
+  const hour = horaDe(m) ? t(dict, "seo.hour", { time: horaDe(m) }) : "";
+  const venue = lugarDe(m) ? t(dict, "seo.venue", { venue: lugarDe(m) }) : "";
+  const roundText = round ? t(dict, "seo.round", { round }) : "";
   if (m.status === "finished") {
-    return `Resultado de ${marcador(m)}: cómo salió Boca por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}. Global, formaciones y datos. Sitio no oficial.`;
+    return t(dict, "seo.descFinished", {
+      score: marcador(m),
+      competition,
+      round: roundText,
+      date,
+    });
   }
   if (m.status === "live") {
-    return `Boca vs ${rival} en vivo por ${m.competition}: marcador actual, eventos y estadísticas del partido. Sitio no oficial.`;
+    return t(dict, "seo.descLive", { rival, competition });
   }
-  return `Boca vs ${rival} por ${m.competition}${m.round ? ` (${m.round})` : ""} el ${fecha}${hora}${lugar}. Formaciones, historial y cómo ver. Sitio no oficial.`;
+  return t(dict, "seo.descUpcoming", {
+    rival,
+    competition,
+    round: roundText,
+    date,
+    hour,
+    venue,
+  });
 }
 
-const DIAS_LARGOS = [
-  "domingo",
-  "lunes",
-  "martes",
-  "miércoles",
-  "jueves",
-  "viernes",
-  "sábado",
-];
-
-/** "sábado" a partir de "2026-09-20". */
-export function diaSemana(iso: string): string {
+/** "sábado" / "Saturday" a partir de "2026-09-20". */
+export function diaSemana(iso: string, dict: Dict): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
   if (!m) return "";
   const d = new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3]));
-  return DIAS_LARGOS[d.getDay()] ?? "";
+  return dict.weekdays[d.getDay()] ?? "";
 }
 
-/** "Faltan X días" / "Falta 1 día" / "Faltan X h" (build-time, hora Argentina). */
-export function countdownText(m: Match): string | undefined {
+/** "Faltan X días" / "Faltan X h" (build-time, hora Argentina). */
+export function countdownText(m: Match, dict: Dict): string | undefined {
   if (m.status === "finished") return undefined;
-  if (m.status === "live") return "En vivo";
+  if (m.status === "live") return dict.status.live;
   const md = /^(\d{4})-(\d{2})-(\d{2})/.exec(m.date);
   if (!md) return undefined;
 
@@ -203,18 +228,18 @@ export function countdownText(m: Match): string | undefined {
   const matchDay = Date.UTC(Number(md[1]), Number(md[2]) - 1, Number(md[3]));
   const days = Math.round((matchDay - todayART) / 86400000);
 
-  if (days > 1) return `Faltan ${days} días`;
-  if (days === 1) return "Falta 1 día";
+  if (days > 1) return t(dict, "countdown.days", { n: days });
+  if (days === 1) return dict.countdown.oneDay;
   if (days < 0) return undefined;
 
   // Es hoy: contar horas.
   const time = /^\d{1,2}:\d{2}/.test(m.time || "") ? m.time : "23:59";
   const dt = new Date(`${m.date}T${time}:00-03:00`).getTime();
-  if (Number.isNaN(dt)) return "Es hoy";
+  if (Number.isNaN(dt)) return dict.countdown.today;
   const diff = dt - Date.now();
-  if (diff <= 0) return "En juego o por comenzar";
+  if (diff <= 0) return dict.countdown.imminent;
   const hours = Math.max(1, Math.floor(diff / 3600000));
-  return `Faltan ${hours} h`;
+  return t(dict, "countdown.hours", { n: hours });
 }
 
 /** ¿Boca avanza el cruce? (según global + penales). */
@@ -250,6 +275,7 @@ export function recentResults(all: Match[], n = 3): { result: string; text: stri
 export function splitByFormation(
   formation: string | undefined,
   players: string[],
+  dict: Dict,
 ): { label: string; players: string[] }[] {
   if (!players || players.length === 0) return [];
   const nums = String(formation || "")
@@ -258,13 +284,17 @@ export function splitByFormation(
     .filter((n) => Number.isFinite(n) && n > 0);
   const expected = nums.reduce((a, b) => a + b, 0) + 1;
   if (nums.length === 0 || expected !== players.length) {
-    return [{ label: "Titulares", players }];
+    return [{ label: dict.formation.starters, players }];
   }
-  const lines = [{ label: "Arquero", players: players.slice(0, 1) }];
+  const lines = [{ label: dict.formation.keeper, players: players.slice(0, 1) }];
   let i = 1;
   nums.forEach((n, idx) => {
     const label =
-      idx === 0 ? "Defensores" : idx === nums.length - 1 ? "Delanteros" : "Mediocampistas";
+      idx === 0
+        ? dict.formation.defenders
+        : idx === nums.length - 1
+          ? dict.formation.forwards
+          : dict.formation.midfielders;
     lines.push({ label, players: players.slice(i, i + n) });
     i += n;
   });
@@ -272,83 +302,105 @@ export function splitByFormation(
 }
 
 /** Preguntas frecuentes generadas desde la ficha (SEO + GEO). */
-export function faqFor(m: Match): { q: string; a: string }[] {
+export function faqFor(m: Match, dict: Dict): { q: string; a: string }[] {
   const rival = rivalOf(m);
-  const fecha = fechaLarga(m.date);
-  const dia = diaSemana(m.date);
-  const torneo = `${m.competition}${m.round ? ` (${m.round})` : ""}`;
+  const date = fechaLarga(m.date, dict);
+  const day = diaSemana(m.date, dict);
+  const tournament = `${competitionLabel(m, dict)}${
+    roundLabel(m, dict) ? ` (${roundLabel(m, dict)})` : ""
+  }`;
   const out: { q: string; a: string }[] = [];
 
   out.push({
-    q: `¿Cuándo juega Boca vs ${rival}?`,
-    a: `El partido Boca vs ${rival} se juega el ${dia} ${fecha}${m.time ? ` a las ${m.time}` : ""}, por ${torneo}.`,
+    q: t(dict, "faq.qWhen", { rival }),
+    a: t(dict, "faq.aWhen", {
+      rival,
+      day,
+      date,
+      hour: horaDe(m) ? t(dict, "seo.hour", { time: horaDe(m) }) : "",
+      tournament,
+    }),
   });
 
   if (horaDe(m)) {
     out.push({
-      q: `¿A qué hora juega Boca vs ${rival}?`,
-      a: `A las ${horaDe(m)} (hora Argentina).`,
+      q: t(dict, "faq.qTime", { rival }),
+      a: t(dict, "faq.aTime", { time: horaDe(m) }),
     });
   }
 
   if (lugarDe(m)) {
-    out.push({ q: `¿Dónde juega Boca vs ${rival}?`, a: `En ${lugarDe(m)}.` });
+    out.push({
+      q: t(dict, "faq.qWhere", { rival }),
+      a: t(dict, "faq.aWhere", { venue: lugarDe(m) }),
+    });
   }
 
   if (canalDe(m)) {
-    out.push({ q: `¿Por qué canal pasan Boca vs ${rival}?`, a: `Por ${canalDe(m)}.` });
+    out.push({
+      q: t(dict, "faq.qChannel", { rival }),
+      a: t(dict, "faq.aChannel", { channel: canalDe(m) }),
+    });
   }
 
-  out.push({ q: `¿En qué torneo juega Boca vs ${rival}?`, a: `Por ${torneo}.` });
+  out.push({
+    q: t(dict, "faq.qTournament", { rival }),
+    a: t(dict, "faq.aTournament", { tournament }),
+  });
 
   const b = bocaGoles(m);
   const r = rivalGoles(m);
   if (m.status === "finished" && b !== undefined && r !== undefined) {
-    let a = `Boca ${b} - ${r} ${rival}.`;
+    let a = `${rival} ${b} - ${r}.`;
     if (m.aggregate) {
-      a += ` Global: Boca ${m.aggregate.bocaScore} - ${m.aggregate.rivalScore} ${rival}.`;
+      a += t(dict, "faq.aResultAggregate", {
+        boca: m.aggregate.bocaScore,
+        rival: m.aggregate.rivalScore,
+        rivalName: rival,
+      });
     }
-    out.push({ q: `¿Cómo salió Boca vs ${rival}?`, a });
+    out.push({ q: t(dict, "faq.qResult", { rival }), a });
   }
 
   return out;
 }
 
 /** Previa automática generada desde la ficha (texto único por partido). */
-export function autoPrevia(m: Match): string {
+export function autoPrevia(m: Match, dict: Dict): string {
   const rival = rivalOf(m);
-  const verbo = m.homeTeam === "Boca" ? "recibe a" : "visita a";
-  const fecha = fechaLarga(m.date);
-  const hora = horaDe(m) ? ` a las ${horaDe(m)}` : "";
-  const lugar = lugarDe(m) ? ` en ${lugarDe(m)}` : "";
-  const torneo = `${m.competition}${m.round ? ` (${m.round})` : ""}`;
-  return `Boca ${verbo} ${rival} por ${torneo} el ${fecha}${hora}${lugar}. Las formaciones, los datos y el resultado se actualizan cerca del inicio del partido.`;
+  const verb = m.homeTeam === "Boca" ? dict.preview.hosts : dict.preview.visits;
+  const date = fechaLarga(m.date, dict);
+  const hour = horaDe(m) ? t(dict, "seo.hour", { time: horaDe(m) }) : "";
+  const venue = lugarDe(m) ? t(dict, "seo.venue", { venue: lugarDe(m) }) : "";
+  const tournament = `${competitionLabel(m, dict)}${
+    roundLabel(m, dict) ? ` (${roundLabel(m, dict)})` : ""
+  }`;
+  return t(dict, "preview.text", { verb, rival, tournament, date, hour, venue });
 }
 
 /** Claves automáticas del partido (la fuente ya no trae texto manual). */
-export function factsFor(m: Match, all: Match[] = []): string[] {
+export function factsFor(m: Match, all: Match[] = [], dict: Dict): string[] {
   const facts: string[] = [];
   const local = m.homeTeam === "Boca";
 
   const a = m.aggregate;
   if (a) {
     if (a.bocaScore > a.rivalScore) {
-      facts.push(`Boca lidera el cruce por ${a.bocaScore} a ${a.rivalScore}.`);
+      facts.push(t(dict, "facts.leading", { boca: a.bocaScore, rival: a.rivalScore }));
     } else if (a.bocaScore < a.rivalScore) {
-      facts.push(`Boca va abajo en el global: ${a.bocaScore} a ${a.rivalScore}.`);
+      facts.push(t(dict, "facts.behind", { boca: a.bocaScore, rival: a.rivalScore }));
     } else {
-      facts.push(`El cruce está igualado ${a.bocaScore} a ${a.rivalScore}.`);
+      facts.push(t(dict, "facts.tied", { boca: a.bocaScore, rival: a.rivalScore }));
     }
     if (a.penaltyBoca !== undefined && a.penaltyRival !== undefined) {
-      facts.push(`Penales de la ida: Boca ${a.penaltyBoca} - ${a.penaltyRival}.`);
+      facts.push(t(dict, "facts.penalties", { boca: a.penaltyBoca, rival: a.penaltyRival }));
     }
   }
 
   if (lugarDe(m)) {
+    const city = m.venueCity ? t(dict, "facts.city", { city: m.venueCity }) : "";
     facts.push(
-      local
-        ? `Boca juega de local en ${lugarDe(m)}${m.venueCity ? ` (${m.venueCity})` : ""}.`
-        : `Boca juega de visitante en ${lugarDe(m)}${m.venueCity ? ` (${m.venueCity})` : ""}.`,
+      t(dict, local ? "facts.home" : "facts.away", { venue: lugarDe(m), city }),
     );
   }
 
@@ -357,8 +409,21 @@ export function factsFor(m: Match, all: Match[] = []): string[] {
     const g = form.filter((f) => f.result === "G").length;
     const e = form.filter((f) => f.result === "E").length;
     const p = form.filter((f) => f.result === "P").length;
-    facts.push(`En los últimos ${form.length} partidos: ${g} victoria${g === 1 ? "" : "s"}, ${e} empate${e === 1 ? "" : "s"} y ${p} derrota${p === 1 ? "" : "s"}.`);
-    facts.push(`Último partido: ${form[0].text}.`);
+    facts.push(
+      t(dict, "facts.form", {
+        n: form.length,
+        w: g,
+        d: e,
+        l: p,
+        win: dict.facts.win,
+        wPlural: g === 1 ? "" : dict.facts.winPlural,
+        draw: dict.facts.draw,
+        dPlural: e === 1 ? "" : dict.facts.drawPlural,
+        loss: dict.facts.loss,
+        lPlural: p === 1 ? "" : dict.facts.lossPlural,
+      }),
+    );
+    facts.push(t(dict, "facts.lastMatch", { text: form[0].text }));
   }
 
   return facts;

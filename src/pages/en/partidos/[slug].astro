@@ -1,0 +1,14 @@
+---
+import MatchDetail from "../../../components/pages/MatchDetail.astro";
+import type { Match } from "../../../types/match";
+import data from "../../../data/matches.json";
+
+export async function getStaticPaths() {
+  const matches = data.matches as Match[];
+  return matches.map((m) => ({ params: { slug: m.slug }, props: { match: m } }));
+}
+
+const { match } = Astro.props as { match: Match };
+---
+
+<MatchDetail match={match} />

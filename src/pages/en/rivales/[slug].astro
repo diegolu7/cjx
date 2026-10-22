@@ -1,0 +1,17 @@
+---
+import RivalDetail from "../../../components/pages/RivalDetail.astro";
+import type { Match } from "../../../types/match";
+import { groupByRival } from "../../../lib/taxonomy";
+import data from "../../../data/matches.json";
+
+export async function getStaticPaths() {
+  const matches = data.matches as Match[];
+  return groupByRival(matches).map((g) => ({ params: { slug: g.slug }, props: { group: g } }));
+}
+
+const { group } = Astro.props as {
+  group: { name: string; slug: string; matches: Match[] };
+};
+---
+
+<RivalDetail name={group.name} matches={group.matches} />

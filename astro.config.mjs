@@ -20,7 +20,7 @@ try {
   noindexPaths = new Set(
     matchList
       .filter((m) => m?.indexable !== true)
-      .map((m) => `/partidos/${m.slug}/`),
+      .flatMap((m) => [`/partidos/${m.slug}/`, `/en/partidos/${m.slug}/`]),
   );
 } catch {
   dataUpdatedAt = undefined;
@@ -30,8 +30,20 @@ try {
 export default defineConfig({
   site: SITE,
   base: '/',
+  // Bilingüe: el español vive en la raíz (las URLs actuales no cambian) y el
+  // inglés en /en/ con los mismos paths. Ver docs/plan-i18n.md.
+  i18n: {
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    routing: { prefixDefaultLocale: false, redirectToDefaultLocale: false },
+  },
   integrations: [
     sitemap({
+      // Alternates hreflang por idioma (coincide con las etiquetas del <head>).
+      i18n: {
+        defaultLocale: 'es',
+        locales: { es: 'es-AR', en: 'en' },
+      },
       // Las páginas por partido sin contenido suficiente van con noindex → fuera del sitemap.
       filter: (page) => {
         try {

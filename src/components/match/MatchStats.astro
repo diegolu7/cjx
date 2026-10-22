@@ -1,17 +1,29 @@
 ---
 import type { MatchStat } from "../../types/match";
+import { getDict, type Locale } from "../../i18n/index.ts";
 
 interface Props {
   stats: MatchStat[];
 }
 const { stats } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+
+/** Etiqueta de la estadística en el idioma del visitante (si hay código). */
+function statLabel(s: MatchStat): string {
+  if (s.labelCode) {
+    const label = dict.stats[s.labelCode as keyof typeof dict.stats];
+    if (label) return label;
+  }
+  return s.label;
+}
 
 const rows = stats.filter((s) => s.boca !== undefined || s.rival !== undefined);
 ---
 
 {rows.length > 0 && (
   <section class="mb-6">
-    <h2 class="text-[15px] font-bold text-text-primary mb-2">Estadísticas del partido</h2>
+    <h2 class="text-[15px] font-bold text-text-primary mb-2">{dict.sections.stats}</h2>
     <div class="rounded-lg border border-border bg-surface shadow-card px-4 py-2">
       <dl class="divide-y divide-border">
         {rows.map((s) => (
@@ -20,7 +32,7 @@ const rows = stats.filter((s) => s.boca !== undefined || s.rival !== undefined);
               {s.boca ?? "-"}
             </dd>
             <dt class="text-[11px] uppercase tracking-[0.04em] text-text-muted text-center">
-              {s.label}
+              {statLabel(s)}
             </dt>
             <dd class="text-[13px] font-semibold text-text-primary tabular-nums">{s.rival ?? "-"}</dd>
           </div>

@@ -353,6 +353,7 @@ export function buildMatches(rawEvents) {
     const ordered = legs.slice().sort((a, b) => a.kickoff - b.kickoff);
     ordered.forEach((leg, i) => {
       leg.legLabel = i === 0 ? "Ida" : "Vuelta";
+      leg.leg = i === 0 ? "first" : "second";
       leg.legIndex = i;
       leg.legCount = ordered.length;
     });
@@ -402,7 +403,13 @@ function toMatch(m) {
     homeLogo: m.homeLogo,
     awayLogo: m.awayLogo,
     competition: m.leagueName,
+    // Código de competition: permite mostrar el nombre en el idioma del visitante.
+    competitionCode: m.league,
     round: round || undefined,
+    // La ronda también viaja como código (para traducirla).
+    roundType: isLigaTorneo ? "matchday" : "phase",
+    ...(isLigaTorneo ? { roundNumber: m.fecha ?? undefined } : { roundPhase: m.phaseSlug ?? undefined }),
+    ...(m.leg ? { leg: m.leg } : {}),
     channel: undefined,
     venue: m.venue,
     venueCity: m.venueCity,
@@ -530,9 +537,14 @@ export async function fetchSummary(league, eventId) {
       return {
         minute: k.clock?.displayValue ?? "",
         type: eventType(type, k?.type?.text),
+        // Código del evento: permite mostrarlo en el idioma del visitante.
+        typeCode: eventTypeCode(type, k?.type?.text),
         team: String(k?.team?.id) === BOCA_TEAM_ID ? "Boca" : "Rival",
         player,
         detail: isSub && names.length >= 2 ? `Sale ${names[1]}, entra ${names[0]}` : undefined,
+        ...(isSub && names.length >= 2
+          ? { playerOut: names[1], playerIn: names[0] }
+          : {}),
       };
     });
 
@@ -567,6 +579,17 @@ export async function fetchSummary(league, eventId) {
   if (referee) details.referee = referee;
 
   return Object.keys(details).length ? details : null;
+}
+
+/** Código estable del evento (para traducirlo). */
+function eventTypeCode(type, text) {
+  if (EVENT_TYPES[type]) return type;
+  const t = String(text ?? "").toLowerCase();
+  if (t.startsWith("goal")) return "goal";
+  if (t.includes("yellow card")) return "yellow-card";
+  if (t.includes("red card")) return "red-card";
+  if (t.includes("substitution")) return "substitution";
+  return "event";
 }
 
 /** Etiqueta en español del evento (ESPN usa variantes como "Goal - Header"). */

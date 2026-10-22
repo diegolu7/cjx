@@ -1,0 +1,110 @@
+---
+import LegalLayout from "../../layouts/LegalLayout.astro";
+import Notifications from "../Notifications.astro";
+import { parseInline } from "../../lib/text";
+import { getDict, t, type Locale } from "../../i18n/index.ts";
+import { localeBase } from "../../i18n/routes";
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const base = import.meta.env.BASE_URL;
+const lbase = localeBase(locale);
+
+const faqs = dict.pages.info.faqs;
+
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+---
+
+<LegalLayout title={dict.pages.info.title} description={dict.pages.info.description}>
+  <p>
+    {
+      parseInline(dict.pages.info.intro).map((p) =>
+        p.type === "strong" ? <strong>{p.text}</strong> : p.type === "link" ? (
+          <a href={p.href}>{p.text}</a>
+        ) : (
+          p.text
+        ),
+      )
+    }
+  </p>
+
+  <h2 id="quienes-somos">{dict.pages.info.aboutTitle}</h2>
+  <p>
+    {
+      parseInline(dict.pages.info.about1).map((p) =>
+        p.type === "strong" ? <strong>{p.text}</strong> : p.type === "link" ? (
+          <a href={p.href}>{p.text}</a>
+        ) : (
+          p.text
+        ),
+      )
+    }
+  </p>
+  <p>
+    {
+      parseInline(dict.pages.info.about2).map((p) =>
+        p.type === "strong" ? <strong>{p.text}</strong> : p.type === "link" ? (
+          <a href={p.href}>{p.text}</a>
+        ) : (
+          p.text
+        ),
+      )
+    }
+  </p>
+
+  <h2 id="faq">{dict.pages.info.faqTitle}</h2>
+  <ul>
+    {faqs.map((f) => (
+      <li>
+        <strong>{f.q}</strong>
+        <br />
+        {f.a}
+      </li>
+    ))}
+  </ul>
+
+  <h2 id="fuentes">{dict.pages.info.sourcesTitle}</h2>
+  <p>
+    {
+      parseInline(dict.pages.info.sourcesText).map((p) =>
+        p.type === "strong" ? <strong>{p.text}</strong> : p.type === "link" ? (
+          <a href={p.href}>{p.text}</a>
+        ) : (
+          p.text
+        ),
+      )
+    }
+  </p>
+
+  <Notifications />
+
+  <h2 id="contacto">{dict.pages.info.contactTitle}</h2>
+  <p>
+    {
+      parseInline(t(dict, "pages.info.contactText", { contact: `${lbase}${base}contacto` })).map((p) =>
+        p.type === "strong" ? <strong>{p.text}</strong> : p.type === "link" ? (
+          <a href={p.href}>{p.text}</a>
+        ) : (
+          p.text
+        ),
+      )
+    }
+  </p>
+
+  <h2 id="legal">{dict.pages.info.legalTitle}</h2>
+  <ul>
+    <li><a href={`${lbase}${base}terminos`}>{dict.footer.terms}</a></li>
+    <li><a href={`${lbase}${base}privacidad`}>{dict.footer.privacy}</a></li>
+    <li><a href={`${lbase}${base}cookies`}>{dict.footer.cookiesLink}</a></li>
+  </ul>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+</LegalLayout>

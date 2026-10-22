@@ -1,0 +1,101 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import MatchesTimeline from "../MatchesTimeline.astro";
+import Notifications from "../Notifications.astro";
+import ShareButton from "../ShareButton.astro";
+import type { Match } from "../../types/match";
+import {
+  fechaHoraCorta,
+  horaDe,
+  kickoffISO,
+  kickoffEndISO,
+  featuredMatch,
+  competitionLabel,
+  roundLabel,
+} from "../../lib/match";
+import { getDict, t, type Locale } from "../../i18n/index.ts";
+import { localeBase } from "../../i18n/routes";
+import data from "../../data/matches.json";
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const base = import.meta.env.BASE_URL;
+const lbase = localeBase(locale);
+const matches = data.matches as Match[];
+// Destacado: el partido en juego o, si no hay ninguno, el próximo.
+const next = featuredMatch(matches);
+
+const rival = next ? (next.homeTeam === "Boca" ? next.awayTeam : next.homeTeam) : "";
+const startDate = next ? kickoffISO(next) : null;
+const endDate = next ? kickoffEndISO(next) : null;
+
+const sportsEvent = next
+  ? {
+      "@context": "https://schema.org",
+      "@type": "SportsEvent",
+      name: `${next.homeTeam} vs ${next.awayTeam}`,
+      ...(startDate ? { startDate, endDate } : {}),
+      eventStatus:
+        next.status === "live"
+          ? "https://schema.org/EventInProgress"
+          : "https://schema.org/EventScheduled",
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      sport: "Soccer",
+      url: new URL(Astro.url.pathname, Astro.site).href,
+      image: new URL(`${base}og.png`, Astro.site).href,
+      description: t(dict, "seo.eventDescription", {
+        teams: `${next.homeTeam} vs ${next.awayTeam}`,
+        competition: competitionLabel(next, dict),
+        round: roundLabel(next, dict) ? ` (${roundLabel(next, dict)})` : "",
+        date: next.date,
+        hour: horaDe(next) ? t(dict, "seo.eventHour", { time: horaDe(next) }) : "",
+      }),
+      location: {
+        "@type": "Place",
+        name: next.venue ?? dict.match.venueTbd,
+      },
+      competitor: [
+        { "@type": "SportsTeam", name: "Boca Juniors", sport: "Soccer" },
+        { "@type": "SportsTeam", name: rival, sport: "Soccer" },
+      ],
+      organizer: { "@type": "Organization", name: competitionLabel(next, dict) },
+    }
+  : null;
+---
+
+<Layout title={dict.pages.home.title} description={dict.pages.home.description}>
+  <section class="mb-4">
+    <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
+      {dict.pages.home.h1}
+    </h1>
+  </section>
+
+  <div id="partidos" class="scroll-mt-6">
+    <MatchesTimeline matches={matches} />
+  </div>
+
+  <div class="mt-4 flex flex-wrap items-center gap-3">
+    <a
+      href={`${lbase}${base}partidos`}
+      class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+    >
+      {dict.pages.home.seeAll}
+    </a>
+    <ShareButton
+      url={new URL(Astro.url.pathname, Astro.site).href}
+      title={dict.pages.home.shareTitle}
+      text={dict.pages.home.shareText}
+      label={dict.share.label}
+    />
+  </div>
+
+  <Notifications hideWhenUnconfigured />
+
+  <p class="mt-6 text-[11px] text-text-muted">
+    {dict.match.updatedAt.replace("{date}", fechaHoraCorta(data.updatedAt))}
+  </p>
+
+  {sportsEvent && (
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />
+  )}
+</Layout>

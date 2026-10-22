@@ -2,18 +2,23 @@
 import type { Match } from "../../types/match";
 import Icon from "./Icon.astro";
 import FixtureLine from "./FixtureLine.astro";
-import { diaMes, statusLabel } from "../../lib/match";
+import { diaMes, statusLabel, competitionLabel, roundLabel } from "../../lib/match";
+import { getDict, type Locale } from "../../i18n/index.ts";
+import { localeBase } from "../../i18n/routes";
 
 interface Props {
   match: Match;
 }
 const { match } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const lbase = localeBase(locale);
 
 const finished = match.status === "finished";
-const { day, month } = diaMes(match.date);
+const { day, month } = diaMes(match.date, dict);
 
-const badge = statusLabel(match.status);
+const badge = statusLabel(match.status, dict);
 const badgeClass = finished
   ? "border-border text-text-secondary bg-[rgba(167,182,200,0.03)]"
   : match.status === "live"
@@ -24,7 +29,7 @@ const badgeClass = finished
 ---
 
 <a
-  href={`${base}partidos/${match.slug}`}
+  href={`${lbase}${base}partidos/${match.slug}`}
   class="group block rounded-lg border border-border bg-surface shadow-card px-3 py-3 transition-all duration-[160ms] ease-linear hover:-translate-y-px hover:bg-surface-hover hover:border-accent-secondary hover:shadow-hover"
 >
   <div class="grid grid-cols-[56px_minmax(0,1fr)_auto] gap-3 items-center">
@@ -36,10 +41,12 @@ const badgeClass = finished
     <div class="min-w-0">
       <FixtureLine match={match} size="compact" />
       <p class="mt-1 text-[12px] leading-[1.45] text-text-secondary break-words">
-        {match.competition}
+        {competitionLabel(match, dict)}
       </p>
-      {match.round && (
-        <p class="text-[12px] leading-[1.45] text-text-muted break-words">{match.round}</p>
+      {roundLabel(match, dict) && (
+        <p class="text-[12px] leading-[1.45] text-text-muted break-words">
+          {roundLabel(match, dict)}
+        </p>
       )}
     </div>
 

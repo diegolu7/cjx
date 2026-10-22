@@ -1,0 +1,48 @@
+---
+import { getDict, type Locale } from "../i18n/index.ts";
+import { esPathWithSlash, enPathWithSlash } from "../i18n/routes";
+
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const base = import.meta.env.BASE_URL;
+const current = Astro.url.pathname;
+
+function href(path: string): string {
+  const rel = path.replace(/^\//, "");
+  return rel ? `${base}${rel}` : base;
+}
+
+const esHref = href(esPathWithSlash(current));
+const enHref = href(enPathWithSlash(current));
+---
+
+<div class="lang-switch" role="group" aria-label={dict.nav.languageSwitcher}>
+  <a
+    href={esHref}
+    data-set-lang="es"
+    hreflang="es-AR"
+    class:list={["lang-switch__link", locale === "es" && "is-active"]}
+    aria-current={locale === "es" ? "true" : undefined}
+  >ES</a>
+  <span class="lang-switch__sep" aria-hidden="true">·</span>
+  <a
+    href={enHref}
+    data-set-lang="en"
+    hreflang="en"
+    class:list={["lang-switch__link", locale === "en" && "is-active"]}
+    aria-current={locale === "en" ? "true" : undefined}
+  >EN</a>
+</div>
+
+<script>
+  // Guardar la preferencia: el redirect automático respeta lo que el usuario eligió.
+  document.querySelectorAll<HTMLAnchorElement>("[data-set-lang]").forEach((link) => {
+    link.addEventListener("click", () => {
+      try {
+        localStorage.setItem("cjx:lang", link.dataset.setLang || "es");
+      } catch (e) {
+        /* storage no disponible */
+      }
+    });
+  });
+</script>

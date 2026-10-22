@@ -1,0 +1,17 @@
+---
+import TournamentDetail from "../../../components/pages/TournamentDetail.astro";
+import type { Match } from "../../../types/match";
+import { groupByTorneo } from "../../../lib/taxonomy";
+import data from "../../../data/matches.json";
+
+export async function getStaticPaths() {
+  const matches = data.matches as Match[];
+  return groupByTorneo(matches).map((g) => ({ params: { slug: g.slug }, props: { group: g } }));
+}
+
+const { group } = Astro.props as {
+  group: { name: string; slug: string; matches: Match[] };
+};
+---
+
+<TournamentDetail name={group.name} matches={group.matches} />

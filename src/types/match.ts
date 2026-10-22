@@ -11,15 +11,24 @@ export interface MatchAggregate {
 /** Evento de un partido (gol, tarjeta, cambio, etc.). */
 export interface MatchEvent {
   minute: string;
+  /** Tipo en texto (español, del snapshot). */
   type: string;
+  /** Código del tipo ("goal", "yellow-card", "substitution"…) → permite traducirlo. */
+  typeCode?: string;
   team: string;
   player: string;
   detail?: string;
+  /** Jugador que sale (cambios). */
+  playerOut?: string;
+  /** Jugador que entra (cambios). */
+  playerIn?: string;
 }
 
 /** Statísticas del partido (valor de Boca y del rival). */
 export interface MatchStat {
   label: string;
+  /** Código de la estadística (nombre de ESPN) → permite traducirla. */
+  labelCode?: string;
   boca?: string;
   rival?: string;
 }
@@ -65,8 +74,21 @@ export interface Match {
   homeLogo?: string;
   awayLogo?: string;
 
+  /** Competition en texto (del snapshot). Se usa como fallback si no hay código. */
   competition: string;
+  /** Código de la competition ("arg.1", "conmebol.libertadores") → permite traducirla. */
+  competitionCode?: string;
+
+  /** Ronda en texto (del snapshot). Fallback cuando no hay código de fase. */
   round?: string;
+  /** Tipo de ronda: "matchday" (liga) o "phase" (copa). */
+  roundType?: "matchday" | "phase";
+  /** Número de fecha (ligas): 13 → "Fecha 13" / "Matchday 13". */
+  roundNumber?: number;
+  /** Slug de la fase (copas): "semifinals", "final", "group-stage"… */
+  roundPhase?: string;
+  /** Pata del cruce de ida y vuelta: "first" | "second". */
+  leg?: "first" | "second";
 
   channel?: string;
   venue?: string;

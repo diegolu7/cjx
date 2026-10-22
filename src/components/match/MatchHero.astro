@@ -12,20 +12,23 @@ import {
   horaDe,
   statusLabel,
 } from "../../lib/match";
+import { getDict, type Locale } from "../../i18n/index.ts";
 
 interface Props {
   match: Match;
 }
 const { match } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
 
 const rival = rivalOf(match);
 const finished = match.status === "finished";
 const live = match.status === "live";
-const countdown = countdownText(match);
+const countdown = countdownText(match, dict);
 const advances = bocaAdvances(match);
 const agg = match.aggregate;
 
-const badge = statusLabel(match.status);
+const badge = statusLabel(match.status, dict);
 const badgeClass = finished
   ? "border-border text-text-secondary"
   : live
@@ -46,7 +49,7 @@ const badgeClass = finished
       >
         {badge}
       </span>
-      {live && <span class="text-[12px] font-semibold text-[#d9534f]">Partido en curso</span>}
+      {live && <span class="text-[12px] font-semibold text-[#d9534f]">{dict.match.inProgress}</span>}
       {!live && countdown && (
         <span class="text-[12px] font-semibold text-accent-secondary">{countdown}</span>
       )}
@@ -72,9 +75,9 @@ const badgeClass = finished
 
     {agg && (
       <div class="mt-3 text-center text-[13px] font-semibold text-accent-secondary">
-        <p>Global: Boca {agg.bocaScore} - {agg.rivalScore} {rival}</p>
+        <p>{dict.match.global}: Boca {agg.bocaScore} - {agg.rivalScore} {rival}</p>
         {agg.penaltyBoca !== undefined && agg.penaltyRival !== undefined && (
-          <p class="text-text-secondary">Penales {agg.penaltyBoca}-{agg.penaltyRival}</p>
+          <p class="text-text-secondary">{dict.match.penalties} {agg.penaltyBoca}-{agg.penaltyRival}</p>
         )}
       </div>
     )}
@@ -82,7 +85,7 @@ const badgeClass = finished
     {advances && (
       <p class="mt-2 flex items-center justify-center gap-1.5 text-center text-[14px] font-semibold text-accent-strong">
         <Icon name="check" size={16} />
-        Boca clasificó a la siguiente fase
+        {dict.match.advanced}
       </p>
     )}
 
@@ -122,14 +125,14 @@ const badgeClass = finished
 
     <div class="mt-5 text-center">
       <p class="text-[12px] uppercase tracking-[0.06em] text-text-secondary capitalize">
-        {diaSemana(match.date)} {fechaLarga(match.date)}
+        {diaSemana(match.date, dict)} {fechaLarga(match.date, dict)}
       </p>
       {horaDe(match) ? (
         <p class="mt-1 text-[36px] lg:text-[42px] font-bold leading-none text-accent-strong">
           {horaDe(match)}
         </p>
       ) : (
-        <p class="mt-1 text-[15px] text-text-secondary">Horario a confirmar</p>
+        <p class="mt-1 text-[15px] text-text-secondary">{dict.match.timeTbd}</p>
       )}
     </div>
 

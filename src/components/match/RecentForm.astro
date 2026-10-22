@@ -1,14 +1,22 @@
 ---
+import { getDict, type Locale } from "../../i18n/index.ts";
+
 interface Props {
   results: { result: string; text: string }[];
 }
 const { results } = Astro.props;
-const label: Record<string, string> = { G: "Ganó", E: "Empató", P: "Perdió" };
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const label: Record<string, string> = {
+  G: dict.sections.formWin,
+  E: dict.sections.formDraw,
+  P: dict.sections.formLoss,
+};
 ---
 
 {results.length > 0 && (
   <section class="mb-6">
-    <h2 class="text-[15px] font-bold text-text-primary mb-2">Últimos partidos</h2>
+    <h2 class="text-[15px] font-bold text-text-primary mb-2">{dict.sections.recent}</h2>
     <ul class="list-none p-0 m-0 flex flex-col gap-2">
       {results.map((r) => (
         <li class="flex items-center gap-3 rounded-lg border border-border bg-surface px-3 py-2">

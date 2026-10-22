@@ -1,0 +1,202 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ShareButton from "../ShareButton.astro";
+import MatchHero from "../match/MatchHero.astro";
+import MatchPreview from "../match/MatchPreview.astro";
+import MatchKeyFacts from "../match/MatchKeyFacts.astro";
+import RecentForm from "../match/RecentForm.astro";
+import Lineups from "../match/Lineups.astro";
+import MatchEvents from "../match/MatchEvents.astro";
+import MatchStats from "../match/MatchStats.astro";
+import MatchFaq from "../match/MatchFaq.astro";
+import TechnicalDetails from "../match/TechnicalDetails.astro";
+import type { Match } from "../../types/match";
+import {
+  rivalOf,
+  titleFor,
+  descriptionFor,
+  autoPrevia,
+  recentResults,
+  faqFor,
+  factsFor,
+  fechaLarga,
+  marcador,
+  fechaHoraCorta,
+  horaDe,
+  lugarDe,
+  kickoffISO,
+  kickoffEndISO,
+  competitionLabel,
+} from "../../lib/match";
+import { slugify } from "../../lib/taxonomy";
+import { getDict, type Locale } from "../../i18n/index.ts";
+import { localeBase } from "../../i18n/routes";
+import data from "../../data/matches.json";
+
+interface Props {
+  match: Match;
+}
+const { match } = Astro.props;
+
+const base = import.meta.env.BASE_URL;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const lbase = localeBase(locale);
+
+const allMatches = data.matches as Match[];
+const rival = rivalOf(match);
+const d = match.details;
+const finished = match.status === "finished";
+const live = match.status === "live";
+const upcoming = !finished && !live;
+const played = finished || live;
+const noindex = !match.indexable;
+
+const previa = d?.preview ?? (upcoming ? autoPrevia(match, dict) : undefined);
+const previewTitle = finished
+  ? dict.match.previewFinished
+  : live
+    ? dict.match.previewLive
+    : dict.match.previewUpcoming;
+const form = recentResults(allMatches, 3);
+const eventos = d?.events ?? [];
+
+const shareUrl = new URL(Astro.url.pathname, Astro.site).href;
+const shareTitle = played ? marcador(match) : `Boca vs ${rival}`;
+const shareText = finished
+  ? `${dict.status.finished}: ${marcador(match)} · ${competitionLabel(match, dict)}`
+  : live
+    ? `${dict.status.live}: ${marcador(match)} · ${competitionLabel(match, dict)}`
+    : `Boca vs ${rival} · ${fechaLarga(match.date, dict)}${horaDe(match) ? ` a las ${horaDe(match)}` : ""}${lugarDe(match) ? ` en ${lugarDe(match)}` : ""}`;
+
+const faqs = faqFor(match, dict);
+const faqLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  mainEntity: faqs.map((f) => ({
+    "@type": "Question",
+    name: f.q,
+    acceptedAnswer: { "@type": "Answer", text: f.a },
+  })),
+};
+
+const eventStart = kickoffISO(match);
+const eventEnd = kickoffEndISO(match);
+
+const sportsEvent = {
+  "@context": "https://schema.org",
+  "@type": "SportsEvent",
+  name: `Boca vs ${rival}`,
+  ...(eventStart ? { startDate: eventStart, endDate: eventEnd } : {}),
+  // En partidos finalizados no declaramos eventStatus: schema.org no tiene "finalizado"
+  // y decir "EventScheduled" contradice el resultado visible.
+  ...(finished
+    ? {}
+    : { eventStatus: live ? "https://schema.org/EventInProgress" : "https://schema.org/EventScheduled" }),
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  sport: "Soccer",
+  url: new URL(Astro.url.pathname, Astro.site).href,
+  image: new URL(`${lbase}${base}og/${match.slug}.png`, Astro.site).href,
+  description: descriptionFor(match, dict),
+  ...(lugarDe(match) ? { location: { "@type": "Place", name: lugarDe(match) } } : {}),
+  competitor: [
+    { "@type": "SportsTeam", name: "Boca Juniors", sport: "Soccer" },
+    { "@type": "SportsTeam", name: rival, sport: "Soccer" },
+  ],
+  organizer: { "@type": "Organization", name: competitionLabel(match, dict) },
+};
+---
+
+<Layout
+  title={titleFor(match, dict)}
+  description={descriptionFor(match, dict)}
+  image={`${lbase}${base}og/${match.slug}.png`}
+  noindex={noindex}
+>
+  <nav class="mb-4 text-[12px] text-text-muted" aria-label={dict.match.breadcrumb}>
+    <a href={`${lbase}${base}`} class="hover:text-accent underline underline-offset-2">
+      {dict.match.breadcrumbHome}
+    </a>
+    <span> / </span>
+    <a href={`${lbase}${base}partidos`} class="hover:text-accent underline underline-offset-2">
+      {dict.match.breadcrumbMatches}
+    </a>
+  </nav>
+
+  <article>
+    <h1 class="sr-only">
+      {played ? `${match.homeTeam} ${match.homeScore} - ${match.awayScore} ${match.awayTeam}` : `Boca vs ${rival}`}
+    </h1>
+
+    <MatchHero match={match} />
+
+    <div class="mt-4">
+      <ShareButton
+        url={shareUrl}
+        title={shareTitle}
+        text={shareText}
+        label={finished ? dict.match.shareResult : live ? dict.match.shareLive : dict.match.shareMatch}
+        image={new URL(`${lbase}${base}og/${match.slug}.png`, Astro.site).href}
+      />
+    </div>
+
+    {previa && (
+      <MatchPreview
+        title={previewTitle}
+        text={previa}
+        referee={played ? d?.referee : undefined}
+      />
+    )}
+
+    <MatchKeyFacts facts={d?.facts ?? factsFor(match, allMatches, dict)} h2h={d?.h2h} notes={d?.notes} />
+
+    <RecentForm results={form} />
+
+    <Lineups match={match} details={d} upcoming={upcoming} />
+
+    {played && eventos.length > 0 && <MatchEvents events={eventos} rival={rival} />}
+
+    {played && d?.stats && d.stats.length > 0 && <MatchStats stats={d.stats} />}
+
+    {played && <TechnicalDetails match={match} details={d} />}
+
+    {!d && played && (
+      <p class="text-[13px] leading-[1.6] text-text-muted border border-border bg-surface rounded-md px-4 py-3">
+        {dict.match.noContent}
+      </p>
+    )}
+
+    <MatchFaq match={match} />
+
+    <div class="mt-6 flex flex-wrap gap-x-4 gap-y-2 text-[13px]">
+      <a
+        href={`${lbase}${base}rivales/${slugify(rival)}`}
+        class="text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+      >
+        Boca vs {rival}
+      </a>
+      <a
+        href={`${lbase}${base}torneos/${slugify(match.competition)}`}
+        class="text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+      >
+        {competitionLabel(match, dict)}
+      </a>
+    </div>
+
+    <p class="mt-6 text-[11px] text-text-muted">
+      {dict.match.updatedAt.replace("{date}", fechaHoraCorta(data.updatedAt))}
+    </p>
+
+    <p class="mt-6">
+      <a
+        href={`${lbase}${base}partidos`}
+        class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
+      >
+        {dict.match.backToMatches}
+      </a>
+    </p>
+  </article>
+
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />
+  <script is:inline type="application/ld+json" set:html={JSON.stringify(faqLd)} />
+</Layout>

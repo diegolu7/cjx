@@ -1,4 +1,6 @@
 ---
+import { getDict, type Locale } from "../i18n/index.ts";
+
 interface Props {
   url: string;
   title: string;
@@ -6,7 +8,10 @@ interface Props {
   label?: string;
   image?: string;
 }
-const { url, title, text, label = "Compartir", image } = Astro.props;
+const { url, title, text, label, image } = Astro.props;
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+const shareLabel = label ?? dict.share.label;
 ---
 
 <div
@@ -39,7 +44,7 @@ const { url, title, text, label = "Compartir", image } = Astro.props;
       <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
       <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
     </svg>
-    {label}
+    {shareLabel}
   </button>
 
   <div
@@ -50,14 +55,14 @@ const { url, title, text, label = "Compartir", image } = Astro.props;
       class="w-full rounded-t-lg border-t border-border-strong bg-surface p-4 lg:max-w-[420px] lg:rounded-lg lg:border"
       role="dialog"
       aria-modal="true"
-      aria-label="Compartir"
+      aria-label={dict.share.label}
     >
       <div class="mb-3 flex items-center justify-between">
-        <p class="text-[13px] font-semibold text-text-primary">Compartir</p>
+        <p class="text-[13px] font-semibold text-text-primary">{dict.share.label}</p>
         <button
           type="button"
           data-share-close
-          aria-label="Cerrar"
+          aria-label={dict.share.close}
           class="flex h-8 w-8 items-center justify-center rounded-[4px] text-text-muted hover:bg-surface-hover hover:text-text-primary"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -123,20 +128,20 @@ const { url, title, text, label = "Compartir", image } = Astro.props;
           <span class="text-accent-secondary">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
           </span>
-          Copiar enlace
+          {dict.share.copy}
         </button>
       </div>
 
       {image && (
         <div class="mt-3 border-t border-border pt-3">
-          <p class="mb-2 text-[12px] text-text-muted">Compartir como imagen</p>
+          <p class="mb-2 text-[12px] text-text-muted">{dict.share.asImage}</p>
           <div class="flex flex-wrap gap-2">
             <button
               type="button"
               data-share-image
               class="flex h-11 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
             >
-              Compartir imagen
+              {dict.share.shareImage}
             </button>
             <a
               data-share-download
@@ -144,7 +149,7 @@ const { url, title, text, label = "Compartir", image } = Astro.props;
               download="partido.png"
               class="flex h-11 items-center gap-2 rounded-[6px] border border-border px-3 text-[12px] font-medium text-text-secondary hover:bg-surface-hover hover:text-text-primary"
             >
-              Descargar imagen
+              {dict.share.downloadImage}
             </a>
           </div>
         </div>
@@ -157,7 +162,7 @@ const { url, title, text, label = "Compartir", image } = Astro.props;
     hidden
     class="fixed bottom-4 left-1/2 z-[60] -translate-x-1/2 rounded-[6px] border border-border-strong bg-surface px-4 py-2 text-[12px] text-text-primary shadow-featured"
   >
-    Enlace copiado
+    {dict.share.copied}
   </div>
 </div>
 
