@@ -64,5 +64,10 @@ export default defineConfig({
 
   vite: {
     plugins: [tailwindcss()],
+    define: {
+      // Interruptor de emergencia del redirect por idioma: AUTO_REDIRECT=false lo apaga
+      // (deja solo el switcher ES/EN). Ver docs/plan-i18n.md §2.4.
+      __AUTO_REDIRECT__: JSON.stringify(process.env.AUTO_REDIRECT !== 'false'),
+    },
   },
 });

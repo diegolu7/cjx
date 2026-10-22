@@ -342,6 +342,8 @@
   `subscribe` y `send` (`supabase functions deploy subscribe send`).
 - [x] **Fase 7 (QA)** — `npm test` (42 tests: paridad de claves, placeholders, rutas,
   inventario sin español suelto), `npm run check` (0 errores) y `npm run build` (55 páginas).
+- [x] **Flag de emergencia**: `AUTO_REDIRECT=false` en el build apaga el redirect
+  automático y deja solo el switcher (`astro.config.mjs` + `.env.example`).
 - [ ] **Manual:** revisar el sitio en `/en/` con `navigator.language = "en-US"`.
 - [ ] **Manual:** validar en Search Console los alternates y el canonical.
 

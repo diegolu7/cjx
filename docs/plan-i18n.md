@@ -283,7 +283,7 @@ Cada fase es un commit revertible.
 - [x] Script inline de §2.4 + `localStorage` (la cookie quedó como `localStorage` + `cjx:lang`).
 - [x] Switcher ES/EN en header y footer.
 - [ ] Banner "disponible en inglés" (opción A elegida: no hace falta banner).
-- [ ] `AUTO_REDIRECT` como flag en `astro.config.mjs` (queda pendiente; hoy el redirect es siempre activo).
+- [x] `AUTO_REDIRECT` como flag en `astro.config.mjs` (`AUTO_REDIRECT=false` apaga el redirect).
 - [ ] Test manual: navegar con `navigator.language = "en-US"` → `/en/`.
 
 ### Fase 6 — Notificaciones push (0,5 día)

@@ -86,7 +86,9 @@ const structuredData = {
     />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(structuredData)} />
     <!-- Idioma del navegador: si el visitante llega con el navegador en inglés y
-         nunca eligió idioma, lo mandamos a /en/ (una sola vez, con cookie/localStorage). -->
+         nunca eligió idioma, lo mandamos a /en/ (una sola vez, con localStorage).
+         Se apaga con AUTO_REDIRECT=false al buildear. -->
+    {__AUTO_REDIRECT__ && (
     <script is:inline>
       (function () {
         try {
@@ -112,6 +114,7 @@ const structuredData = {
         }
       })();
     </script>
+    )}
   </head>
   <body class="min-h-screen bg-bg text-text-primary flex flex-col">
     <div class="site">
