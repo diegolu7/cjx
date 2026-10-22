@@ -375,10 +375,10 @@ export const en: DictShape<typeof es> = {
       "Independent (NOT official) information site showing when Boca Juniors play: next match, date, kickoff time, opponent, competition, TV channel and recent results. Content in English.",
     keyFactsTitle: "Key facts:",
     keyFacts: [
-      '- Purpose: answer "when does Boca play?" quickly with fixtures and results.',
-      "- Unofficial site: not affiliated with Boca Juniors, the AFA or CONMEBOL. Official channel: https://www.bocajuniors.com.ar",
+      'Purpose: answer "when does Boca play?" quickly with fixtures and results.',
+      "Unofficial site: not affiliated with Boca Juniors, the AFA or CONMEBOL. Official channel: https://www.bocajuniors.com.ar",
       "Data source: ESPN public API (site.api.espn.com).",
-      "- The data may contain errors or be out of date; double-check on the official channels.",
+      "The data may contain errors or be out of date; double-check on the official channels.",
       "Contact: delnorte.destinos@gmail.com",
     ],
     pagesTitle: "Pages:",
