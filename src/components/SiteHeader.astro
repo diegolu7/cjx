@@ -33,13 +33,6 @@ const notifyConfigured = Boolean(
       <a href={`${lbase}${base}`} class={`nav-link ${isHome ? "nav-link--active" : ""}`} aria-current={isHome ? "page" : undefined}>
         {dict.nav.home.toUpperCase()}
       </a>
-      <LangSwitcher />
-      {notifyConfigured && (
-        <button type="button" data-notify-open class="nav-alert" aria-haspopup="dialog">
-          <Icon name="bell" size={14} />
-          <span data-notify-label>{dict.nav.alerts}</span>
-        </button>
-      )}
       <button type="button" data-install-app class="nav-link inline-flex items-center gap-[5px] bg-transparent border-0 p-0 cursor-pointer">
         {dict.nav.install.toUpperCase()}
         <svg class="nav-install" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -47,6 +40,13 @@ const notifyConfigured = Boolean(
           <path d="m5.6 10.4 6.4 6.4 6.4-6.4" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
       </button>
+      {notifyConfigured && (
+        <button type="button" data-notify-open class="nav-alert" aria-haspopup="dialog">
+          <Icon name="bell" size={14} />
+          <span data-notify-label>{dict.nav.alerts}</span>
+        </button>
+      )}
+      <LangSwitcher />
     </nav>
 
     <details class="site-menu lg:hidden relative">
@@ -57,16 +57,16 @@ const notifyConfigured = Boolean(
       </summary>
       <div class="site-menu__panel">
         <a href={`${lbase}${base}`} aria-current={isHome ? "page" : undefined}>{dict.nav.home}</a>
-        <LangSwitcher />
+        <button type="button" data-install-app>
+          {dict.nav.install}
+        </button>
         {notifyConfigured && (
           <button type="button" data-notify-open class="nav-alert site-menu__alert" aria-haspopup="dialog">
             <Icon name="bell" size={14} />
             <span data-notify-label>{dict.nav.alerts}</span>
           </button>
         )}
-        <button type="button" data-install-app>
-          {dict.nav.install}
-        </button>
+        <LangSwitcher />
       </div>
     </details>
   </div>
