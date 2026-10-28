@@ -1,0 +1,299 @@
+---
+import Icon from "./match/Icon.astro";
+import { getDict, type Locale } from "../i18n/index.ts";
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
+const vapidPublic = import.meta.env.PUBLIC_VAPID_PUBLIC_KEY;
+const configured = Boolean(supabaseUrl && vapidPublic);
+const locale = (Astro.currentLocale ?? "es") as Locale;
+const dict = getDict(locale);
+
+const msgs = {
+  alerts: dict.nav.alerts,
+  alertsOn: dict.nav.alertsOn,
+  enable: dict.notify.enable,
+  disable: dict.notify.disable,
+  enabled: dict.notify.enabled,
+  disabled: dict.notify.disabled,
+  denied: dict.notify.denied,
+  ready: dict.notify.ready,
+  error: dict.notify.error,
+  unsupported: dict.notify.unsupported,
+  ios: dict.notify.ios,
+  dialogTitle: dict.notify.dialogTitle,
+  dialogText: dict.notify.dialogText,
+  onTitle: dict.notify.onTitle,
+  onText: dict.notify.onText,
+  accept: dict.notify.accept,
+  cancel: dict.notify.cancel,
+  turnOff: dict.notify.turnOff,
+  close: dict.notify.close,
+};
+---
+
+{configured && (
+  <dialog
+    id="notify-dialog"
+    class="notify-dialog"
+    data-notify-dialog
+    data-supabase={supabaseUrl}
+    data-vapid={vapidPublic}
+    aria-labelledby="notify-dialog-title"
+    aria-describedby="notify-dialog-text"
+  >
+    <div class="notify-dialog__box">
+      <button type="button" class="notify-dialog__close" data-notify-close aria-label={dict.notify.close}>
+        ×
+      </button>
+
+      <div class="notify-dialog__icon">
+        <Icon name="bell" size={24} />
+      </div>
+
+      <h2 id="notify-dialog-title" data-notify-title>{dict.notify.dialogTitle}</h2>
+      <p id="notify-dialog-text" class="notify-dialog__text" data-notify-text>{dict.notify.dialogText}</p>
+      <p class="notify-dialog__feedback" data-notify-feedback aria-live="polite" hidden></p>
+
+      <div class="notify-dialog__actions">
+        <button type="button" class="notify-dialog__primary" data-notify-accept>
+          {dict.notify.accept}
+        </button>
+        <button type="button" class="notify-dialog__secondary" data-notify-off hidden>
+          {dict.notify.turnOff}
+        </button>
+        <button type="button" class="notify-dialog__secondary" data-notify-install hidden>
+          {dict.nav.installShort}
+        </button>
+        <button type="button" class="notify-dialog__secondary" data-notify-cancel>
+          {dict.notify.cancel}
+        </button>
+      </div>
+    </div>
+  </dialog>
+)}
+
+{configured && (
+  <script is:inline define:vars={{ msgs, supabaseUrl, vapidPublic, locale }}>
+    (function () {
+      var dialog = document.querySelector("[data-notify-dialog]");
+      if (!dialog) return;
+
+      var titleEl = dialog.querySelector("[data-notify-title]");
+      var textEl = dialog.querySelector("[data-notify-text]");
+      var feedbackEl = dialog.querySelector("[data-notify-feedback]");
+      var acceptBtn = dialog.querySelector("[data-notify-accept]");
+      var offBtn = dialog.querySelector("[data-notify-off]");
+      var installBtn = dialog.querySelector("[data-notify-install]");
+      var cancelBtn = dialog.querySelector("[data-notify-cancel]");
+      var closeBtn = dialog.querySelector("[data-notify-close]");
+
+      var base = (dialog.getAttribute("data-supabase") || "").replace(/\/$/, "");
+      var vapid = dialog.getAttribute("data-vapid") || "";
+      var lang = locale === "en" ? "en" : "es";
+      var currentSub = null;
+
+      var supported = "serviceWorker" in navigator && "PushManager" in window;
+      var standalone =
+        window.matchMedia("(display-mode: standalone)").matches ||
+        navigator.standalone === true;
+      var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
+      function feedback(msg, isError) {
+        if (!feedbackEl) return;
+        feedbackEl.textContent = msg || "";
+        feedbackEl.hidden = !msg;
+        feedbackEl.setAttribute("data-error", isError ? "true" : "false");
+      }
+
+      function urlBase64ToUint8Array(base64String) {
+        var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+        var base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+        var raw = atob(base64);
+        var arr = new Uint8Array(raw.length);
+        for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
+        return arr;
+      }
+
+      async function currentSubscription() {
+        if (!("serviceWorker" in navigator)) return null;
+        var reg = await navigator.serviceWorker.getRegistration();
+        if (!reg) return null;
+        return reg.pushManager.getSubscription();
+      }
+
+      async function save(sub, enabled) {
+        var json = sub.toJSON();
+        await fetch(base + "/functions/v1/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            endpoint: json.endpoint,
+            keys: json.keys,
+            prefs: { h1: true },
+            enabled: enabled,
+            lang: lang,
+          }),
+        });
+      }
+
+      function syncUI(sub) {
+        currentSub = sub || null;
+        var enabled = Boolean(sub);
+
+        document.querySelectorAll("[data-notify-label]").forEach(function (el) {
+          el.textContent = enabled ? msgs.alertsOn : msgs.alerts;
+        });
+        document.querySelectorAll("[data-notify-open]").forEach(function (el) {
+          el.setAttribute("data-enabled", enabled ? "true" : "false");
+        });
+        document.querySelectorAll("[data-notify-toggle]").forEach(function (el) {
+          el.textContent = enabled ? msgs.disable : msgs.enable;
+        });
+        document.querySelectorAll("[data-notify-status]").forEach(function (el) {
+          el.textContent = enabled ? msgs.enabled : "";
+        });
+
+        if (enabled) {
+          document.querySelectorAll("[data-notify-ios]").forEach(function (el) {
+            el.hidden = true;
+          });
+        }
+      }
+
+      function setState(state) {
+        if (!titleEl || !textEl) return;
+        var isOn = state === "on";
+        if (acceptBtn) acceptBtn.hidden = state !== "default";
+        if (offBtn) offBtn.hidden = !isOn;
+        if (installBtn) installBtn.hidden = state !== "ios";
+        if (cancelBtn) cancelBtn.textContent = state === "default" ? msgs.cancel : msgs.close;
+
+        titleEl.textContent = isOn ? msgs.onTitle : msgs.dialogTitle;
+        textEl.textContent =
+          state === "on"
+            ? msgs.onText
+            : state === "unsupported"
+              ? msgs.unsupported
+              : state === "ios"
+                ? msgs.ios
+                : msgs.dialogText;
+      }
+
+      function openDialog() {
+        if (!supported) setState("unsupported");
+        else if (isIOS && !standalone) setState("ios");
+        else if (currentSub) setState("on");
+        else setState("default");
+        feedback("");
+        if (typeof dialog.showModal === "function") dialog.showModal();
+        else dialog.setAttribute("open", "");
+      }
+
+      function closeDialog() {
+        if (typeof dialog.close === "function") dialog.close();
+        else dialog.removeAttribute("open");
+      }
+
+      document.querySelectorAll("[data-notify-open]").forEach(function (el) {
+        el.addEventListener("click", openDialog);
+      });
+
+      if (acceptBtn) {
+        acceptBtn.addEventListener("click", async function () {
+          acceptBtn.disabled = true;
+          feedback("");
+          try {
+            var perm = await Notification.requestPermission();
+            if (perm !== "granted") {
+              feedback(msgs.denied, true);
+              return;
+            }
+            var reg = await navigator.serviceWorker.ready;
+            var sub =
+              (await reg.pushManager.getSubscription()) ||
+              (await reg.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(vapid),
+              }));
+            await save(sub, true);
+            syncUI(sub);
+            setState("on");
+            feedback(msgs.ready, false);
+          } catch (e) {
+            feedback(
+              (msgs.error || "Error: {message}").replace(
+                "{message}",
+                (e && e.message) || String(e),
+              ),
+              true,
+            );
+          } finally {
+            acceptBtn.disabled = false;
+          }
+        });
+      }
+
+      if (offBtn) {
+        offBtn.addEventListener("click", async function () {
+          feedback("");
+          try {
+            var sub = currentSub || (await currentSubscription());
+            if (sub) {
+              await save(sub, false);
+              await sub.unsubscribe();
+            }
+            syncUI(null);
+            setState("default");
+            feedback(msgs.disabled, false);
+          } catch (e) {
+            feedback(
+              (msgs.error || "Error: {message}").replace(
+                "{message}",
+                (e && e.message) || String(e),
+              ),
+              true,
+            );
+          }
+        });
+      }
+
+      if (installBtn) {
+        installBtn.addEventListener("click", function () {
+          closeDialog();
+          var install = document.querySelector("[data-install-app]");
+          if (install) install.click();
+        });
+      }
+
+      if (cancelBtn) cancelBtn.addEventListener("click", closeDialog);
+      if (closeBtn) closeBtn.addEventListener("click", closeDialog);
+      dialog.addEventListener("click", function (event) {
+        if (event.target === dialog) closeDialog();
+      });
+
+      if (!supported) {
+        document.querySelectorAll("[data-notify-open]").forEach(function (el) {
+          el.hidden = true;
+        });
+        document.querySelectorAll("[data-notify-toggle]").forEach(function (el) {
+          el.disabled = true;
+        });
+        return;
+      }
+
+      if (isIOS && !standalone) {
+        document.querySelectorAll("[data-notify-ios]").forEach(function (el) {
+          el.hidden = false;
+        });
+      }
+
+      currentSubscription()
+        .then(function (sub) {
+          syncUI(sub);
+        })
+        .catch(function () {
+          syncUI(null);
+        });
+    })();
+  </script>
+)}

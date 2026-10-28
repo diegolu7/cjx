@@ -28,6 +28,8 @@ export const es = {
     languageSwitcher: "Idioma",
     switchToEnglish: "English",
     switchToSpanish: "Español",
+    alerts: "Activar alertas",
+    alertsOn: "Alertas activadas",
   },
 
   footer: {
@@ -76,6 +78,15 @@ export const es = {
     denied: "Permiso denegado. Podés habilitarlo desde el navegador.",
     ready: "¡Listo! Vas a recibir el aviso 1 hora antes.",
     error: "No se pudo activar: {message}",
+    dialogTitle: "¿Querés activar las notificaciones?",
+    dialogText:
+      "Te avisamos 1 hora antes de cada partido de Boca. Sin spam: un solo aviso por partido.",
+    accept: "Sí, activar",
+    cancel: "Ahora no",
+    onTitle: "Ya tenés las alertas activadas",
+    onText: "Te avisamos 1 hora antes de cada partido de Boca.",
+    turnOff: "Desactivar alertas",
+    close: "Cerrar",
   },
 
   push: {

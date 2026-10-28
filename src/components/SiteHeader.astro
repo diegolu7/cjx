@@ -1,5 +1,6 @@
 ---
 import LangSwitcher from "./LangSwitcher.astro";
+import Icon from "./match/Icon.astro";
 import { getDict, type Locale } from "../i18n/index.ts";
 import { localeBase } from "../i18n/routes";
 
@@ -9,6 +10,9 @@ const dict = getDict(locale);
 const lbase = localeBase(locale);
 const pathname = Astro.url.pathname;
 const isHome = pathname === `${base}` || pathname === `${base.replace(/\/$/, "")}` || pathname === "/" || pathname === "/en" || pathname === "/en/";
+const notifyConfigured = Boolean(
+  import.meta.env.PUBLIC_SUPABASE_URL && import.meta.env.PUBLIC_VAPID_PUBLIC_KEY,
+);
 ---
 
 <header class="site-header">
@@ -25,12 +29,18 @@ const isHome = pathname === `${base}` || pathname === `${base.replace(/\/$/, "")
       <span class="brand-text">CUANDO JUEGA <em>EL XENEIZE</em></span>
     </a>
 
-    <nav aria-label={dict.nav.main} class="hidden lg:flex items-center gap-[27px]">
+    <nav aria-label={dict.nav.main} class="hidden lg:flex items-center gap-[14px] xl:gap-[22px]">
       <a href={`${lbase}${base}`} class={`nav-link ${isHome ? "nav-link--active" : ""}`} aria-current={isHome ? "page" : undefined}>
         {dict.nav.home.toUpperCase()}
       </a>
       <a href={`${lbase}${base}info`} class="nav-link">{dict.nav.info.toUpperCase()}</a>
       <LangSwitcher />
+      {notifyConfigured && (
+        <button type="button" data-notify-open class="nav-alert" aria-haspopup="dialog">
+          <Icon name="bell" size={14} />
+          <span data-notify-label>{dict.nav.alerts}</span>
+        </button>
+      )}
       <button type="button" data-install-app class="nav-link bg-transparent border-0 p-0 cursor-pointer">
         {dict.nav.install.toUpperCase()}
         <span class="nav-install">↓</span>
@@ -47,6 +57,12 @@ const isHome = pathname === `${base}` || pathname === `${base.replace(/\/$/, "")
         <a href={`${lbase}${base}`} aria-current={isHome ? "page" : undefined}>{dict.nav.home}</a>
         <a href={`${lbase}${base}info`}>{dict.nav.info}</a>
         <LangSwitcher />
+        {notifyConfigured && (
+          <button type="button" data-notify-open class="nav-alert site-menu__alert" aria-haspopup="dialog">
+            <Icon name="bell" size={14} />
+            <span data-notify-label>{dict.nav.alerts}</span>
+          </button>
+        )}
         <button type="button" data-install-app>
           {dict.nav.install}
         </button>

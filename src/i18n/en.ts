@@ -27,6 +27,8 @@ export const en: DictShape<typeof es> = {
     languageSwitcher: "Language",
     switchToEnglish: "English",
     switchToSpanish: "Español",
+    alerts: "Turn on alerts",
+    alertsOn: "Alerts on",
   },
 
   footer: {
@@ -74,6 +76,15 @@ export const en: DictShape<typeof es> = {
     denied: "Permission denied. You can enable it from your browser.",
     ready: "All set! You will get the alert 1 hour before kickoff.",
     error: "Could not enable: {message}",
+    dialogTitle: "Turn on notifications?",
+    dialogText:
+      "We will remind you 1 hour before every Boca match. No spam: one alert per match.",
+    accept: "Yes, turn on",
+    cancel: "Not now",
+    onTitle: "Alerts are already on",
+    onText: "We will remind you 1 hour before every Boca match.",
+    turnOff: "Turn off alerts",
+    close: "Close",
   },
 
   push: {

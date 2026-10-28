@@ -12,42 +12,24 @@ const configured = Boolean(supabaseUrl && vapidPublic);
 const { hideWhenUnconfigured = false, compact = false } = Astro.props;
 const locale = (Astro.currentLocale ?? "es") as Locale;
 const dict = getDict(locale);
-
-// Mensajes del script (van por data-attributes para no duplicar el diccionario).
-const msgs = {
-  unsupported: dict.notify.unsupported,
-  enable: dict.notify.enable,
-  disable: dict.notify.disable,
-  enabled: dict.notify.enabled,
-  disabled: dict.notify.disabled,
-  denied: dict.notify.denied,
-  ready: dict.notify.ready,
-  error: dict.notify.error,
-};
 ---
 
 {(!configured && hideWhenUnconfigured) ? null : compact ? (
-  <div
-    id="notify-box"
-    data-supabase={supabaseUrl}
-    data-vapid={vapidPublic}
-    data-msgs={JSON.stringify(msgs)}
-    class="rounded-lg border border-border bg-surface p-4 shadow-card"
-  >
+  <div class="rounded-lg border border-border bg-surface p-4 shadow-card">
     <p class="text-[13px] leading-[1.6] text-text-secondary">
       {dict.notify.compact}
     </p>
     <div class="mt-3">
       <button
         type="button"
-        id="notify-toggle"
+        data-notify-toggle
         class="h-10 rounded-[6px] border border-accent bg-accent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong"
       >
         {dict.notify.enableShort}
       </button>
     </div>
-    <p id="notify-status" class="mt-3 text-[12px] text-text-muted"></p>
-    <p id="notify-ios" hidden class="mt-2 text-[12px] text-text-muted">
+    <p data-notify-status class="mt-3 text-[12px] text-text-muted" aria-live="polite"></p>
+    <p data-notify-ios hidden class="mt-2 text-[12px] text-text-muted">
       {dict.notify.ios}
     </p>
   </div>
@@ -56,13 +38,7 @@ const msgs = {
     <h2 class="text-[17px] font-bold tracking-[0.02em] text-text-primary">{dict.notify.title}</h2>
 
     {configured ? (
-      <div
-        id="notify-box"
-        data-supabase={supabaseUrl}
-        data-vapid={vapidPublic}
-        data-msgs={JSON.stringify(msgs)}
-        class="mt-3 rounded-lg border border-border bg-surface p-4 shadow-card"
-      >
+      <div class="mt-3 rounded-lg border border-border bg-surface p-4 shadow-card">
         <p class="text-[13px] leading-[1.6] text-text-secondary">
           {dict.notify.full}
         </p>
@@ -70,15 +46,15 @@ const msgs = {
         <div class="mt-4">
           <button
             type="button"
-            id="notify-toggle"
+            data-notify-toggle
             class="h-10 rounded-[6px] border border-accent bg-accent px-4 text-[12px] font-semibold uppercase tracking-[0.04em] text-bg transition-colors hover:border-accent-strong hover:bg-accent-strong"
           >
             {dict.notify.enable}
           </button>
         </div>
 
-        <p id="notify-status" class="mt-3 text-[12px] text-text-muted"></p>
-        <p id="notify-ios" hidden class="mt-2 text-[12px] text-text-muted">
+        <p data-notify-status class="mt-3 text-[12px] text-text-muted" aria-live="polite"></p>
+        <p data-notify-ios hidden class="mt-2 text-[12px] text-text-muted">
           {dict.notify.ios}
         </p>
       </div>
@@ -89,111 +65,3 @@ const msgs = {
     )}
   </section>
 )}
-
-<script>
-  (function () {
-    var box = document.getElementById("notify-box") as HTMLElement | null;
-    if (!box) return;
-
-    var supabaseUrl = (box.dataset.supabase || "").replace(/\/$/, "");
-    var vapid = box.dataset.vapid || "";
-    var msgs = (function () {
-      try {
-        return JSON.parse(box.dataset.msgs || "{}");
-      } catch (e) {
-        return {};
-      }
-    })();
-    var lang =
-      (document.documentElement.lang || "es").toLowerCase().indexOf("en") === 0 ? "en" : "es";
-    var statusEl = document.getElementById("notify-status");
-    var toggleBtn = document.getElementById("notify-toggle") as HTMLButtonElement | null;
-    var iosEl = document.getElementById("notify-ios");
-
-    function setStatus(msg: string) {
-      if (statusEl) statusEl.textContent = msg;
-    }
-    function urlBase64ToUint8Array(base64String: string): Uint8Array {
-      var padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-      var base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-      var raw = atob(base64);
-      var arr = new Uint8Array(raw.length);
-      for (var i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i);
-      return arr;
-    }
-
-    var supported = "serviceWorker" in navigator && "PushManager" in window;
-    var standalone =
-      window.matchMedia("(display-mode: standalone)").matches ||
-      (navigator as any).standalone === true;
-    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
-
-    if (!supported) {
-      setStatus(msgs.unsupported || "");
-      if (toggleBtn) toggleBtn.disabled = true;
-      return;
-    }
-    if (isIOS && !standalone && iosEl) iosEl.hidden = false;
-
-    async function currentSubscription(): Promise<PushSubscription | null> {
-      var reg = await navigator.serviceWorker.getRegistration();
-      if (!reg) reg = await navigator.serviceWorker.ready;
-      return reg.pushManager.getSubscription();
-    }
-
-    async function save(sub: PushSubscription, enabled: boolean) {
-      var json = sub.toJSON();
-      await fetch(supabaseUrl + "/functions/v1/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          endpoint: json.endpoint,
-          keys: json.keys,
-          prefs: { h1: true },
-          enabled: enabled,
-          lang: lang,
-        }),
-      });
-    }
-
-    async function refresh() {
-      var sub = await currentSubscription();
-      if (!toggleBtn) return;
-      toggleBtn.textContent = sub ? msgs.disable : msgs.enable;
-      if (sub) setStatus(msgs.enabled || "");
-    }
-
-    if (!toggleBtn) return;
-    const btn = toggleBtn;
-    btn.addEventListener("click", async function () {
-      try {
-        var existing = await currentSubscription();
-        if (existing) {
-          await save(existing, false);
-          await existing.unsubscribe();
-          setStatus(msgs.disabled || "");
-          btn.textContent = msgs.enable || "";
-          return;
-        }
-        var perm = await Notification.requestPermission();
-        if (perm !== "granted") {
-          setStatus(msgs.denied || "");
-          return;
-        }
-        var reg = await navigator.serviceWorker.ready;
-        var sub = await reg.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapid) as unknown as BufferSource,
-        });
-        await save(sub, true);
-        setStatus(msgs.ready || "");
-        btn.textContent = msgs.disable || "";
-      } catch (e) {
-        var msg = (msgs.error || "Error: {message}").replace("{message}", (e as Error).message || String(e));
-        setStatus(msg);
-      }
-    });
-
-    refresh();
-  })();
-</script>

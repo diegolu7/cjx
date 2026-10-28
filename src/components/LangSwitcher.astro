@@ -12,27 +12,66 @@ function href(path: string): string {
   return rel ? `${base}${rel}` : base;
 }
 
+function flagFor(l: Locale): string {
+  return `${base}flags/${l === "es" ? "ar" : "us"}.svg`;
+}
+
 const esHref = href(esPathWithSlash(current));
 const enHref = href(enPathWithSlash(current));
+const currentName = locale === "es" ? dict.nav.switchToSpanish : dict.nav.switchToEnglish;
 ---
 
-<div class="lang-switch" role="group" aria-label={dict.nav.languageSwitcher}>
-  <a
-    href={esHref}
-    data-set-lang="es"
-    hreflang="es-AR"
-    class:list={["lang-switch__link", locale === "es" && "is-active"]}
-    aria-current={locale === "es" ? "true" : undefined}
-  >ES</a>
-  <span class="lang-switch__sep" aria-hidden="true">·</span>
-  <a
-    href={enHref}
-    data-set-lang="en"
-    hreflang="en"
-    class:list={["lang-switch__link", locale === "en" && "is-active"]}
-    aria-current={locale === "en" ? "true" : undefined}
-  >EN</a>
-</div>
+<details class="lang-select" data-lang-select>
+  <summary class="lang-select__button" aria-label={`${dict.nav.languageSwitcher}: ${currentName}`}>
+    <img
+      class="lang-select__flag"
+      src={flagFor(locale)}
+      alt=""
+      width="20"
+      height="14"
+      loading="eager"
+    />
+    <span class="lang-select__code">{locale === "es" ? "ES" : "EN"}</span>
+    <svg class="lang-select__chevron" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  </summary>
+
+  <div class="lang-select__menu">
+    <a
+      href={esHref}
+      data-set-lang="es"
+      hreflang="es-AR"
+      lang="es"
+      class="lang-select__option"
+      aria-current={locale === "es" ? "true" : undefined}
+    >
+      <img class="lang-select__flag" src={flagFor("es")} alt="" width="20" height="14" loading="lazy" />
+      <span>{dict.nav.switchToSpanish}</span>
+      {locale === "es" && (
+        <svg class="lang-select__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      )}
+    </a>
+    <a
+      href={enHref}
+      data-set-lang="en"
+      hreflang="en"
+      lang="en"
+      class="lang-select__option"
+      aria-current={locale === "en" ? "true" : undefined}
+    >
+      <img class="lang-select__flag" src={flagFor("en")} alt="" width="20" height="14" loading="lazy" />
+      <span>{dict.nav.switchToEnglish}</span>
+      {locale === "en" && (
+        <svg class="lang-select__check" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 6 9 17l-5-5" />
+        </svg>
+      )}
+    </a>
+  </div>
+</details>
 
 <script>
   // Guardar la preferencia: el redirect automático respeta lo que el usuario eligió.
@@ -42,6 +81,21 @@ const enHref = href(enPathWithSlash(current));
         localStorage.setItem("cjx:lang", link.dataset.setLang || "es");
       } catch (e) {
         /* storage no disponible */
+      }
+    });
+  });
+
+  // Cerrar el dropdown con clic afuera o Escape.
+  document.querySelectorAll<HTMLDetailsElement>("[data-lang-select]").forEach((details) => {
+    document.addEventListener("click", (event) => {
+      if (details.open && event.target instanceof Node && !details.contains(event.target)) {
+        details.open = false;
+      }
+    });
+    details.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        details.open = false;
+        details.querySelector<HTMLElement>("summary")?.focus();
       }
     });
   });

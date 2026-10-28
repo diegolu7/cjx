@@ -4,6 +4,7 @@ import SiteFooter from "../components/SiteFooter.astro";
 import Analytics from "../components/Analytics.astro";
 import CookieBanner from "../components/CookieBanner.astro";
 import InstallPrompt from "../components/InstallPrompt.astro";
+import NotifyDialog from "../components/NotifyDialog.astro";
 import SeoHead from "../components/SeoHead.astro";
 import { getDict, HTML_LANG, type Locale } from "../i18n/index.ts";
 import { esPathWithSlash, enPathWithSlash, localeBase } from "../i18n/routes";
@@ -134,6 +135,7 @@ const structuredData = {
     <Analytics />
     <CookieBanner />
     <InstallPrompt />
+    <NotifyDialog />
     {import.meta.env.PROD && (
       <script is:inline define:vars={{ base }}>
         if ("serviceWorker" in navigator) {
