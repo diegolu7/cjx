@@ -19,7 +19,7 @@ export const es = {
   nav: {
     home: "Inicio",
     info: "Info",
-    install: "Instalar App 📥",
+    install: "Instalar App",
     installShort: "Instalar app",
     openMenu: "Abrir menú",
     main: "Principal",

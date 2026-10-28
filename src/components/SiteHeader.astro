@@ -40,9 +40,12 @@ const notifyConfigured = Boolean(
           <span data-notify-label>{dict.nav.alerts}</span>
         </button>
       )}
-      <button type="button" data-install-app class="nav-link bg-transparent border-0 p-0 cursor-pointer">
+      <button type="button" data-install-app class="nav-link inline-flex items-center gap-[5px] bg-transparent border-0 p-0 cursor-pointer">
         {dict.nav.install.toUpperCase()}
-        <span class="nav-install">↓</span>
+        <svg class="nav-install" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M12 4.5v9" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" />
+          <path d="m5.6 10.4 6.4 6.4 6.4-6.4" stroke="currentColor" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
       </button>
     </nav>
 
@@ -91,8 +94,13 @@ const notifyConfigured = Boolean(
     height: 40px;
   }
   .nav-install {
+    display: block;
+    flex-shrink: 0;
     color: var(--color-accent-strong);
-    margin-left: 4px;
+    transition: transform 160ms ease;
+  }
+  .nav-link:hover .nav-install {
+    transform: translateY(2px);
   }
   .hamburger {
     display: flex;

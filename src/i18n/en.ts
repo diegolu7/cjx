@@ -18,7 +18,7 @@ export const en: DictShape<typeof es> = {
   nav: {
     home: "Home",
     info: "Info",
-    install: "Install App 📥",
+    install: "Install App",
     installShort: "Install app",
     openMenu: "Open menu",
     main: "Main",
