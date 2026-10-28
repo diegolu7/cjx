@@ -111,14 +111,14 @@ const badgeClass = finished
       <span class="flex min-w-0 flex-col items-center justify-center gap-1.5 text-center lg:flex-row lg:items-center lg:gap-2 lg:text-right">
         <Crest src={match.homeLogo} name={match.homeTeam} size={34} />
         <span class="min-w-0 break-words text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
-          Boca
+          {match.homeTeam}
         </span>
       </span>
       <span class="shrink-0 text-[13px] uppercase tracking-[0.06em] text-text-muted">vs</span>
       <span class="flex min-w-0 flex-col items-center justify-center gap-1.5 text-center lg:flex-row lg:items-center lg:gap-2 lg:text-left">
         <Crest src={match.awayLogo} name={match.awayTeam} size={34} />
         <span class="min-w-0 break-words text-[20px] lg:text-[26px] font-bold uppercase leading-[1.1] text-text-primary">
-          {rival}
+          {match.awayTeam}
         </span>
       </span>
     </div>
