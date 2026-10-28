@@ -33,7 +33,6 @@ const notifyConfigured = Boolean(
       <a href={`${lbase}${base}`} class={`nav-link ${isHome ? "nav-link--active" : ""}`} aria-current={isHome ? "page" : undefined}>
         {dict.nav.home.toUpperCase()}
       </a>
-      <a href={`${lbase}${base}info`} class="nav-link">{dict.nav.info.toUpperCase()}</a>
       <LangSwitcher />
       {notifyConfigured && (
         <button type="button" data-notify-open class="nav-alert" aria-haspopup="dialog">
@@ -55,7 +54,6 @@ const notifyConfigured = Boolean(
       </summary>
       <div class="site-menu__panel">
         <a href={`${lbase}${base}`} aria-current={isHome ? "page" : undefined}>{dict.nav.home}</a>
-        <a href={`${lbase}${base}info`}>{dict.nav.info}</a>
         <LangSwitcher />
         {notifyConfigured && (
           <button type="button" data-notify-open class="nav-alert site-menu__alert" aria-haspopup="dialog">
