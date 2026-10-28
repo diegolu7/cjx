@@ -1,8 +1,5 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import MatchesTimeline from "../MatchesTimeline.astro";
-import Notifications from "../Notifications.astro";
-import ShareButton from "../ShareButton.astro";
 import type { Match } from "../../types/match";
 import {
   fechaHoraCorta,
@@ -12,9 +9,15 @@ import {
   featuredMatch,
   competitionLabel,
   roundLabel,
+  rivalOf,
+  fechaLarga,
+  diaSemana,
+  countdownText,
 } from "../../lib/match";
 import { getDict, t, type Locale } from "../../i18n/index.ts";
 import { localeBase } from "../../i18n/routes";
+import Notifications from "../Notifications.astro";
+import ShareButton from "../ShareButton.astro";
 import data from "../../data/matches.json";
 
 const locale = (Astro.currentLocale ?? "es") as Locale;
@@ -22,12 +25,22 @@ const dict = getDict(locale);
 const base = import.meta.env.BASE_URL;
 const lbase = localeBase(locale);
 const matches = data.matches as Match[];
-// Destacado: el partido en juego o, si no hay ninguno, el próximo.
 const next = featuredMatch(matches);
+const all = [...matches].sort((a, b) => a.date.localeCompare(b.date) || (a.time || "").localeCompare(b.time || ""));
 
-const rival = next ? (next.homeTeam === "Boca" ? next.awayTeam : next.homeTeam) : "";
+const finished = all.filter((m) => m.status === "finished").slice(-3).reverse();
+const upcoming = all.filter((m) => m.status === "next" || m.status === "scheduled" || m.status === "live").slice(0, 6);
+
 const startDate = next ? kickoffISO(next) : null;
 const endDate = next ? kickoffEndISO(next) : null;
+const rival = next ? rivalOf(next) : "";
+const countdown = next ? countdownText(next, dict) : "";
+const isLive = next?.status === "live";
+const isFinished = next?.status === "finished";
+
+function crestUrl(team: string) {
+  return `https://a.espncdn.com/i/teamlogos/soccer/500/${team === "Boca" ? "5" : "16"}.png`;
+}
 
 const sportsEvent = next
   ? {
@@ -35,10 +48,7 @@ const sportsEvent = next
       "@type": "SportsEvent",
       name: `${next.homeTeam} vs ${next.awayTeam}`,
       ...(startDate ? { startDate, endDate } : {}),
-      eventStatus:
-        next.status === "live"
-          ? "https://schema.org/EventInProgress"
-          : "https://schema.org/EventScheduled",
+      eventStatus: isLive ? "https://schema.org/EventInProgress" : "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       sport: "Soccer",
       url: new URL(Astro.url.pathname, Astro.site).href,
@@ -50,10 +60,7 @@ const sportsEvent = next
         date: next.date,
         hour: horaDe(next) ? t(dict, "seo.eventHour", { time: horaDe(next) }) : "",
       }),
-      location: {
-        "@type": "Place",
-        name: next.venue ?? dict.match.venueTbd,
-      },
+      location: { "@type": "Place", name: next.venue ?? dict.match.venueTbd },
       competitor: [
         { "@type": "SportsTeam", name: "Boca Juniors", sport: "Soccer" },
         { "@type": "SportsTeam", name: rival, sport: "Soccer" },
@@ -64,38 +71,587 @@ const sportsEvent = next
 ---
 
 <Layout title={dict.pages.home.title} description={dict.pages.home.description}>
-  <section class="mb-4">
-    <h1 class="text-[24px] lg:text-[30px] font-bold leading-[1.15] tracking-[0.02em] text-text-primary">
-      {dict.pages.home.h1}
-    </h1>
-  </section>
+  <h1>{dict.pages.home.h1}</h1>
 
-  <div id="partidos" class="scroll-mt-6">
-    <MatchesTimeline matches={matches} />
-  </div>
+  {
+    next && (
+      <section class="hero" aria-labelledby="hero-label">
+        <div class="hero-stadium" aria-hidden="true"></div>
+        <div class="hero-top">
+          <span id="hero-label" class="tag tag-yellow">
+            {isLive ? dict.timeline.badges.live.toUpperCase() : isFinished ? dict.timeline.badges.finished.toUpperCase() : dict.timeline.badges.next.toUpperCase()}
+          </span>
+        </div>
+        <div class="hero-grid">
+          <div class="hero-date">
+            <p class="eyebrow">{diaSemana(next.date, dict).toUpperCase()} {fechaLarga(next.date, dict).toUpperCase()}</p>
+            {horaDe(next) ? <p class="hero-time">{horaDe(next)}</p> : <p class="hero-time hero-time--tbd">{dict.timeline.timeTbd}</p>}
+            <p>
+              {competitionLabel(next, dict)}{roundLabel(next, dict) ? ` · ${roundLabel(next, dict)}` : ""}
+            </p>
+            <p class="venue">⌖ &nbsp;{next.venue ?? dict.match.venueTbd}</p>
+            {countdown && <div class="countdown">▣ &nbsp;{countdown}</div>}
+          </div>
+          <div class="hero-match">
+            <div class="teams">
+              <div class="hero-team">
+                <img src="https://a.espncdn.com/i/teamlogos/soccer/500/5.png" alt="Boca Juniors" />
+                <strong>BOCA</strong>
+              </div>
+              <span class="versus">VS</span>
+              <div class="hero-team">
+                <img src={`https://a.espncdn.com/i/teamlogos/soccer/500/${next.awayTeam === "Boca" ? "5" : "16"}.png`} alt={rival} />
+                <strong>{rival.toUpperCase()}</strong>
+              </div>
+            </div>
+            <a class="primary-button" href={`${lbase}${base}partidos/${next.slug}`}>
+              {dict.match.shareMatch.toUpperCase()} <span>→</span>
+            </a>
+          </div>
+        </div>
+      </section>
+    )
+  }
 
-  <div class="mt-4 flex flex-wrap items-center gap-3">
-    <a
-      href={`${lbase}${base}partidos`}
-      class="text-[13px] text-accent-secondary underline underline-offset-2 hover:text-text-primary"
-    >
-      {dict.pages.home.seeAll}
-    </a>
-    <ShareButton
-      url={new URL(Astro.url.pathname, Astro.site).href}
-      title={dict.pages.home.shareTitle}
-      text={dict.pages.home.shareText}
-      label={dict.share.label}
-    />
-  </div>
+  {
+    finished.length > 0 && (
+      <section class="results" aria-labelledby="results-title">
+        <div class="section-heading">
+          <h2 id="results-title">{dict.sections.recent}</h2>
+          <a href={`${lbase}${base}partidos`}>{dict.pages.home.seeAll}</a>
+        </div>
+        <div class="result-grid">
+          {finished.map((m) => {
+            const r = rivalOf(m);
+            const bocaHome = m.homeTeam === "Boca";
+            return (
+              <article class="result-card">
+                <div class="date-block">
+                  <strong>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString("es-AR", { day: "2-digit" })}</strong>
+                  <span>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { month: "short" }).toUpperCase()}</span>
+                </div>
+                <div class="result-content">
+                  <div class="score-row">
+                    <span>
+                      <img src="https://a.espncdn.com/i/teamlogos/soccer/500/5.png" alt="" />
+                      Boca
+                    </span>
+                    <b>{bocaHome ? m.homeScore ?? "-" : m.awayScore ?? "-"}</b>
+                  </div>
+                  <div class="score-row">
+                    <span>
+                      <img src={`https://a.espncdn.com/i/teamlogos/soccer/500/16.png`} alt="" />
+                      {r}
+                    </span>
+                    <b>{bocaHome ? m.awayScore ?? "-" : m.homeScore ?? "-"}</b>
+                  </div>
+                  <p>
+                    {competitionLabel(m, dict)}
+                    <br />
+                    {roundLabel(m, dict)}
+                    {m.aggregate && (
+                      <>
+                        <br />
+                        <a href={`${lbase}${base}partidos/${m.slug}`}>{t(dict, "timeline.aggregateShort", { boca: m.aggregate.bocaScore, rival: m.aggregate.rivalScore })}</a>
+                      </>
+                    )}
+                  </p>
+                </div>
+                <span class="status">{dict.timeline.badges.finished}</span>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    upcoming.length > 0 && (
+      <section id="fixture" class="fixture" aria-labelledby="fixture-title">
+        <div class="section-heading fixture-heading">
+          <h2 id="fixture-title">{dict.pages.matches.h1}</h2>
+          <div class="tabs" role="group" aria-label={dict.timeline.filterLabel}>
+            <button data-filter="past">{dict.timeline.tabs.previous}</button>
+            <button class="selected" data-filter="all">{dict.timeline.tabs.all}</button>
+            <button data-filter="future">{dict.timeline.tabs.upcoming}</button>
+          </div>
+        </div>
+        <div class="fixture-list">
+          {upcoming.map((m) => {
+            const r = rivalOf(m);
+            const bocaHome = m.homeTeam === "Boca";
+            return (
+              <article class="fixture-row" data-type="future">
+                <div class="date-block">
+                  <strong>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString("es-AR", { day: "2-digit" })}</strong>
+                  <span>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { month: "short" }).toUpperCase()}</span>
+                </div>
+                <a class="fixture-details" href={`${lbase}${base}partidos/${m.slug}`}>
+                  <div class="fixture-names">
+                    <img src="https://a.espncdn.com/i/teamlogos/soccer/500/5.png" alt="" />
+                    <strong>Boca</strong>
+                    <span>vs</span>
+                    <img src={`https://a.espncdn.com/i/teamlogos/soccer/500/16.png`} alt="" />
+                    <strong>{r}</strong>
+                  </div>
+                  <p>
+                    {competitionLabel(m, dict)}{roundLabel(m, dict) ? ` · ${roundLabel(m, dict)}` : ""}
+                  </p>
+                </a>
+                <span class="status outlined">{m.status === "live" ? dict.timeline.badges.live : dict.timeline.badges.scheduled}</span>
+                <span class="chevron">›</span>
+              </article>
+            );
+          })}
+        </div>
+        <div class="fixture-actions">
+          <a href={`${lbase}${base}partidos`}>{dict.pages.home.seeAll}</a>
+          <ShareButton url={new URL(Astro.url.pathname, Astro.site).href} title={dict.pages.home.shareTitle} text={dict.pages.home.shareText} label={dict.share.label} />
+        </div>
+      </section>
+    )
+  }
 
   <Notifications hideWhenUnconfigured />
 
-  <p class="mt-6 text-[11px] text-text-muted">
+  <p class="updated">
     {dict.match.updatedAt.replace("{date}", fechaHoraCorta(data.updatedAt))}
   </p>
 
-  {sportsEvent && (
-    <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />
-  )}
+  {sportsEvent && <script is:inline type="application/ld+json" set:html={JSON.stringify(sportsEvent)} />}
+
+  <style>
+    h1 {
+      font-size: 44px;
+      line-height: 1.12;
+      margin: 0 0 22px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--color-text-primary);
+    }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 305px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 12px;
+      box-shadow: var(--shadow-card);
+      padding: 17px 20px 19px;
+    }
+    .hero-stadium {
+      position: absolute;
+      right: 0;
+      top: 0;
+      width: 46%;
+      height: 100%;
+      background: linear-gradient(90deg, #fff 0%, rgba(255, 255, 255, 0.45) 35%, rgba(255, 255, 255, 0.1) 100%),
+        url("https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1000&q=80") center/cover;
+      opacity: 0.45;
+      pointer-events: none;
+    }
+    .hero-top {
+      position: relative;
+      z-index: 1;
+    }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      padding: 8px 12px;
+    }
+    .tag-yellow {
+      background: var(--color-accent);
+      color: var(--color-text-primary);
+    }
+    .hero-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+      align-items: center;
+      gap: 20px;
+      margin-top: 16px;
+    }
+    .eyebrow {
+      margin: 0;
+      color: #506e9b;
+      font-size: 11px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+    .hero-time {
+      margin: 6px 0;
+      font-family: var(--font-display);
+      font-size: 76px;
+      font-weight: 800;
+      line-height: 0.9;
+    }
+    .hero-time--tbd {
+      font-size: 42px;
+    }
+    .hero-date p {
+      margin: 4px 0;
+      color: var(--color-text-secondary);
+    }
+    .venue {
+      color: var(--color-text-primary) !important;
+    }
+    .countdown {
+      margin-top: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: rgba(243, 246, 250, 0.8);
+      font-size: 12px;
+      color: var(--color-text-secondary);
+    }
+    .teams {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+    }
+    .hero-team {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      min-width: 110px;
+    }
+    .hero-team img {
+      width: 104px;
+      height: 104px;
+    }
+    .hero-team strong {
+      font-family: var(--font-display);
+      font-size: 26px;
+      font-weight: 800;
+    }
+    .versus {
+      font-family: var(--font-display);
+      font-size: 19px;
+      font-weight: 800;
+      color: #8ca0c6;
+    }
+    .hero-match {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+    .primary-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 22px;
+      border-radius: 6px;
+      background: var(--color-accent);
+      color: var(--color-text-primary);
+      text-decoration: none;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+    }
+    .primary-button:hover {
+      background: var(--color-accent-strong);
+    }
+    .section-heading {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin: 32px 2px 12px;
+    }
+    .section-heading h2 {
+      font-size: 32px;
+      font-weight: 800;
+    }
+    .section-heading a {
+      color: var(--color-accent-secondary);
+      text-decoration: none;
+      font-size: 12px;
+    }
+    .result-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .result-card {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      box-shadow: var(--shadow-card);
+      padding: 14px 16px;
+      position: relative;
+    }
+    .date-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 56px;
+      color: var(--color-text-primary);
+    }
+    .date-block strong {
+      font-family: var(--font-display);
+      font-size: 28px;
+      line-height: 1;
+    }
+    .date-block span {
+      font-size: 11px;
+      letter-spacing: 0.6px;
+    }
+    .result-content {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      flex: 1;
+    }
+    .score-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .score-row span {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .score-row img {
+      width: 22px;
+      height: 22px;
+    }
+    .score-row b {
+      font-size: 14px;
+    }
+    .result-content p {
+      margin: 2px 0 0;
+      color: var(--color-text-muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+    .result-content a {
+      color: var(--color-accent-secondary);
+      text-decoration: none;
+    }
+    .status {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e7edf7;
+      color: #506e9b;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.6px;
+    }
+    .status.outlined {
+      background: transparent;
+      border: 1px solid var(--color-border);
+    }
+    .fixture-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .fixture-row {
+      display: grid;
+      grid-template-columns: 70px minmax(0, 1fr) auto auto;
+      align-items: center;
+      gap: 18px;
+      background: var(--color-surface);
+      border: 1px solid var(--color-border);
+      border-radius: 10px;
+      box-shadow: var(--shadow-card);
+      padding: 12px 18px;
+    }
+    .fixture-details {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      text-decoration: none;
+      color: inherit;
+    }
+    .fixture-names {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .fixture-names img {
+      width: 26px;
+      height: 26px;
+    }
+    .fixture-names strong {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+    }
+    .fixture-names span {
+      color: #8ca0c6;
+    }
+    .fixture-details p {
+      margin: 0;
+      color: var(--color-text-muted);
+      font-size: 12px;
+    }
+    .chevron {
+      font-size: 26px;
+      color: #8ca0c6;
+    }
+    .fixture-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+    }
+    .fixture-actions a {
+      color: var(--color-accent-secondary);
+      text-decoration: none;
+    }
+    .tabs {
+      display: flex;
+      gap: 18px;
+      font-family: var(--font-display);
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+    }
+    .tabs button {
+      background: none;
+      border: 0;
+      color: #8ca0c6;
+      padding: 6px 0;
+    }
+    .tabs .selected {
+      color: var(--color-text-primary);
+      border-bottom: 2px solid var(--color-accent);
+    }
+    .updated {
+      margin-top: 28px;
+      color: var(--color-text-muted);
+      font-size: 11px;
+    }
+
+    @media (max-width: 960px) {
+      h1 {
+        font-size: 31px;
+        margin: 0 0 14px;
+      }
+      .hero {
+        padding: 12px;
+      }
+      .hero-stadium {
+        top: 36px;
+        right: 0;
+        width: 68%;
+        height: 46%;
+        opacity: 0.29;
+      }
+      .hero-grid {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .hero-date {
+        display: contents;
+      }
+      .eyebrow {
+        order: 1;
+        font-size: 10px;
+      }
+      .hero-time {
+        order: 2;
+        font-size: 54px;
+      }
+      .hero-time--tbd {
+        font-size: 28px;
+      }
+      .hero-date p:not(.hero-time):not(.eyebrow) {
+        order: 3;
+        font-size: 11px;
+        margin: 0;
+      }
+      .venue {
+        order: 4 !important;
+      }
+      .hero-match {
+        display: contents;
+      }
+      .teams {
+        order: 5;
+        gap: 15px;
+        margin: 8px 0;
+      }
+      .hero-team {
+        flex: 1;
+        min-width: 0;
+      }
+      .hero-team img {
+        width: 79px;
+        height: 79px;
+      }
+      .hero-team strong {
+        font-size: 23px;
+      }
+      .versus {
+        font-size: 17px;
+      }
+      .countdown {
+        order: 6;
+        align-self: center;
+      }
+      .primary-button {
+        order: 7;
+        width: 100%;
+        justify-content: center;
+      }
+      .section-heading {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 10px;
+      }
+      .section-heading h2 {
+        font-size: 27px;
+      }
+      .result-grid {
+        grid-template-columns: 1fr;
+      }
+      .fixture-row {
+        grid-template-columns: 49px minmax(0, 1fr) auto auto;
+        gap: 12px;
+        padding: 11px 13px;
+      }
+      .fixture-names strong {
+        font-size: 16px;
+      }
+      .fixture-names img {
+        width: 22px;
+        height: 22px;
+      }
+      .tabs {
+        width: 100%;
+        justify-content: space-between;
+      }
+      .fixture-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+      }
+    }
+  </style>
 </Layout>

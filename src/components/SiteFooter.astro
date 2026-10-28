@@ -1,5 +1,4 @@
 ---
-// Footer según design.md §45/§46: disclaimer, links legales, contacto y logo.
 import LangSwitcher from "./LangSwitcher.astro";
 import { getDict, t, type Locale } from "../i18n/index.ts";
 import { localeBase } from "../i18n/routes";
@@ -11,59 +10,100 @@ const dict = getDict(locale);
 const lbase = localeBase(locale);
 ---
 
-<footer class="site-footer">
+<footer id="info" class="site-footer">
   <div class="site-footer__inner">
-    <div class="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-      <div class="flex flex-col gap-2">
-        <p class="text-[11px] leading-[1.5] text-text-secondary">
-          {dict.footer.disclaimer}
-        </p>
-
-        <p class="text-[11px] leading-[1.5] text-text-muted">
-          {dict.footer.data}{" "}
-          <a href="https://www.espn.com/soccer/" rel="noopener noreferrer nofollow" target="_blank" class="text-text-secondary underline underline-offset-2 hover:text-accent">ESPN</a>.
-        </p>
-
-        <nav aria-label={dict.nav.legal} class="flex flex-wrap gap-x-4 gap-y-1">
-          <a href={`${lbase}${base}info`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.nav.info}</a>
-          <a href={`${lbase}${base}terminos`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.terms}</a>
-          <a href={`${lbase}${base}privacidad`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.privacy}</a>
-          <a href={`${lbase}${base}cookies`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.cookiesLink}</a>
-          <a href={`${lbase}${base}contacto`} class="text-[11px] text-text-secondary underline underline-offset-2 hover:text-accent">{dict.footer.contact}</a>
-        </nav>
-
-        <p class="text-[11px] leading-[1.5] text-text-muted">
-          {dict.footer.cookiesText}{" "}
-          <a href={`${lbase}${base}cookies`} class="underline underline-offset-2 hover:text-accent">{dict.footer.cookiesPolicy}</a>.
-        </p>
-
-        <p class="text-[11px] leading-[1.5] text-text-secondary">
-          <a href="mailto:delnorte.destinos@gmail.com" class="underline underline-offset-2 hover:text-accent">delnorte.destinos@gmail.com</a>
-        </p>
-        <p class="text-[11px] leading-[1.5] text-text-secondary">
-          {t(dict, "footer.copyright", { year: anio })}
-        </p>
-
-        <p class="text-[11px]">
-          <LangSwitcher />
-        </p>
-        <p class="text-[11px]">
-          <button
-            type="button"
-            data-install-app
-            class="text-text-secondary underline underline-offset-2 hover:text-accent"
-          >{dict.nav.installShort}</button>
-        </p>
-      </div>
-
-      <a href={`${lbase}${base}`} aria-label={dict.nav.brandHome} class="self-start lg:self-center shrink-0">
-        <img
-          src={`${base}logo.png`}
-          alt=""
-          class="h-12 w-auto"
-          loading="lazy"
-        />
-      </a>
+    <div class="footer-info">
+      <p>{dict.footer.disclaimer}</p>
+      <p>
+        {dict.footer.data}{" "}
+        <a href="https://www.espn.com/soccer/" rel="noopener noreferrer nofollow" target="_blank">ESPN</a>.
+      </p>
+      <nav aria-label={dict.nav.legal} class="footer-links">
+        <a href={`${lbase}${base}info`}>{dict.nav.info}</a>
+        <a href={`${lbase}${base}terminos`}>{dict.footer.terms}</a>
+        <a href={`${lbase}${base}privacidad`}>{dict.footer.privacy}</a>
+        <a href={`${lbase}${base}cookies`}>{dict.footer.cookiesLink}</a>
+        <a href={`${lbase}${base}contacto`}>{dict.footer.contact}</a>
+      </nav>
+      <p>
+        {dict.footer.cookiesText}{" "}
+        <a href={`${lbase}${base}cookies`}>{dict.footer.cookiesPolicy}</a>.
+      </p>
+      <p>
+        <a href="mailto:delnorte.destinos@gmail.com">delnorte.destinos@gmail.com</a>
+      </p>
+      <p>{t(dict, "footer.copyright", { year: anio })}</p>
+    </div>
+    <div class="footer-brand">
+      <img src={`${base}logo.png`} alt="" class="footer-logo" loading="lazy" />
+      <span class="footer-brand-text">
+        <LangSwitcher />
+        <br />
+        <button type="button" data-install-app class="footer-install">{dict.nav.install}</button>
+      </span>
     </div>
   </div>
 </footer>
+
+<style>
+  .footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 760px;
+  }
+  .footer-info p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.8;
+  }
+  .footer-info a {
+    color: var(--color-accent-secondary);
+    text-decoration: none;
+  }
+  .footer-info a:hover {
+    text-decoration: underline;
+  }
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+  .footer-links a {
+    color: var(--color-text-muted);
+  }
+  .footer-brand {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    text-align: right;
+  }
+  .footer-logo {
+    width: 58px;
+    height: 58px;
+  }
+  .footer-brand-text {
+    color: #a1aec0;
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .footer-install {
+    background: none;
+    border: 0;
+    color: var(--color-accent-strong);
+    font: inherit;
+    cursor: pointer;
+    padding: 0;
+  }
+
+  @media (max-width: 960px) {
+    .footer-brand {
+      align-self: flex-start;
+      text-align: left;
+    }
+  }
+</style>
