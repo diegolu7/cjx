@@ -408,6 +408,7 @@ export const en: DictShape<typeof es> = {
       shareTitle: "When does Boca Juniors play",
       shareText: "Boca Juniors upcoming matches, kickoff times and results",
       seeAll: "See all matches →",
+      seeMatchInfo: "More match info",
     },
 
     matches: {

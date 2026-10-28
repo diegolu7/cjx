@@ -120,7 +120,8 @@ export function looksSpanish(value) {
 
   let clean = value;
   for (const phrase of ALLOWED_PHRASES) {
-    clean = clean.split(phrase).join(" ");
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    clean = clean.replace(new RegExp(escaped, "gi"), " ");
   }
 
   const words = clean

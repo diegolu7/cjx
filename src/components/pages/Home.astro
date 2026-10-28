@@ -28,7 +28,7 @@ const matches = data.matches as Match[];
 const next = featuredMatch(matches);
 const all = [...matches].sort((a, b) => a.date.localeCompare(b.date) || (a.time || "").localeCompare(b.time || ""));
 
-const finished = all.filter((m) => m.status === "finished").slice(-3).reverse();
+const finished = all.filter((m) => m.status === "finished").slice(-3);
 const upcoming = all.filter((m) => m.status === "next" || m.status === "scheduled" || m.status === "live").slice(0, 6);
 
 const startDate = next ? kickoffISO(next) : null;
@@ -37,10 +37,6 @@ const rival = next ? rivalOf(next) : "";
 const countdown = next ? countdownText(next, dict) : "";
 const isLive = next?.status === "live";
 const isFinished = next?.status === "finished";
-
-function crestUrl(team: string) {
-  return `https://a.espncdn.com/i/teamlogos/soccer/500/${team === "Boca" ? "5" : "16"}.png`;
-}
 
 const sportsEvent = next
   ? {
@@ -95,17 +91,17 @@ const sportsEvent = next
           <div class="hero-match">
             <div class="teams">
               <div class="hero-team">
-                <img src={next.homeLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/5.png"} alt={next.homeTeam === "Boca" ? "Boca Juniors" : rival} />
+                <img src={next.homeLogo} alt="" />
                 <strong>{next.homeTeam.toUpperCase()}</strong>
               </div>
               <span class="versus">VS</span>
               <div class="hero-team">
-                <img src={next.awayLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/16.png"} alt={next.awayTeam === "Boca" ? "Boca Juniors" : rival} />
+                <img src={next.awayLogo} alt="" />
                 <strong>{next.awayTeam.toUpperCase()}</strong>
               </div>
             </div>
             <a class="primary-button" href={`${lbase}${base}partidos/${next.slug}`}>
-              {dict.match.shareMatch.toUpperCase()} <span>→</span>
+              {dict.pages.home.seeMatchInfo.toUpperCase()} <span>→</span>
             </a>
           </div>
         </div>
@@ -121,48 +117,42 @@ const sportsEvent = next
           <a href={`${lbase}${base}partidos`}>{dict.pages.home.seeAll}</a>
         </div>
         <div class="result-grid">
-          {finished.map((m) => {
-            const r = rivalOf(m);
-            const bocaHome = m.homeTeam === "Boca";
-            const homeLogo = bocaHome ? m.homeLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/5.png" : m.awayLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/16.png";
-            const awayLogo = bocaHome ? m.awayLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/16.png" : m.homeLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/5.png";
-            return (
-              <article class="result-card">
-                <div class="date-block">
-                  <strong>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString("es-AR", { day: "2-digit" })}</strong>
-                  <span>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { month: "short" }).toUpperCase()}</span>
+          {finished.map((m) => (
+            <article class="result-card">
+              <div class="date-block">
+                <strong>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { day: "2-digit" })}</strong>
+                <span>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { month: "short" }).toUpperCase()}</span>
+              </div>
+              <div class="result-content">
+                <div class="score-row">
+                  <span>
+                    <img src={m.homeLogo} alt="" />
+                    <span class="team-name">{m.homeTeam}</span>
+                  </span>
+                  <b>{m.homeScore ?? "-"}</b>
                 </div>
-                <div class="result-content">
-                  <div class="score-row">
-                    <span>
-                      <img src={homeLogo} alt={bocaHome ? "Boca Juniors" : r} />
-                      {bocaHome ? "Boca" : r}
-                    </span>
-                    <b>{bocaHome ? m.homeScore ?? "-" : m.awayScore ?? "-"}</b>
-                  </div>
-                  <div class="score-row">
-                    <span>
-                      <img src={awayLogo} alt={bocaHome ? r : "Boca Juniors"} />
-                      {bocaHome ? r : "Boca"}
-                    </span>
-                    <b>{bocaHome ? m.awayScore ?? "-" : m.homeScore ?? "-"}</b>
-                  </div>
-                  <p>
-                    {competitionLabel(m, dict)}
-                    <br />
-                    {roundLabel(m, dict)}
-                    {m.aggregate && (
-                      <>
-                        <br />
-                        <a href={`${lbase}${base}partidos/${m.slug}`}>{t(dict, "timeline.aggregateShort", { boca: m.aggregate.bocaScore, rival: m.aggregate.rivalScore })}</a>
-                      </>
-                    )}
-                  </p>
+                <div class="score-row">
+                  <span>
+                    <img src={m.awayLogo} alt="" />
+                    <span class="team-name">{m.awayTeam}</span>
+                  </span>
+                  <b>{m.awayScore ?? "-"}</b>
                 </div>
-                <span class="status">{dict.timeline.badges.finished}</span>
-              </article>
-            );
-          })}
+                <p>
+                  {competitionLabel(m, dict)}
+                  <br />
+                  {roundLabel(m, dict)}
+                  {m.aggregate && (
+                    <>
+                      <br />
+                      <a href={`${lbase}${base}partidos/${m.slug}`}>{t(dict, "timeline.aggregateShort", { boca: m.aggregate.bocaScore, rival: m.aggregate.rivalScore })}</a>
+                    </>
+                  )}
+                </p>
+              </div>
+              <span class="status">{dict.timeline.badges.finished}</span>
+            </article>
+          ))}
         </div>
       </section>
     )
@@ -180,34 +170,28 @@ const sportsEvent = next
           </div>
         </div>
         <div class="fixture-list">
-          {upcoming.map((m) => {
-            const r = rivalOf(m);
-            const bocaHome = m.homeTeam === "Boca";
-            const homeLogo = bocaHome ? m.homeLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/5.png" : m.awayLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/16.png";
-            const awayLogo = bocaHome ? m.awayLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/16.png" : m.homeLogo || "https://a.espncdn.com/i/teamlogos/soccer/500/5.png";
-            return (
-              <article class="fixture-row" data-type="future">
-                <div class="date-block">
-                  <strong>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString("es-AR", { day: "2-digit" })}</strong>
-                  <span>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { month: "short" }).toUpperCase()}</span>
+          {upcoming.map((m) => (
+            <article class="fixture-row" data-type="future">
+              <div class="date-block">
+                <strong>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { day: "2-digit" })}</strong>
+                <span>{new Date(`${m.date}T00:00:00-03:00`).toLocaleDateString(locale === "en" ? "en-US" : "es-AR", { month: "short" }).toUpperCase()}</span>
+              </div>
+              <a class="fixture-details" href={`${lbase}${base}partidos/${m.slug}`}>
+                <div class="fixture-names">
+                  <img src={m.homeLogo} alt="" />
+                  <strong>{m.homeTeam}</strong>
+                  <span>vs</span>
+                  <img src={m.awayLogo} alt="" />
+                  <strong>{m.awayTeam}</strong>
                 </div>
-                <a class="fixture-details" href={`${lbase}${base}partidos/${m.slug}`}>
-                  <div class="fixture-names">
-                    <img src={homeLogo} alt={bocaHome ? "Boca Juniors" : r} />
-                    <strong>{bocaHome ? "Boca" : r}</strong>
-                    <span>vs</span>
-                    <img src={awayLogo} alt={bocaHome ? r : "Boca Juniors"} />
-                    <strong>{bocaHome ? r : "Boca"}</strong>
-                  </div>
-                  <p>
-                    {competitionLabel(m, dict)}{roundLabel(m, dict) ? ` · ${roundLabel(m, dict)}` : ""}
-                  </p>
-                </a>
-                <span class="status outlined">{m.status === "live" ? dict.timeline.badges.live : dict.timeline.badges.scheduled}</span>
-                <span class="chevron">›</span>
-              </article>
-            );
-          })}
+                <p>
+                  {competitionLabel(m, dict)}{roundLabel(m, dict) ? ` · ${roundLabel(m, dict)}` : ""}
+                </p>
+              </a>
+              <span class="status outlined">{m.status === "live" ? dict.timeline.badges.live : dict.timeline.badges.scheduled}</span>
+              <span class="chevron">›</span>
+            </article>
+          ))}
         </div>
         <div class="fixture-actions">
           <a href={`${lbase}${base}partidos`}>{dict.pages.home.seeAll}</a>
@@ -430,11 +414,16 @@ const sportsEvent = next
       font-size: 13px;
       gap: 10px;
     }
-    .score-row span {
+    .score-row > span {
       display: flex;
       align-items: center;
       gap: 8px;
       min-width: 0;
+    }
+    .score-row .team-name {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
     .score-row img {
       width: 22px;
@@ -456,9 +445,9 @@ const sportsEvent = next
       text-decoration: none;
     }
     .status {
-      position: absolute;
-      right: 12px;
-      top: 12px;
+      flex-shrink: 0;
+      align-self: center;
+      margin-left: auto;
       padding: 6px 10px;
       border-radius: 999px;
       background: #e7edf7;
@@ -499,7 +488,7 @@ const sportsEvent = next
       display: flex;
       align-items: center;
       gap: 10px;
-      flex-wrap: nowrap;
+      flex-wrap: wrap;
       min-width: 0;
     }
     .fixture-names img {
@@ -511,7 +500,6 @@ const sportsEvent = next
       font-family: var(--font-display);
       font-size: 18px;
       font-weight: 800;
-      white-space: nowrap;
     }
     .fixture-names span {
       color: #8ca0c6;
@@ -655,6 +643,9 @@ const sportsEvent = next
       .fixture-names img {
         width: 22px;
         height: 22px;
+      }
+      .fixture-row .status {
+        display: none;
       }
       .tabs {
         width: 100%;

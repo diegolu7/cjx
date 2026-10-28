@@ -410,6 +410,7 @@ export const es = {
       shareTitle: "Cuándo juega Boca Juniors",
       shareText: "Cuándo juega Boca: próximos partidos, horarios y resultados",
       seeAll: "Ver todos los partidos →",
+      seeMatchInfo: "Ver más info",
     },
 
     matches: {
