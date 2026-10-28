@@ -117,7 +117,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "William Alarcón → Sebastián Villa",
+            "player": "William Alarcón ➔ Sebastián Villa",
             "detail": "Sale William Alarcón, entra Sebastián Villa",
             "playerOut": "William Alarcón",
             "playerIn": "Sebastián Villa"
@@ -141,7 +141,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Carlos Palacios → Miguel Merentiel",
+            "player": "Carlos Palacios ➔ Miguel Merentiel",
             "detail": "Sale Carlos Palacios, entra Miguel Merentiel",
             "playerOut": "Carlos Palacios",
             "playerIn": "Miguel Merentiel"
@@ -151,7 +151,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Adson → Tchê Tchê",
+            "player": "Adson ➔ Tchê Tchê",
             "detail": "Sale Adson, entra Tchê Tchê",
             "playerOut": "Adson",
             "playerIn": "Tchê Tchê"
@@ -161,7 +161,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Bruno Duarte → Brenner",
+            "player": "Bruno Duarte ➔ Brenner",
             "detail": "Sale Bruno Duarte, entra Brenner",
             "playerOut": "Bruno Duarte",
             "playerIn": "Brenner"
@@ -171,7 +171,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Santiago Sosa → Gabriel Pereira",
+            "player": "Santiago Sosa ➔ Gabriel Pereira",
             "detail": "Sale Santiago Sosa, entra Gabriel Pereira",
             "playerOut": "Santiago Sosa",
             "playerIn": "Gabriel Pereira"
@@ -181,7 +181,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Alan Lescano → Ramon Rique",
+            "player": "Alan Lescano ➔ Ramon Rique",
             "detail": "Sale Alan Lescano, entra Ramon Rique",
             "playerOut": "Alan Lescano",
             "playerIn": "Ramon Rique"
@@ -191,7 +191,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Paulo Henrique → José Luis Rodríguez",
+            "player": "Paulo Henrique ➔ José Luis Rodríguez",
             "detail": "Sale Paulo Henrique, entra José Luis Rodríguez",
             "playerOut": "Paulo Henrique",
             "playerIn": "José Luis Rodríguez"
@@ -201,7 +201,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Santiago Ascacibar → Ángel Romero",
+            "player": "Santiago Ascacibar ➔ Ángel Romero",
             "detail": "Sale Santiago Ascacibar, entra Ángel Romero",
             "playerOut": "Santiago Ascacibar",
             "playerIn": "Ángel Romero"
@@ -375,7 +375,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Leandro Lozano → Dylan Gorosito",
+            "player": "Leandro Lozano ➔ Dylan Gorosito",
             "detail": "Sale Leandro Lozano, entra Dylan Gorosito",
             "playerOut": "Leandro Lozano",
             "playerIn": "Dylan Gorosito"
@@ -392,7 +392,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Giovanni Baroni → Mateo Caceres",
+            "player": "Giovanni Baroni ➔ Mateo Caceres",
             "detail": "Sale Giovanni Baroni, entra Mateo Caceres",
             "playerOut": "Giovanni Baroni",
             "playerIn": "Mateo Caceres"
@@ -402,7 +402,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Rick → Diego Valoyes",
+            "player": "Rick ➔ Diego Valoyes",
             "detail": "Sale Rick, entra Diego Valoyes",
             "playerOut": "Rick",
             "playerIn": "Diego Valoyes"
@@ -419,7 +419,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Federico Fattori → Valentín Dávila",
+            "player": "Federico Fattori ➔ Valentín Dávila",
             "detail": "Sale Federico Fattori, entra Valentín Dávila",
             "playerOut": "Federico Fattori",
             "playerIn": "Valentín Dávila"
@@ -429,7 +429,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Ángel Romero → Carlos Palacios",
+            "player": "Ángel Romero ➔ Carlos Palacios",
             "detail": "Sale Ángel Romero, entra Carlos Palacios",
             "playerOut": "Ángel Romero",
             "playerIn": "Carlos Palacios"
@@ -439,7 +439,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Miguel Merentiel → Enner Valencia",
+            "player": "Miguel Merentiel ➔ Enner Valencia",
             "detail": "Sale Miguel Merentiel, entra Enner Valencia",
             "playerOut": "Miguel Merentiel",
             "playerIn": "Enner Valencia"
@@ -449,7 +449,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Valentin Depietri → Emiliano Chiavassa",
+            "player": "Valentin Depietri ➔ Emiliano Chiavassa",
             "detail": "Sale Valentin Depietri, entra Emiliano Chiavassa",
             "playerOut": "Valentin Depietri",
             "playerIn": "Emiliano Chiavassa"
@@ -459,7 +459,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Augusto Schott → Timoteo Chamorro",
+            "player": "Augusto Schott ➔ Timoteo Chamorro",
             "detail": "Sale Augusto Schott, entra Timoteo Chamorro",
             "playerOut": "Augusto Schott",
             "playerIn": "Timoteo Chamorro"
@@ -469,7 +469,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Leonel Flores → Rodrigo Bacidalupe",
+            "player": "Leonel Flores ➔ Rodrigo Bacidalupe",
             "detail": "Sale Leonel Flores, entra Rodrigo Bacidalupe",
             "playerOut": "Leonel Flores",
             "playerIn": "Rodrigo Bacidalupe"
@@ -655,7 +655,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "David → Brenner",
+            "player": "David ➔ Brenner",
             "detail": "Sale David, entra Brenner",
             "playerOut": "David",
             "playerIn": "Brenner"
@@ -665,7 +665,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Adson → Marino Hinestroza",
+            "player": "Adson ➔ Marino Hinestroza",
             "detail": "Sale Adson, entra Marino Hinestroza",
             "playerOut": "Adson",
             "playerIn": "Marino Hinestroza"
@@ -675,7 +675,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Paulo Henrique → José Luis Rodríguez",
+            "player": "Paulo Henrique ➔ José Luis Rodríguez",
             "detail": "Sale Paulo Henrique, entra José Luis Rodríguez",
             "playerOut": "Paulo Henrique",
             "playerIn": "José Luis Rodríguez"
@@ -685,7 +685,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Rodrigo Battaglia → Leandro Paredes",
+            "player": "Rodrigo Battaglia ➔ Leandro Paredes",
             "detail": "Sale Rodrigo Battaglia, entra Leandro Paredes",
             "playerOut": "Rodrigo Battaglia",
             "playerIn": "Leandro Paredes"
@@ -702,7 +702,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Leonel Flores → Alan Velasco",
+            "player": "Leonel Flores ➔ Alan Velasco",
             "detail": "Sale Leonel Flores, entra Alan Velasco",
             "playerOut": "Leonel Flores",
             "playerIn": "Alan Velasco"
@@ -712,7 +712,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Miguel Merentiel → Enner Valencia",
+            "player": "Miguel Merentiel ➔ Enner Valencia",
             "detail": "Sale Miguel Merentiel, entra Enner Valencia",
             "playerOut": "Miguel Merentiel",
             "playerIn": "Enner Valencia"
@@ -729,7 +729,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Rival",
-            "player": "Alan Lescano → Claudio Spinelli",
+            "player": "Alan Lescano ➔ Claudio Spinelli",
             "detail": "Sale Alan Lescano, entra Claudio Spinelli",
             "playerOut": "Alan Lescano",
             "playerIn": "Claudio Spinelli"
@@ -739,7 +739,7 @@
             "type": "Cambio",
             "typeCode": "substitution",
             "team": "Boca",
-            "player": "Sebastián Villa → Ayrton Costa",
+            "player": "Sebastián Villa ➔ Ayrton Costa",
             "detail": "Sale Sebastián Villa, entra Ayrton Costa",
             "playerOut": "Sebastián Villa",
             "playerIn": "Ayrton Costa"

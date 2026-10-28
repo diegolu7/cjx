@@ -533,7 +533,7 @@ export async function fetchSummary(league, eventId) {
       const names = (k?.participants ?? []).map((p) => playerName(p?.athlete)).filter(Boolean);
       const isSub = type === "substitution";
       // ESPN: "X replaces Y" → X entra, Y sale.
-      const player = isSub ? names.slice().reverse().join(" → ") : names.join(", ");
+      const player = isSub ? names.slice().reverse().join(" ➔ ") : names.join(", ");
       return {
         minute: k.clock?.displayValue ?? "",
         type: eventType(type, k?.type?.text),

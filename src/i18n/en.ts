@@ -65,7 +65,7 @@ export const en: DictShape<typeof es> = {
     enableShort: "Turn on alerts",
     enable: "Turn on notifications",
     disable: "Turn off notifications",
-    ios: "On iPhone/iPad install the app first (Share → Add to Home Screen) and then turn on notifications from the installed icon.",
+    ios: "On iPhone/iPad install the app first (Share ➔ Add to Home Screen) and then turn on notifications from the installed icon.",
     soonLabel: "Coming soon:",
     soon: "you will be able to turn on alerts so we can notify you when Boca is about to play.",
     unsupported: "Your browser does not support notifications.",
@@ -407,7 +407,7 @@ export const en: DictShape<typeof es> = {
       h1: "When does Boca Juniors play",
       shareTitle: "When does Boca Juniors play",
       shareText: "Boca Juniors upcoming matches, kickoff times and results",
-      seeAll: "See all matches →",
+      seeAll: "See all matches ➔",
       seeMatchInfo: "More match info",
     },
 

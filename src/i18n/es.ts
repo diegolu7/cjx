@@ -67,7 +67,7 @@ export const es = {
     enableShort: "Activar avisos",
     enable: "Activar notificaciones",
     disable: "Desactivar notificaciones",
-    ios: "En iPhone/iPad primero instalá la app (Compartir → Agregar a pantalla de inicio) y luego activá las notificaciones desde el ícono instalado.",
+    ios: "En iPhone/iPad primero instalá la app (Compartir ➔ Agregar a pantalla de inicio) y luego activá las notificaciones desde el ícono instalado.",
     soonLabel: "Próximamente:",
     soon: "vas a poder activar avisos para que te notifiquemos cuando esté por jugar Boca.",
     unsupported: "Tu navegador no soporta notificaciones.",
@@ -409,7 +409,7 @@ export const es = {
       h1: "Cuándo juega Boca Juniors",
       shareTitle: "Cuándo juega Boca Juniors",
       shareText: "Cuándo juega Boca: próximos partidos, horarios y resultados",
-      seeAll: "Ver todos los partidos →",
+      seeAll: "Ver todos los partidos ➔",
       seeMatchInfo: "Ver más info",
     },
 
